@@ -1,0 +1,430 @@
+<?php
+
+namespace Saseul\Consensus;
+
+use Saseul\Constant\Decision;
+use Saseul\Constant\Directory;
+use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\Structure;
+use Saseul\Core\Chunk;
+use Saseul\Core\IMLog;
+use Saseul\Core\NodeInfo;
+use Saseul\Custom\Status\Fee;
+use Saseul\System\Database;
+use Saseul\System\Key;
+use Saseul\Util\DateTime;
+use Saseul\Util\Logger;
+use Saseul\Util\RestCall;
+use Saseul\Util\TypeChecker;
+
+class CommitManager
+{
+    private static $instance = null;
+
+    private $db;
+    private $rest;
+    private $transaction_manager;
+    private $status_manager;
+
+    public static function GetInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    public function __construct()
+    {
+        $this->db = Database::GetInstance();
+        $this->rest = RestCall::GetInstance();
+        $this->transaction_manager = new TransactionManager();
+        $this->status_manager = new StatusManager();
+    }
+
+    public function init()
+    {
+        $this->status_manager->Reset();
+    }
+
+    public function nextBlock($lastBlock, $blockhash, int $txCount, $standardTimestamp)
+    {
+        return [
+            'block_number' => ((int) $lastBlock['block_number'] + 1),
+            'last_blockhash' => $lastBlock['blockhash'],
+            'blockhash' => $blockhash,
+            'transaction_count' => $txCount,
+            's_timestamp' => $standardTimestamp,
+            'timestamp' => DateTime::Microtime(),
+        ];
+    }
+
+    public function commit($transactions, $lastBlock, $expectBlock)
+    {
+        if (count($transactions) === 0) {
+            return;
+        }
+
+        $blockhash = $expectBlock['blockhash'];
+        $s_timestamp = $expectBlock['s_timestamp'];
+
+        Fee::SetBlockhash($blockhash);
+        Fee::SetStandardTimestamp($s_timestamp);
+
+        $this->status_manager->Preprocess();
+        $this->status_manager->Save();
+        $this->status_manager->Postprocess();
+
+        $this->commitTransaction($transactions, $expectBlock);
+        $this->commitBlock($expectBlock);
+
+        Chunk::RemoveAPIChunk($lastBlock['s_timestamp']);
+        Chunk::RemoveBroadcastChunk($lastBlock['s_timestamp']);
+    }
+
+    public function orderedTransactions($transactions, $minTimestamp, $maxTimestamp) {
+        $orderKey = [];
+        $txs = [];
+
+        $this->status_manager->Reset();
+        
+        foreach ($transactions as $key => $item) {
+            if (TypeChecker::StructureCheck(Structure::TX_ITEM, $item) === false) {
+                continue;
+            }
+
+            $transaction = $item['transaction'];
+            $thash = hash('sha256', json_encode($transaction));
+            $public_key = $item['public_key'];
+            $signature = $item['signature'];
+
+            $type = $transaction['type'];
+            $timestamp = $transaction['timestamp'];
+
+            if ($timestamp > $maxTimestamp || $timestamp < $minTimestamp) {
+                continue;
+            }
+
+            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
+            $validity = $this->transaction_manager->GetTransactionValidity();
+            $this->transaction_manager->LoadStatus();
+
+            if ($validity == false) {
+                continue;
+            }
+
+            $txs[] = [
+                'thash' => $thash,
+                'timestamp' => $timestamp,
+                'transaction' => $transaction,
+                'public_key' => $public_key,
+                'signature' => $signature,
+                'result' => '',
+            ];
+
+            $orderKey[] = $timestamp . $thash;
+        }
+
+        array_multisort($orderKey, $txs);
+
+        return $txs;
+    }
+
+    public function collectChunk(array $results, array $oldChunks, int $minTime, int $maxTime)
+    {
+        $t = [];
+        $max = 0;
+        $chunks = $oldChunks;
+
+        foreach ($results as $rs) {
+            $result = json_decode($rs['result'], true);
+
+            if ($rs['exec_time'] > $max) {
+                $max = $rs['exec_time'];
+            }
+
+//            $t[] = [
+//                'host' => $rs['host'],
+//                'exec_time' => $rs['exec_time'],
+//                'cnt' => count($result['data']['items']),
+//            ];
+
+            # check structure;
+            if (!isset($result['data']['items']) || !is_array($result['data']['items'])) {
+                continue;
+            }
+
+            foreach ($result['data']['items'] as $item) {
+                # check structure;
+                if (TypeChecker::StructureCheck(Structure::BROADCAST_ITEM, $item) === false) {
+                    continue;
+                }
+
+                $address = $item['address'];
+                $file_name = $item['file_name'];
+                $transactions = $item['transactions'];
+                $public_key = $item['public_key'];
+                $content_signature = $item['content_signature'];
+
+                # check request is valid;
+                if (!Key::isValidAddress($address, $public_key) ||
+                    !Chunk::isValidContentSignaure($public_key, DateTime::toTime($maxTime), $content_signature, $transactions)) {
+                    continue;
+                }
+
+                # add broadcast chunk;
+                Chunk::makeBroadcastChunk($file_name, $public_key, $content_signature, $transactions);
+
+                $chunks = $this->mergedChunks($chunks, $transactions, $minTime, $maxTime);
+            }
+        }
+
+//        Logger::Log($t);
+        IMLog::add('[Log] maximum_exec_time : ' . $max);
+
+        return $chunks;
+    }
+
+    public function collectApiChunk(array $aliveValidators, array $oldChunks, int $minTime, int $maxTime)
+    {
+        $hosts = [];
+        $chunks = $oldChunks;
+
+        $reqTime = DateTime::Microtime();
+        $data = [
+            'min_time' => $minTime,
+            'max_time' => $maxTime,
+            'req_time' => $reqTime,
+            'public_key' => NodeInfo::getPublicKey(),
+            'signature' => Key::makeSignature($reqTime, NodeInfo::getPrivateKey(), NodeInfo::getPublicKey()),
+        ];
+
+        foreach ($aliveValidators as $node) {
+            $hosts[] = $node['host'];
+        }
+
+        $results = $this->rest->MultiPOST($hosts, 'broadcast2', $data, false, [], 3);
+        $chunks = $this->collectChunk($results, $chunks, $minTime, $maxTime);
+
+        return $chunks;
+    }
+
+    public function collectBroadcastChunk(array $aliveValidators, array $oldChunks, int $minTime, int $maxTime)
+    {
+        $reqTime = DateTime::Microtime();
+
+        $chunks = $oldChunks;
+        $hosts = [];
+
+        foreach ($aliveValidators as $node) {
+            $hosts[] = $node['host'];
+        }
+
+        # try;
+        $broadcastCode = Chunk::broadcastCode(DateTime::toTime($maxTime));
+        $data = [
+            'broadcast_code' => $broadcastCode,
+            's_timestamp' => $maxTime,
+            'req_time' => $reqTime,
+            'public_key' => NodeInfo::getPublicKey(),
+            'signature' => Key::makeSignature($reqTime, NodeInfo::getPrivateKey(), NodeInfo::getPublicKey()),
+        ];
+
+        $results = $this->rest->MultiPOST($hosts, 'broadcast3', $data, false, [], 3);
+        $chunks = $this->collectChunk($results, $chunks, $minTime, $maxTime);
+        $broadcastCodes = $this->collectBroadcastCode($results, []);
+        $most = TypeChecker::findMostItem(array_values($broadcastCodes), 'broadcast_code');
+
+        # 이거 살리면 확실하게 Stable;
+//        if ($most['unique'] === true && $most['item']['broadcast_code'] === $broadcastCode) {
+//            return $chunks;
+//        }
+        if ($most['item']['broadcast_code'] === $broadcastCode) {
+            return $chunks;
+        }
+
+        # retry;
+        $broadcastCode = Chunk::broadcastCode(DateTime::toTime($maxTime));
+        $data = [
+            'broadcast_code' => $broadcastCode,
+            's_timestamp' => $maxTime,
+            'req_time' => $reqTime,
+            'public_key' => NodeInfo::getPublicKey(),
+            'signature' => Key::makeSignature($reqTime, NodeInfo::getPrivateKey(), NodeInfo::getPublicKey()),
+        ];
+
+        $results = $this->rest->MultiPOST($hosts, 'broadcast3', $data, false, [], 3);
+        $chunks = $this->collectChunk($results, $chunks, $minTime, $maxTime);
+
+        return $chunks;
+
+        # TODO : 리스크 실험 해야함.
+        # 이거 살리면 확실하게 Stable;
+//        $broadcastCodes = $this->collectBroadcastCode($results, $broadcastCodes);
+//        $most = TypeChecker::findMostItem(array_values($broadcastCodes), 'broadcast_code');
+//
+//        if ($most['item']['broadcast_code'] === $broadcastCode) {
+//            return $chunks;
+//        }
+//
+//        return ['keys' => [], 'txs' => []];
+    }
+
+    public function collectBroadcastCode($results, $oldCodes)
+    {
+        $broadcastCodes = $oldCodes;
+
+        foreach ($results as $rs) {
+            $result = json_decode($rs['result'], true);
+
+            # check structure;
+            if (!isset($result['data'])) {
+                continue;
+            }
+
+            # check structure;
+            if (TypeChecker::StructureCheck(Structure::BROADCAST_RESULT, $result['data']) === false) {
+                continue;
+            }
+
+            $broadcastCodes[$result['data']['address']] = [
+                'address' => $result['data']['address'],
+                'broadcast_code' => $result['data']['broadcast_code'],
+            ];
+        }
+
+        return $broadcastCodes;
+    }
+
+    public function mergedChunks(array $oldChunks, array $transactions, $minTimestamp, $maxTimestamp) {
+        $keys = $oldChunks['keys'];
+        $txs = $oldChunks['txs'];
+
+        foreach ($transactions as $item) {
+            if (TypeChecker::StructureCheck(Structure::TX_ITEM, $item) === false) {
+                continue;
+            }
+
+            $transaction = $item['transaction'];
+            $thash = hash('sha256', json_encode($transaction));
+            $public_key = $item['public_key'];
+            $signature = $item['signature'];
+
+            $type = $transaction['type'];
+            $timestamp = $transaction['timestamp'];
+            $key = $timestamp . $thash;
+
+            if ($timestamp > $maxTimestamp || $minTimestamp >= $timestamp || in_array($key, $keys)) {
+                continue;
+            }
+
+            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
+
+            if ($this->transaction_manager->GetTransactionValidity() === false) {
+                continue;
+            }
+
+            $this->transaction_manager->LoadStatus();
+
+            $keys[] = $key;
+
+            $txs[] = [
+                'thash' => $thash,
+                'timestamp' => $timestamp,
+                'transaction' => $transaction,
+                'public_key' => $public_key,
+                'signature' => $signature,
+                'result' => '',
+            ];
+        }
+
+        $chunks = [
+            'keys' => $keys,
+            'txs' => $txs,
+        ];
+
+        return $chunks;
+    }
+
+    public function completeTransactions($transactions)
+    {
+        # load status;
+        $this->status_manager->Load();
+
+        foreach ($transactions as $key => $item) {
+            $transaction = $item['transaction'];
+            $thash = $item['thash'];
+            $public_key = $item['public_key'];
+            $signature = $item['signature'];
+
+            $type = $transaction['type'];
+
+            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
+            $this->transaction_manager->GetStatus();
+            $result = $this->transaction_manager->MakeDecision();
+            $transactions[$key]['result'] = $result;
+
+            if ($result === Decision::REJECT) {
+                continue;
+            }
+
+            $this->transaction_manager->SetStatus();
+        }
+
+        return $transactions;
+    }
+
+    public function commitTransaction($transactions, $expectBlock)
+    {
+        $blockhash = $expectBlock['blockhash'];
+
+        foreach ($transactions as $transaction) {
+            $transaction['block'] = $blockhash;
+            $filter = ['thash' => $transaction['thash'], 'timestamp' => $transaction['timestamp']];
+            $row = ['$set' => $transaction];
+            $opt = ['upsert' => true];
+            $this->db->bulk->update($filter, $row, $opt);
+        }
+
+        if ($this->db->bulk->count() > 0) {
+            $this->db->BulkWrite(MongoDbConfig::DB_COMMITTED . '.transactions');
+        }
+    }
+
+    public function commitBlock($expectBlock)
+    {
+        $this->db->bulk->insert($expectBlock);
+
+        if ($this->db->bulk->count() > 0) {
+            $this->db->BulkWrite(MongoDbConfig::DB_COMMITTED . '.blocks');
+        }
+    }
+
+    public function makeTransactionChunk($expectBlock, $transactions)
+    {
+        $block_number = $expectBlock['block_number'];
+        $chunkname = $expectBlock['blockhash'] . $expectBlock['s_timestamp'] . '.json';
+
+        $transaction_dir = Chunk::txSubDir($block_number);
+        $make = Chunk::makeTxSubDir($block_number);
+
+        if ($make === true) {
+            Chunk::makeTxArchive((int) $block_number - 1);
+        }
+
+        $transaction_chunk = Directory::TRANSACTIONS . '/' . $transaction_dir . '/' . $chunkname;
+
+        if (file_exists($transaction_chunk)) {
+            return;
+        }
+
+        $file = fopen($transaction_chunk, 'a');
+
+        foreach ($transactions as $transaction) {
+            fwrite($file, json_encode($transaction) . ",\n");
+        }
+
+        fclose($file);
+    }
+}
