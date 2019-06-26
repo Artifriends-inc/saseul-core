@@ -32,6 +32,7 @@ class Light extends Node
 
         $generation = Generation::current();
         $nodes = Tracker::getAccessibleNodes();
+        $nodes = $this->mergedNode($nodes);
         $lastBlock = Block::GetLastBlock();
 
         $myRound = $this->round_manager->myRound($lastBlock);
@@ -42,12 +43,13 @@ class Light extends Node
         }
         $netRound = $this->round_manager->netRound($nodes, $registOption);
 
+        $this->tracker_manager->register($nodes, array_keys($netRound));
+        $nodes = Tracker::getAccessibleNodes();
         $aliveNodes = $this->aliveNodes($nodes, array_keys($netRound));
         $aliveArbiter = $this->aliveArbiters($aliveNodes);
+        $this->tracker_manager->collect($aliveNodes, array_keys($netRound));
 
         Property::aliveNode($aliveNodes);
-
-        $this->tracker_manager->collect($nodes, $aliveNodes, array_keys($netRound));
 
         $roundInfo = $this->round_manager->roundInfo($myRound, $netRound);
 

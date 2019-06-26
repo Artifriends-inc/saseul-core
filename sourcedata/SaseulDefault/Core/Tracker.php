@@ -250,7 +250,7 @@ class Tracker
             ]);
         } else {
             $db->bulk->insert([
-                'host' => Env::$genesis['host'],
+                'host' => '',
                 'address' => Env::$genesis['address'],
                 'rank' => Rank::VALIDATOR,
                 'status' => 'admitted',

@@ -111,6 +111,8 @@ class TrackerManager
                 }
             }
         }
+
+        Tracker::registerRequest(array_values($infos));
     }
 
     public function register($nodes, $alives)

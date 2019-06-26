@@ -30,6 +30,7 @@ class Arbiter extends Node
 
         $generation = Generation::current();
         $nodes = Tracker::getAccessibleNodes();
+        $nodes = $this->mergedNode($nodes);
         $lastBlock = Block::GetLastBlock();
 
         $myRound = $this->round_manager->myRound($lastBlock);
@@ -40,8 +41,10 @@ class Arbiter extends Node
         }
         $netRound = $this->round_manager->netRound($nodes, $registOption);
 
+        $this->tracker_manager->register($nodes, array_keys($netRound));
+        $nodes = Tracker::getAccessibleNodes();
         $aliveNodes = $this->aliveNodes($nodes, array_keys($netRound));
-        $this->tracker_manager->collect($nodes, $aliveNodes, array_keys($netRound));
+        $this->tracker_manager->collect($aliveNodes, array_keys($netRound));
 
         Property::aliveNode($aliveNodes);
 
