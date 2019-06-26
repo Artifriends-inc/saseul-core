@@ -9,7 +9,6 @@ use Saseul\Core\IMLog;
 use Saseul\Core\Property;
 use Saseul\Core\Tracker;
 use Saseul\Util\DateTime;
-use Saseul\Util\Logger;
 use Saseul\Util\Merkle;
 
 class Validator extends Node

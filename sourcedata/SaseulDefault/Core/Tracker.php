@@ -177,7 +177,11 @@ class Tracker
         $count = count($validators);
         $pick = rand(0, $count - 1);
 
-        return $validators[$pick];
+        if (count($validators) > 0) {
+            return $validators[$pick];
+        }
+
+        return [];
     }
 
     public static function setData($filter, $item) {
@@ -205,6 +209,20 @@ class Tracker
             $db->bulk->update(['host' => $host, 'address' => ['$nin' => [null, '']]], ['$set' => ['host' => '']], ['multi' => true]);
             $db->bulk->update(['address' => $address], ['$set' => ['host' => $host]], ['upsert' => true]);
         }
+
+        if ($db->bulk->count() > 0) {
+            $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+        }
+    }
+
+    public static function setMyHost() {
+
+        $db = Database::GetInstance();
+        $host = NodeInfo::getHost();
+        $address = NodeInfo::getAddress();
+
+        $db->bulk->update(['host' => $host, 'address' => ['$nin' => [null, '']]], ['$set' => ['host' => '']], ['multi' => true]);
+        $db->bulk->update(['address' => $address], ['$set' => ['host' => $host]], ['upsert' => true]);
 
         if ($db->bulk->count() > 0) {
             $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);

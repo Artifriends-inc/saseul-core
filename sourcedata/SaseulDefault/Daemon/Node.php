@@ -15,6 +15,7 @@ use Saseul\Constant\Structure;
 use Saseul\Core\Block;
 use Saseul\Core\Chunk;
 use Saseul\Core\IMLog;
+use Saseul\Core\NodeInfo;
 use Saseul\Core\Property;
 use Saseul\Core\Tracker;
 use Saseul\Util\Logger;
@@ -48,6 +49,9 @@ class Node
         $this->sync_manager = SyncManager::GetInstance();
         $this->source_manager = SourceManager::GetInstance();
         $this->tracker_manager = TrackerManager::GetInstance();
+
+        $this->tracker_manager->GenerateTracker();
+        Tracker::setMyHost();
     }
 
     public static function GetInstance()

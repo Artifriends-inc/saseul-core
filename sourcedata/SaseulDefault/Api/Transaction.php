@@ -77,15 +77,17 @@ class Transaction extends Api
     public function BroadcastTransaction()
     {
         $validator = Tracker::GetRandomValidator();
-        $host = $validator['host'];
+        if (isset($validator['host'])) {
+            $host = $validator['host'];
 
-        $url = "http://{$host}/transaction";
-        $data = [
-            'transaction' => json_encode($this->transaction),
-            'public_key' => $this->public_key,
-            'signature' => $this->signature,
-        ];
+            $url = "http://{$host}/transaction";
+            $data = [
+                'transaction' => json_encode($this->transaction),
+                'public_key' => $this->public_key,
+                'signature' => $this->signature,
+            ];
 
-        $this->rest->POST($url, $data);
+            $this->rest->POST($url, $data);
+        }
     }
 }
