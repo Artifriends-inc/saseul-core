@@ -53,8 +53,9 @@ class Validator extends Node
         $this->heartbeat = ((DateTime::Microtime() - $this->stime) / 1000000);
         IMLog::add('[Net] check round : ' . $this->heartbeat . ' s');
 
-        $aliveNodes = $this->aliveNodes($nodes, array_keys($netRound));
         $this->tracker_manager->register($nodes, array_keys($netRound));
+        $nodes = Tracker::getAccessibleNodes();
+        $aliveNodes = $this->aliveNodes($nodes, array_keys($netRound));
         $this->tracker_manager->collect($aliveNodes, array_keys($netRound));
 
         IMLog::add('[Net] check tracker : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');

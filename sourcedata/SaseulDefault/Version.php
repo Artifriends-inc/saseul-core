@@ -4,7 +4,7 @@ namespace Saseul;
 
 class Version
 {
-    const CURRENT = '1.0.0';
+    const CURRENT = '1.0.0.1';
     const LENGTH_LIMIT = 64;
 
     public static function isValid($version)

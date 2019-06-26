@@ -3,6 +3,7 @@
 namespace Saseul\Consensus;
 
 use Saseul\Constant\Structure;
+use Saseul\Core\Property;
 use Saseul\Core\Tracker;
 use Saseul\Custom\Method\Attributes;
 use Saseul\System\Cache;
@@ -129,6 +130,7 @@ class TrackerManager
             }
         }
 
+        Property::registerRequest([]);
         Tracker::setHosts($infos);
     }
 }
