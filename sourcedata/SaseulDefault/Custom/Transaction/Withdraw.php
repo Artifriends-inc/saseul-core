@@ -92,7 +92,7 @@ class Withdraw extends Transaction
 
     public function _MakeDecision()
     {
-        if ((int) $this->amount + (int) $this->fee > (int) $this->from_balance) {
+        if ((int) $this->amount + (int) $this->fee > (int) $this->from_deposit) {
             return Decision::REJECT;
         }
 

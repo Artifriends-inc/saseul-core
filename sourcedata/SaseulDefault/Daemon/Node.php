@@ -217,6 +217,19 @@ class Node
         return $aliveArbiters;
     }
 
+    public function validators(array $nodes) {
+        $allValidators = Tracker::GetValidatorAddress();
+        $validators = [];
+
+        foreach ($nodes as $node) {
+            if (in_array($node['address'], $allValidators)) {
+                $validators[] = $node;
+            }
+        }
+
+        return $validators;
+    }
+
     public function update($aliveArbiters, $generation, $myRoundNumber): void
     {
         $originBlockhash = $generation['origin_blockhash'];

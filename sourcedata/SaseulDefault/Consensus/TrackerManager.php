@@ -117,6 +117,8 @@ class TrackerManager
 
     public function register($nodes, $alives)
     {
+        $infos = [];
+
         # die;
         foreach ($nodes as $node) {
             if (in_array($node['address'], $alives)) {
@@ -133,6 +135,9 @@ class TrackerManager
         }
 
         Property::registerRequest([]);
-        Tracker::setHosts($infos);
+
+        if (count($infos) > 0) {
+            Tracker::setHosts($infos);
+        }
     }
 }

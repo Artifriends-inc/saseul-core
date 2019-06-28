@@ -39,6 +39,7 @@ class Validator extends Node
         $lastBlock = Block::GetLastBlock();
         $nodes = Tracker::getAccessibleNodes();
         $nodes = $this->mergedNode($nodes);
+        $nodes = $this->validators($nodes);
 
         IMLog::add('[CPU] check block & tracker : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');
 
