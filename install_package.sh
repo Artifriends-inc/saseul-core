@@ -240,7 +240,7 @@ chkconfig mongod on
 echo ""
 
 ln -s "$SASEUL_SOURCE_DEFAULT" "$SASEUL_SOURCE"
-chown -Rf saseul:saseul-node "$SASEUL_PATH"/*
+chown -Rf saseul:saseul-node "$SASEUL_PATH"
 chown -Rf saseul:saseul-node "$SASEUL_SOURCE"
 
 service saseuld restart
