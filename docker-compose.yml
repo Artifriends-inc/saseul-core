@@ -1,0 +1,53 @@
+version: '3.7'
+
+services:
+  memcached:
+    image: memcached:alpine
+    networks:
+      - back
+  mongo:
+    image: mongo
+    networks:
+      - front
+    volumes:
+      - ./data/db:/data/db
+  node:
+    image: saseul-origin-v
+#    command: bin/start_node.sh
+    networks:
+      - back
+      - front
+    depends_on:
+      - memcached
+      - mongo
+    volumes:
+      - .:/var/saseul-origin
+      - ./data/logs:/var/log/saseul-origin
+#    env_file: .env
+  api:
+    image: saseul-origin-v
+    networks:
+      - back
+      - front
+    depends_on:
+      - memcached
+      - mongo
+    volumes:
+      - .:/var/saseul-origin
+      - ./data/logs:/var/log/saseul-origin
+#    env_file: .env
+  web:
+    image: nginx:alpine
+    networks:
+      - front
+    depends_on:
+      - api
+    ports:
+      - 8080:80
+    volumes:
+      - ./conf/nginx/saseul-origin-api-nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./data:/var/saseul-origin
+
+networks:
+  front:
+  back:

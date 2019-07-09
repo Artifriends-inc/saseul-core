@@ -3,3 +3,6 @@
 !.keep
 
 .env
+data/db
+data/logs
+*.log
