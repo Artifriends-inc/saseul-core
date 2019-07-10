@@ -21,6 +21,8 @@ RUN pecl install xdebug 2.7.0 \
     && docker-php-ext-enable ast \
     && rm -rf /tmp/pear/*
 
+RUN docker-php-ext-install pcntl json
+
 # ed25519
 WORKDIR /tmp
 RUN git clone https://github.com/encedo/php-ed25519-ext.git \

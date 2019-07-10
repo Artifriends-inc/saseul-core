@@ -5,4 +5,12 @@
 .env
 data/db
 data/logs
+blockdata/apichunks
+blockdata/broadcastchunks
+blockdata/generations
+blockdata/transactions
+blockdata/txarchives
 *.log
+
+*.tar.gz
+*.pid

@@ -20,3 +20,10 @@
 
 ## v.1.0.0.2
 1. 자신의 Host 등록하는 절차 추가;
+
+## Node 실행 순서
+
+* `docker-compose run --rm api sh -c "cd src; ./saseul_script Reset"`
+
+* `docker-compose up -d`
+  * 실행하게되면 `saseuld.pid`가 생성된다. 항상 지워주도록 하자.

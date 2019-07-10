@@ -26,13 +26,13 @@ class Env
     }
 
     public static $memcached = [
-        'host' => 'localhost',
+        'host' => 'memcached',
         'port' => 11211,
         'prefix' => '',
     ];
 
     public static $mongoDb = [
-        'host' => 'localhost',
+        'host' => 'mongo',
         'port' => 27017
     ];
 
