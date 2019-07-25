@@ -1,16 +1,11 @@
-FROM php:7.3-fpm-alpine
+FROM php:7.3-fpm
 
-RUN apk update --no-cache \
-    && apk upgrade --no-cache \
-    && apk add --no-cache shadow \
-    && apk add --no-cache --virtual .build-deps \
-           autoconf file g++ gcc libc-dev make pkgconf re2c git openssl-dev bash \
-    && apk add --no-cache --update --virtual .memcached-deps \
-           zlib-dev libmemcached-dev cyrus-sasl-dev \
-    && docker-php-source extract \
-    && rm -rf /var/cache/apk && mkdir -p /var/cache/apk
+RUN apt update \
+    && apt install -y --no-install-recommends \
+            build-essential git libmemcached-dev zlib1g-dev libssl-dev \
+    && apt autoclean \
+    && rm -rf /var/lib/apt/lists/*
 
-# php-ext
 RUN pecl install xdebug 2.7.0 \
     && docker-php-ext-enable xdebug \
     && pecl install memcached \

@@ -1,0 +1,24 @@
+# OSX
+.DS_Store
+
+#
+.idea
+.git
+.gitignore
+.dockerignore
+.env
+docker-compose.yml
+Dockerfile
+Readme.md
+
+# saseul
+*.tar.gz
+*.pid
+*.log
+
+blockdata/apichunks/*
+blockdata/broadcastchunks/*
+blockdata/transactions/*
+
+data/db/*
+data/logs/*
