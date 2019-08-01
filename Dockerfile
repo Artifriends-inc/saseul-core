@@ -14,13 +14,14 @@ RUN composer install \
     && composer dump-autoload -o
 
 #
-# ed25519
+# Extenstions
 #
-FROM php:7.3-cli AS ext-ed25519
+FROM php:7.3-cli AS all-ext
 
 RUN docker-php-source extract \
     && apt update \
-    && apt install -y --no-install-recommends git libssl-dev \
+    && apt install -y --no-install-recommends \
+            git libssl-dev libmemcached-dev zlib1g-dev \
     && apt autoclean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -33,17 +34,6 @@ RUN git clone https://github.com/encedo/php-ed25519-ext.git \
     && make test \
     && docker-php-ext-enable ed25519
 
-#
-# Saseul
-#
-FROM php:7.3-fpm
-
-RUN apt update \
-    && apt install -y --no-install-recommends \
-            build-essential git libmemcached-dev zlib1g-dev libssl-dev \
-    && apt autoclean \
-    && rm -rf /var/lib/apt/lists/*
-
 RUN pecl install xdebug 2.7.0 \
     && docker-php-ext-enable xdebug \
     && pecl install memcached \
@@ -52,10 +42,22 @@ RUN pecl install xdebug 2.7.0 \
     && docker-php-ext-enable mongodb \
     && pecl install ast \
     && docker-php-ext-enable ast \
-    && rm -rf /tmp/pear/*
+    && docker-php-ext-install pcntl json \
+    && docker-php-source delete
 
-RUN docker-php-ext-install pcntl json
+#
+# Saseul
+#
+FROM php:7.3-fpm
 
+RUN apt update \
+    && apt autoclean \
+    && rm -rf /var/lib/apt/lists/*
+
+# ext
+COPY --from=all-ext /usr/local/etc/php/conf.d/* /usr/local/etc/php/conf.d/
+COPY --from=all-ext /usr/local/lib/php/extensions/no-debug-non-zts-20180731/* \
+            /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
 
 # User settings
 WORKDIR /var/saseul-origin
@@ -63,13 +65,9 @@ WORKDIR /var/saseul-origin
 COPY . .
 
 RUN groupadd saseul-node \
-    && useradd -s /bin/bash -G saseul-node,www-data saseul \
+    && useradd -m -s /bin/bash -G saseul-node,www-data saseul \
     && chown -Rf saseul.saseul-node /var/saseul-origin
 
 USER saseul:saseul-node
 
 COPY --from=vendor /app/vendor .
-
-# ext
-COPY --from=ext-ed25519 /usr/local/etc/php/conf.d/* /usr/local/etc/php/conf.d/
-COPY --from=ext-ed25519 /usr/local/lib/php/extensions/no-debug-non-zts-20180731/* /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
