@@ -49,12 +49,7 @@ function build() {
 }
 
 function composer() {
-    api_exec '
-    for project_name in api components saseuld script
-    do
-        cd ${project_name} && composer install && composer dump-autoload && cd ..
-    done
-    '
+    composer install && composer dump-autoload
 }
 
 function up() {

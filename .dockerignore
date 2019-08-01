@@ -10,6 +10,7 @@
 docker-compose.yml
 Dockerfile
 Readme.md
+vendor
 
 # saseul
 *.tar.gz

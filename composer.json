@@ -1,0 +1,35 @@
+{
+    "name": "artifriends/saseul-origin",
+    "description": "SASEUL Origin core.",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "artifriends",
+            "email": "saseul@artifriends.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "src\\": "./src/",
+            "Saseul\\": "./src/Saseul/",
+            "Saseul\\API\\": "./src/Saseul/SaseulDefault/API/",
+            "Saseul\\Common\\": "./src/Saseul/SaseulDefault/Common/",
+            "Saseul\\Consensus\\": "./src/Saseul/SaseulDefault/Consensus/",
+            "Saseul\\Constant\\": "./src/Saseul/SaseulDefault/Constant/",
+            "Saseul\\Core\\": "./src/Saseul/SaseulDefault/Core/",
+            "Saseul\\Custom\\": "./src/Saseul/SaseulDefault/Custom/",
+            "Saseul\\Daemon\\": "./src/Saseul/SaseulDefault/Daemon/",
+            "Saseul\\System\\": "./src/Saseul/SaseulDefault/System/",
+            "Saseul\\Util\\": "./src/Saseul/SaseulDefault/Util/",
+            "Saseul\\Script\\": "./src/Saseul/SaseulDefault/Script/"
+        }
+    },
+    "require": {
+        "monolog/monolog": "^1.24"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8",
+        "phan/phan": "^1.2",
+        "friendsofphp/php-cs-fixer": "^2"
+    }
+}
