@@ -14,6 +14,26 @@ RUN composer install \
     && composer dump-autoload -o
 
 #
+# ed25519
+#
+FROM php:7.3-cli AS ext-ed25519
+
+RUN docker-php-source extract \
+    && apt update \
+    && apt install -y --no-install-recommends git libssl-dev \
+    && apt autoclean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/encedo/php-ed25519-ext.git \
+    && cd php-ed25519-ext \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && make test \
+    && docker-php-ext-enable ed25519
+
+#
 # Saseul
 #
 FROM php:7.3-fpm
@@ -36,18 +56,6 @@ RUN pecl install xdebug 2.7.0 \
 
 RUN docker-php-ext-install pcntl json
 
-# ed25519
-WORKDIR /tmp
-RUN git clone https://github.com/encedo/php-ed25519-ext.git \
-    && cd php-ed25519-ext \
-    && phpize \
-    && ./configure \
-    && make \
-    && make install \
-    && make test \
-    && docker-php-ext-enable ed25519 \
-    && cd / \
-    && rm -rf /tmp/php-ed25519-ext
 
 # User settings
 WORKDIR /var/saseul-origin
@@ -61,3 +69,7 @@ RUN groupadd saseul-node \
 USER saseul:saseul-node
 
 COPY --from=vendor /app/vendor .
+
+# ext
+COPY --from=ext-ed25519 /usr/local/etc/php/conf.d/* /usr/local/etc/php/conf.d/
+COPY --from=ext-ed25519 /usr/local/lib/php/extensions/no-debug-non-zts-20180731/* /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
