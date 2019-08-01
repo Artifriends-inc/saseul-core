@@ -60,6 +60,7 @@ RUN docker-php-source extract \
 WORKDIR /var/saseul-origin
 
 COPY . .
+COPY ./conf/php.ini $PHP_INI_DIR/php.ini
 
 RUN groupadd saseul-node \
     && useradd -m -s /bin/bash -G saseul-node,www-data saseul \
