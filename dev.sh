@@ -45,7 +45,7 @@ function setenv() {
 }
 
 function build() {
-    docker build --rm -t saseul-origin-v .
+    DOCKER_BUILDKIT=1 docker build --rm -t saseul-origin-v .
 }
 
 function composer() {
