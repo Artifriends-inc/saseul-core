@@ -16,12 +16,11 @@ RUN composer install \
 #
 # Extenstions
 #
-FROM php:7.3-cli AS all-ext
+FROM php:7.3-cli AS ed25519-ext
 
 RUN docker-php-source extract \
     && apt update \
-    && apt install -y --no-install-recommends \
-            git libssl-dev libmemcached-dev zlib1g-dev \
+    && apt install -y --no-install-recommends git libssl-dev \
     && apt autoclean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -32,17 +31,7 @@ RUN git clone https://github.com/encedo/php-ed25519-ext.git \
     && make \
     && make install \
     && make test \
-    && docker-php-ext-enable ed25519
-
-RUN pecl install xdebug 2.7.0 \
-    && docker-php-ext-enable xdebug \
-    && pecl install memcached \
-    && docker-php-ext-enable memcached \
-    && pecl install mongodb \
-    && docker-php-ext-enable mongodb \
-    && pecl install ast \
-    && docker-php-ext-enable ast \
-    && docker-php-ext-install pcntl json \
+    && docker-php-ext-enable ed25519 \
     && docker-php-source delete
 
 #
@@ -51,13 +40,21 @@ RUN pecl install xdebug 2.7.0 \
 FROM php:7.3-fpm
 
 RUN apt update \
+    && apt install -y --no-install-recommends \
+            libmemcached-dev zlib1g-dev\
     && apt autoclean \
     && rm -rf /var/lib/apt/lists/*
 
 # ext
-COPY --from=all-ext /usr/local/etc/php/conf.d/* /usr/local/etc/php/conf.d/
-COPY --from=all-ext /usr/local/lib/php/extensions/no-debug-non-zts-20180731/* \
+COPY --from=ed25519-ext $PHP_INI_DIR/conf.d/* $PHP_INI_DIR/conf.d/
+COPY --from=ed25519-ext /usr/local/lib/php/extensions/no-debug-non-zts-20180731/* \
             /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
+
+RUN docker-php-source extract \
+    && pecl install xdebug-2.7.2 memcached mongodb ast \
+    && docker-php-ext-enable xdebug memcached mongodb ast \
+    && docker-php-ext-install -j$(nproc) pcntl json \
+    && docker-php-source delete
 
 # User settings
 WORKDIR /var/saseul-origin
