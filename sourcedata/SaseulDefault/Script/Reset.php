@@ -100,31 +100,37 @@ class Reset extends Script
         File::rrmdir(Directory::API_CHUNKS);
         mkdir(Directory::API_CHUNKS);
         chmod(Directory::API_CHUNKS, 0775);
+        file_put_contents(Directory::API_CHUNKS . '/.keep', '');
 
         Logger::EchoLog('Delete Files : Broadcast Chunk ');
         File::rrmdir(Directory::BROADCAST_CHUNKS);
         mkdir(Directory::BROADCAST_CHUNKS);
         chmod(Directory::BROADCAST_CHUNKS, 0775);
+        file_put_contents(Directory::BROADCAST_CHUNKS . '/.keep', '');
 
         Logger::EchoLog('Delete Files : Transactions ');
         File::rrmdir(Directory::TRANSACTIONS);
         mkdir(Directory::TRANSACTIONS);
         chmod(Directory::TRANSACTIONS, 0775);
+        file_put_contents(Directory::TRANSACTIONS . '/.keep', '');
 
         Logger::EchoLog('Delete Files : Transaction Archive ');
         File::rrmdir(Directory::TX_ARCHIVE);
         mkdir(Directory::TX_ARCHIVE);
         chmod(Directory::TX_ARCHIVE, 0775);
+        file_put_contents(Directory::TX_ARCHIVE . '/.keep', '');
 
         Logger::EchoLog('Delete Files : Generations ');
         File::rrmdir(Directory::GENERATIONS);
         mkdir(Directory::GENERATIONS);
         chmod(Directory::GENERATIONS, 0775);
+        file_put_contents(Directory::GENERATIONS . '/.keep', '');
 
         Logger::EchoLog('Delete Files : Temp folder ');
         File::rrmdir(Directory::TEMP);
         mkdir(Directory::TEMP);
         chmod(Directory::TEMP, 0775);
+        file_put_contents(Directory::TEMP . '/.keep', '');
     }
 
     public function FlushCache()

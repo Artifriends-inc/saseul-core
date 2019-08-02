@@ -1,25 +1,29 @@
-FROM php:7.3-fpm
+#
+# Composer
+#
+FROM composer:1.8 AS vendor
 
-RUN apt update \
-    && apt install -y --no-install-recommends \
-            build-essential git libmemcached-dev zlib1g-dev libssl-dev \
+COPY composer.* .
+
+RUN composer install \
+    --ignore-platform-reqs \
+    --no-interaction \
+    --no-plugins \
+    --no-scripts \
+    --prefer-dist \
+    && composer dump-autoload -o
+
+#
+# Extenstions
+#
+FROM php:7.3-cli AS ed25519-ext
+
+RUN docker-php-source extract \
+    && apt update \
+    && apt install -y --no-install-recommends git libssl-dev \
     && apt autoclean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pecl install xdebug 2.7.0 \
-    && docker-php-ext-enable xdebug \
-    && pecl install memcached \
-    && docker-php-ext-enable memcached \
-    && pecl install mongodb \
-    && docker-php-ext-enable mongodb \
-    && pecl install ast \
-    && docker-php-ext-enable ast \
-    && rm -rf /tmp/pear/*
-
-RUN docker-php-ext-install pcntl json
-
-# ed25519
-WORKDIR /tmp
 RUN git clone https://github.com/encedo/php-ed25519-ext.git \
     && cd php-ed25519-ext \
     && phpize \
@@ -28,25 +32,40 @@ RUN git clone https://github.com/encedo/php-ed25519-ext.git \
     && make install \
     && make test \
     && docker-php-ext-enable ed25519 \
-    && cd / \
-    && rm -rf /tmp/php-ed25519-ext
+    && docker-php-source delete
 
-# composer
-ENV COMPOSER_ALLOW_SUPERUSER 1
-RUN curl -sS https://getcomposer.org/installer | \
-    php -- --install-dir=/usr/local/bin --filename=composer \
-    && composer global require hirak/prestissimo --no-plugins --no-scripts
+#
+# Saseul
+#
+FROM php:7.3-fpm
 
+RUN apt update \
+    && apt install -y --no-install-recommends \
+            libmemcached-dev zlib1g-dev\
+    && apt autoclean \
+    && rm -rf /var/lib/apt/lists/*
+
+# ext
+COPY --from=ed25519-ext $PHP_INI_DIR/conf.d/* $PHP_INI_DIR/conf.d/
+COPY --from=ed25519-ext /usr/local/lib/php/extensions/no-debug-non-zts-20180731/* \
+            /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
+
+RUN docker-php-source extract \
+    && pecl install xdebug-2.7.2 memcached mongodb ast \
+    && docker-php-ext-enable xdebug memcached mongodb ast \
+    && docker-php-ext-install -j$(nproc) pcntl json \
+    && docker-php-source delete
+
+# User settings
 WORKDIR /var/saseul-origin
 
 COPY . .
+COPY ./conf/php.ini $PHP_INI_DIR/php.ini
 
-#RUN useradd -s /bin/bash saseul \
-#    && mkdir /home/saseul && chown -R saseul /home/saseul \
-#    && chown saseul.saseul -R /var/saseul-origin
-#
-#USER saseul:saseul
-#
-#RUN cd api && composer install --no-dev && composer dump-autoload -o && composer clear-cache \
-#    && cd ../saseuld && composer install --no-dev && composer dump-autoload -o && composer clear-cache \
-#    && cd ../script && composer install --no-dev && composer dump-autoload -o && composer clear-cache
+RUN groupadd saseul-node \
+    && useradd -m -s /bin/bash -G saseul-node,www-data saseul \
+    && chown -Rf saseul.saseul-node /var/saseul-origin
+
+USER saseul:saseul-node
+
+COPY --from=vendor /app/vendor .
