@@ -12,7 +12,7 @@ services:
     volumes:
       - ./data/db:/data/db
   node:
-    image: saseul-origin-v
+    image: saseul-core
     command: bin/start_node.sh
     networks:
       - back
@@ -25,7 +25,7 @@ services:
       - ./data/logs:/var/log/saseul-origin
 #    env_file: .env
   api:
-    image: saseul-origin-v
+    image: saseul-core
     networks:
       - back
       - front
