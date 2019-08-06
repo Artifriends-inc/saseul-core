@@ -30,7 +30,10 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8",
-        "phan/phan": "^1.2",
+        "phan/phan": "^2",
         "friendsofphp/php-cs-fixer": "^2"
+    },
+    "scripts": {
+        "phan": "PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan"
     }
 }

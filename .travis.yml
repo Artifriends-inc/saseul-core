@@ -3,18 +3,12 @@ language: php
 dist: bionic
 
 php:
-  - "7.1"
   - "7.3"
 
 git:
   quiet: true
 
 addons:
-  apt:
-    packages:
-      - libmemcached-dev
-      - zlib1g-dev
-      - libssl-dev
   hosts:
     - monogo
     - memcached
@@ -27,18 +21,21 @@ env:
   global:
     - CC_TEST_REPORTER_ID=a79bd6f5a895e10b2036044b7f51c430fb02e90f8cd6ce16b0a0a6a1b08d2f0e
 
+install:
+  - ./.travis/set_php.sh
+  - composer global require hirak/prestissimo
+  - composer install
+
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
   - ./.travis/mongo_test.sh
-  - composer global require hirak/prestissimo
-
-install:
-  - ./.travis/set_php.sh
 
 script:
-  - echo Test
+  # Skip
+  #- PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan
+  - echo 'Test'
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

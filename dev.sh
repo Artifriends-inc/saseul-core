@@ -111,19 +111,7 @@ function composer_fix() {
 }
 
 function composer_phan() {
-    case $1 in
-    api | saseuld)
-        api_exec 'cd ./'"${1}"' && composer phan'
-        ;;
-    *)
-        api_exec '
-        for project_name in api saseuld
-        do
-            cd ${project_name} && composer phan && cd ..
-        done
-        '
-        ;;
-    esac
+    api_exec 'PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan'
 }
 
 function node_data_cleanup() {
