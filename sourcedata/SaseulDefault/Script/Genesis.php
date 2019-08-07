@@ -6,14 +6,14 @@ use Saseul\Common\Script;
 use Saseul\Constant\Directory;
 use Saseul\Constant\MongoDbConfig;
 use Saseul\Constant\Rule;
-use Saseul\Version;
-use Saseul\Core\NodeInfo;
 use Saseul\Core\Env;
-use Saseul\System\Key;
+use Saseul\Core\NodeInfo;
 use Saseul\System\Cache;
 use Saseul\System\Database;
+use Saseul\System\Key;
 use Saseul\Util\DateTime;
 use Saseul\Util\Logger;
+use Saseul\Version;
 
 class Genesis extends Script
 {

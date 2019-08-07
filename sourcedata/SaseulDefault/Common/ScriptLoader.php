@@ -77,8 +77,7 @@ class ScriptLoader
 
         if (count($this->argv) > 2) {
             $arg = $this->argv;
-            unset($arg[0]);
-            unset($arg[1]);
+            unset($arg[0], $arg[1]);
 
             $arg = array_values($arg);
         }

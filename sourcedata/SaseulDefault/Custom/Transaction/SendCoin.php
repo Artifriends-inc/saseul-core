@@ -2,13 +2,13 @@
 
 namespace Saseul\Custom\Transaction;
 
+use Saseul\Common\Transaction;
 use Saseul\Constant\Account;
-use Saseul\Custom\Status\Coin;
-use Saseul\Custom\Status\Fee;
 use Saseul\Constant\Decision;
 use Saseul\Core\Env;
+use Saseul\Custom\Status\Coin;
+use Saseul\Custom\Status\Fee;
 use Saseul\System\Key;
-use Saseul\Common\Transaction;
 use Saseul\Version;
 
 class SendCoin extends Transaction

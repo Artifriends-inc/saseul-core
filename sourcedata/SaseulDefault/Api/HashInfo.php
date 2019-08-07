@@ -9,12 +9,12 @@ class HashInfo extends Api
 {
     private $round_key;
 
-    function _init()
+    public function _init()
     {
         $this->round_key = $this->getParam($_REQUEST, 'round_key');
     }
 
-    function _process()
+    public function _process()
     {
         $this->data = Property::hashInfo($this->round_key);
     }

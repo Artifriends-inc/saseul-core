@@ -52,6 +52,6 @@ class DateTime
 
     public static function toTime(int $microtime)
     {
-        return (int)($microtime / 1000000);
+        return (int) ($microtime / 1000000);
     }
 }

@@ -2,14 +2,14 @@
 
 namespace Saseul\Custom\Transaction;
 
+use Saseul\Common\Transaction;
 use Saseul\Constant\Account;
+use Saseul\Constant\Decision;
+use Saseul\Core\Env;
 use Saseul\Custom\Status\Attributes;
 use Saseul\Custom\Status\Token;
 use Saseul\Custom\Status\TokenList;
-use Saseul\Constant\Decision;
-use Saseul\Core\Env;
 use Saseul\System\Key;
-use Saseul\Common\Transaction;
 use Saseul\Version;
 
 class CreateToken extends Transaction
@@ -106,10 +106,9 @@ class CreateToken extends Transaction
 //                return Decision::ACCEPT;
 //            }
             return Decision::ACCEPT;
-        } else {
-            if (isset($this->publish_token_info['publisher']) && $this->publish_token_info['publisher'] === $this->from) {
-                return Decision::ACCEPT;
-            }
+        }
+        if (isset($this->publish_token_info['publisher']) && $this->publish_token_info['publisher'] === $this->from) {
+            return Decision::ACCEPT;
         }
 
         return Decision::REJECT;

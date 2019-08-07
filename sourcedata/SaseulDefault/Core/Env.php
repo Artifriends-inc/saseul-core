@@ -7,24 +7,6 @@ use Saseul\Util\TypeChecker;
 
 class Env
 {
-    public static function load(): void
-    {
-        # TODO: env 파일 찾는 로직 필요.
-        if (!is_file(SASEUL_DIR . '/env.default')) {
-            return;
-        }
-
-        $env = file_get_contents(SASEUL_DIR. '/env.default');
-        $env = json_decode($env, true);
-
-        if (TypeChecker::StructureCheck(Structure::ENV, $env)) {
-            self::$memcached = $env['memcached'];
-            self::$mongoDb = $env['mongo_db'];
-            self::$nodeInfo = $env['node_info'];
-            self::$genesis = $env['genesis'];
-        }
-    }
-
     public static $memcached = [
         'host' => 'memcached',
         'port' => 11211,
@@ -81,4 +63,22 @@ class Env
             ]
         ]
     ];
+
+    public static function load(): void
+    {
+        // TODO: env 파일 찾는 로직 필요.
+        if (!is_file(SASEUL_DIR . '/env.default')) {
+            return;
+        }
+
+        $env = file_get_contents(SASEUL_DIR . '/env.default');
+        $env = json_decode($env, true);
+
+        if (TypeChecker::StructureCheck(Structure::ENV, $env)) {
+            self::$memcached = $env['memcached'];
+            self::$mongoDb = $env['mongo_db'];
+            self::$nodeInfo = $env['node_info'];
+            self::$genesis = $env['genesis'];
+        }
+    }
 }

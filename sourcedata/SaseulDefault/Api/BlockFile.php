@@ -30,11 +30,11 @@ class BlockFile extends Api
         if (is_file($filePath)) {
             $fileSize = filesize($filePath);
 
-            header("Pragma: public");
-            header("Expires: 0");
-            header("Content-Type: application/octet-stream");
+            header('Pragma: public');
+            header('Expires: 0');
+            header('Content-Type: application/octet-stream');
             header("Content-Disposition: attachment; filename={$txFileName}.json");
-            header("Content-Transfer-Encoding: binary");
+            header('Content-Transfer-Encoding: binary');
             header("Content-Length: {$fileSize}");
 
             ob_clean();

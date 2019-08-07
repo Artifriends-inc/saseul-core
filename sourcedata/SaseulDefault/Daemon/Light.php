@@ -8,7 +8,6 @@ use Saseul\Core\Block;
 use Saseul\Core\Generation;
 use Saseul\Core\Property;
 use Saseul\Core\Tracker;
-use Saseul\Util\Logger;
 
 class Light extends Node
 {
@@ -25,9 +24,9 @@ class Light extends Node
         return self::$instance;
     }
 
-    function round()
+    public function round()
     {
-        # start;
+        // start;
         Property::excludedHost($this->excludedHosts);
 
         $generation = Generation::current();

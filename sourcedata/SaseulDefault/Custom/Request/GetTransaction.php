@@ -2,12 +2,12 @@
 
 namespace Saseul\Custom\Request;
 
+use Saseul\Common\Request;
 use Saseul\Constant\MongoDbConfig;
 use Saseul\System\Database;
 use Saseul\System\Key;
-use Saseul\Common\Request;
-use Saseul\Version;
 use Saseul\Util\Parser;
+use Saseul\Version;
 
 class GetTransaction extends Request
 {
@@ -65,6 +65,7 @@ class GetTransaction extends Request
             unset($item['_id']);
 
             $transaction = $item;
+
             break;
         }
 

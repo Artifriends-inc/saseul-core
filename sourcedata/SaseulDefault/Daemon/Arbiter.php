@@ -8,7 +8,6 @@ use Saseul\Core\Block;
 use Saseul\Core\Generation;
 use Saseul\Core\Property;
 use Saseul\Core\Tracker;
-use Saseul\Util\Logger;
 
 class Arbiter extends Node
 {
@@ -23,9 +22,9 @@ class Arbiter extends Node
         return self::$instance;
     }
 
-    function round()
+    public function round()
     {
-        # start;
+        // start;
         Property::excludedHost($this->excludedHosts);
 
         $generation = Generation::current();

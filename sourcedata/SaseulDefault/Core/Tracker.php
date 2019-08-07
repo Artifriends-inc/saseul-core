@@ -10,7 +10,8 @@ use Saseul\Util\Parser;
 
 class Tracker
 {
-    public static function init() {
+    public static function init()
+    {
         $infos = [];
         $infos[] = [
             'host' => NodeInfo::getHost(),
@@ -21,11 +22,13 @@ class Tracker
         self::resetBanList();
     }
 
-    public static function resetBanList() {
+    public static function resetBanList()
+    {
         self::updateData(['status' => 'ban'], ['status' => 'admitted']);
     }
 
-    public static function banList() {
+    public static function banList()
+    {
         return self::GetNode(['status' => 'ban']);
     }
 
@@ -165,6 +168,7 @@ class Tracker
 
         foreach ($rs as $item) {
             $role = $item->rank ?? Role::LIGHT;
+
             break;
         }
 
@@ -184,7 +188,8 @@ class Tracker
         return [];
     }
 
-    public static function setData($filter, $item) {
+    public static function setData($filter, $item)
+    {
         $db = Database::GetInstance();
 
         $opt = ['upsert' => true];
@@ -201,7 +206,7 @@ class Tracker
             $host = $info['host'];
             $address = $info['address'];
 
-            # ignore my info;
+            // ignore my info;
             if ($address === NodeInfo::getAddress() || $host === NodeInfo::getHost()) {
                 continue;
             }
@@ -215,8 +220,8 @@ class Tracker
         }
     }
 
-    public static function setMyHost() {
-
+    public static function setMyHost()
+    {
         $db = Database::GetInstance();
         $host = NodeInfo::getHost();
         $address = NodeInfo::getAddress();
@@ -238,7 +243,8 @@ class Tracker
         Property::registerRequest($newRequest);
     }
 
-    public static function reset() {
+    public static function reset()
+    {
         $db = Database::GetInstance();
 
         if (NodeInfo::getAddress() === Env::$genesis['address']) {
@@ -269,7 +275,8 @@ class Tracker
         }
     }
 
-    public static function updateData($filter, $item) {
+    public static function updateData($filter, $item)
+    {
         $db = Database::GetInstance();
 
         $db->bulk->update($filter, ['$set' => $item], ['multi' => true]);

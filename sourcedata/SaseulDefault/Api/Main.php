@@ -6,5 +6,4 @@ use Saseul\Common\Api;
 
 class Main extends Api
 {
-
 }

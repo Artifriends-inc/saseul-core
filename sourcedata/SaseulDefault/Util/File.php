@@ -10,7 +10,7 @@ class File
             return false;
         }
 
-        $files = array_diff(scandir($dir), ['.','..']);
+        $files = array_diff(scandir($dir), ['.', '..']);
 
         foreach ($files as $file) {
             if (is_dir("{$dir}/{$file}")) {
@@ -23,7 +23,7 @@ class File
         return rmdir($dir);
     }
 
-    static function getAllfiles($dir)
+    public static function getAllfiles($dir)
     {
         $files = [];
 

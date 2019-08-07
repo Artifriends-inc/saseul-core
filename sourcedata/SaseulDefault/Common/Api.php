@@ -26,19 +26,40 @@ class Api
         $this->success();
     }
 
+    /**
+     * Use $type to check the type of $param data.
+     *
+     * @param        $param
+     * @param string $type
+     *
+     * @return bool
+     */
+    public static function checkType($param, string $type): bool
+    {
+        if (($type === 'string') && !is_string($param)) {
+            return false;
+        }
+
+        if (($type === 'numeric') && !is_numeric($param)) {
+            return false;
+        }
+
+        return true;
+    }
+
     protected function _init()
     {
-        # inherit
+        // inherit
     }
 
     protected function _process()
     {
-        # inherit
+        // inherit
     }
 
     protected function _end()
     {
-        # inherit
+        // inherit
     }
 
     protected function success()
@@ -82,9 +103,9 @@ class Api
      * Get request parameter.
      * If not set request parameter, default parameter data is set.
      *
-     * @param array $request
+     * @param array  $request
      * @param string $key
-     * @param array $options keys [default, type]
+     * @param array  $options keys [default, type]
      *
      * @return float|int|string
      */
@@ -101,26 +122,5 @@ class Api
         }
 
         return $param;
-    }
-
-    /**
-     * Use $type to check the type of $param data.
-     *
-     * @param        $param
-     * @param string $type
-     *
-     * @return bool
-     */
-    public static function checkType($param, string $type): bool
-    {
-        if (($type === 'string') && !is_string($param)) {
-            return false;
-        }
-
-        if (($type === 'numeric') && !is_numeric($param)) {
-            return false;
-        }
-
-        return true;
     }
 }

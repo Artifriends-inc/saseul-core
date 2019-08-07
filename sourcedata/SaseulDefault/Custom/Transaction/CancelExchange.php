@@ -2,9 +2,9 @@
 
 namespace Saseul\Custom\Transaction;
 
+use Saseul\Common\Transaction;
 use Saseul\Constant\Decision;
 use Saseul\System\Key;
-use Saseul\Common\Transaction;
 use Saseul\Version;
 
 class CancelExchange extends Transaction

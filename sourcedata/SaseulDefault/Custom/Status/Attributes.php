@@ -2,9 +2,9 @@
 
 namespace Saseul\Custom\Status;
 
-use Saseul\System\Database;
-use Saseul\Constant\Role;
 use Saseul\Common\Status;
+use Saseul\Constant\Role;
+use Saseul\System\Database;
 
 class Attributes extends Status
 {

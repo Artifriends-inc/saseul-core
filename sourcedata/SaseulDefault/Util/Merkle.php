@@ -64,8 +64,9 @@ class Merkle
      * The generated hash value is made of 'the hash value of the previous block'
      * and 'the Merkle root of the transactions to be included in the current block'.
      *
-     * @param string $last_blockhash   the hash value of the last block
-     * @param string $transaction_hash the hash value of the transactions
+     * @param string $last_blockhash    the hash value of the last block
+     * @param string $transaction_hash  the hash value of the transactions
+     * @param mixed  $standardTimestamp
      *
      * @return string a hash value
      */

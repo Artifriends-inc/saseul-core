@@ -15,10 +15,8 @@ use Saseul\Constant\Structure;
 use Saseul\Core\Block;
 use Saseul\Core\Chunk;
 use Saseul\Core\IMLog;
-use Saseul\Core\NodeInfo;
 use Saseul\Core\Property;
 use Saseul\Core\Tracker;
-use Saseul\Util\Logger;
 use Saseul\Util\Merkle;
 use Saseul\Util\TypeChecker;
 
@@ -63,7 +61,7 @@ class Node
         return self::$instance;
     }
 
-    function round()
+    public function round()
     {
         IMLog::add('[Log] Nothing; ');
         sleep(1);
@@ -93,27 +91,29 @@ class Node
 
     public function finishingWork(string $result): void
     {
-        # TODO: ban이 리스크를 가짐.
-        switch ($result)
-        {
+        // TODO: ban이 리스크를 가짐.
+        switch ($result) {
             case Event::DIFFERENT:
                 $this->ban();
+
                 break;
             case Event::NO_RESULT:
             case Event::WAIT:
                 $this->resetFailCount();
                 $this->exclude();
+
                 break;
             case Event::NOTHING:
             case Event::SUCCESS:
             default:
                 $this->resetFailCount();
                 $this->resetexcludedHosts();
+
                 break;
         }
     }
 
-    function exclude(): void
+    public function exclude(): void
     {
         $subjectNode = Property::subjectNode();
 
@@ -122,15 +122,15 @@ class Node
         }
     }
 
-    function resetexcludedHosts()
+    public function resetexcludedHosts()
     {
-        # TODO: 바로 리셋해도 별 문제 없을까?
+        // TODO: 바로 리셋해도 별 문제 없을까?
         $this->excludedHosts = [];
     }
 
-    function setLength($completeTime = 0)
+    public function setLength($completeTime = 0)
     {
-        $length = (int)($completeTime + $this->heartbeat * 5) + 1;
+        $length = (int) ($completeTime + $this->heartbeat * 5) + 1;
 
         if ($length < 1) {
             $length = 1;
@@ -184,6 +184,7 @@ class Node
         foreach ($nodes as $node) {
             if ($node['address'] === $address) {
                 $subjectNode = $node;
+
                 break;
             }
         }
@@ -198,6 +199,7 @@ class Node
         foreach ($nodes as $node) {
             if ($node['host'] === $host) {
                 $subjectNode = $node;
+
                 break;
             }
         }
@@ -205,7 +207,8 @@ class Node
         return $subjectNode;
     }
 
-    public function aliveArbiters(array $nodes) {
+    public function aliveArbiters(array $nodes)
+    {
         $aliveArbiters = [];
 
         foreach ($nodes as $node) {
@@ -217,7 +220,8 @@ class Node
         return $aliveArbiters;
     }
 
-    public function validators(array $nodes) {
+    public function validators(array $nodes)
+    {
         $allValidators = Tracker::GetValidatorAddress();
         $validators = [];
 
@@ -257,7 +261,7 @@ class Node
         $mySourceHash = Property::sourceHash();
         $mySourceVersion = Property::sourceVersion();
 
-        # collect source hashs;
+        // collect source hashs;
         $sourcehashs = $this->source_manager->collectSourcehashs($netGenerationInfo, $targetInfo);
 
         if (in_array($mySourceHash, $sourcehashs) || $mySourceVersion === $targetSourceVersion) {
@@ -266,11 +270,11 @@ class Node
 
         Property::subjectNode($this->subjectNodeByHost($aliveArbiters, $host));
 
-        # source change;
+        // source change;
         $sourceArchive = $this->source_manager->getSource($host, $myRoundNumber);
 
         if ($sourceArchive === '') {
-            # TODO: source 다른 놈한테 받아야 함.
+            // TODO: source 다른 놈한테 받아야 함.
             return;
         }
 
@@ -303,6 +307,7 @@ class Node
 
         if (count($netBlockInfo) === 0) {
             IMLog::add('[Sync] netBlockInfo false ');
+
             return Event::NOTHING;
         }
 
@@ -323,9 +328,8 @@ class Node
         $nextStandardTimestamp = $blockInfo['s_timestamp'];
 
         $transactions = $this->sync_manager->getBlockFile($host, $myRoundNumber);
-        $syncResult = $this->syncCommit($transactions, $lastBlock, $nextBlockhash, $nextStandardTimestamp);
 
-        return $syncResult;
+        return $this->syncCommit($transactions, $lastBlock, $nextBlockhash, $nextStandardTimestamp);
     }
 
     public function syncBunch($aliveNodes, $myRoundNumber): string
@@ -334,6 +338,7 @@ class Node
 
         if (count($netBunchInfo) === 0) {
             IMLog::add('[Sync] netBunchInfo false ');
+
             return Event::NOTHING;
         }
 
@@ -354,6 +359,7 @@ class Node
 
         if ($bunch === '') {
             IMLog::add('[Sync] getBunchFile false ');
+
             return Event::NO_RESULT;
         }
 
@@ -370,14 +376,14 @@ class Node
             $fileBlockhash = mb_substr($chunk, 0, 64);
             $fileStandardTimestamp = mb_substr($chunk, 64, mb_strpos($chunk, '.') - 64);
 
-            # find first;
+            // find first;
             if ($first === true && $nextBlockhash !== $fileBlockhash) {
                 continue;
             }
 
             $first = false;
 
-            # commit-manager init;
+            // commit-manager init;
             $syncResult = $this->syncCommit($transactions, $lastBlock, $fileBlockhash, $fileStandardTimestamp);
 
             if ($syncResult === Event::DIFFERENT) {
@@ -393,12 +399,12 @@ class Node
         $lastStandardTimestamp = $lastBlock['s_timestamp'];
         $lastBlockhash = $lastBlock['blockhash'];
 
-        # commit-manager init;
-        # merge & sort;
+        // commit-manager init;
+        // merge & sort;
         $completedTransactions = $this->commit_manager->orderedTransactions($transactions, $lastStandardTimestamp, $expectStandardTimestamp);
         $completedTransactions = $this->commit_manager->completeTransactions($completedTransactions);
 
-        # make expect block info;
+        // make expect block info;
         $txCount = count($completedTransactions);
         $myBlockhash = Merkle::MakeBlockHash($lastBlockhash, Merkle::MakeMerkleHash($completedTransactions), $expectStandardTimestamp);
         $expectBlock = $this->commit_manager->nextBlock($lastBlock, $expectBlockhash, $txCount, $expectStandardTimestamp);
@@ -407,28 +413,29 @@ class Node
             $this->commit_manager->commit($completedTransactions, $lastBlock, $expectBlock);
             $this->commit_manager->makeTransactionChunk($expectBlock, $transactions);
 
-            /** tracker **/
+            // tracker
             $this->tracker_manager->GenerateTracker();
 
-            # ok;
+            // ok;
             return Event::SUCCESS;
         }
 
-        # banish;
+        // banish;
         IMLog::add('[Sync] myBlockhash : ' . $myBlockhash);
         IMLog::add('[Sync] expectBlockhash : ' . $expectBlockhash);
         IMLog::add('[Sync] syncCommit false ');
+
         return Event::DIFFERENT;
     }
 
     public function ban(): void
     {
-        if ($this->isTimeToSeparation())
-        {
-            # ban;
+        if ($this->isTimeToSeparation()) {
+            // ban;
             $subjectNode = Property::subjectNode();
             Tracker::banHost($subjectNode['host']);
             $this->resetFailCount();
+
             return;
         }
 

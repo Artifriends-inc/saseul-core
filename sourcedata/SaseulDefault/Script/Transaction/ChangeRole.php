@@ -3,13 +3,13 @@
 namespace Saseul\Script\Transaction;
 
 use Saseul\Common\Script;
-use Saseul\Version;
 use Saseul\Core\NodeInfo;
 use Saseul\Core\Tracker;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
 use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
+use Saseul\Version;
 
 class ChangeRole extends Script
 {

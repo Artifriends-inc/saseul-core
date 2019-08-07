@@ -27,11 +27,11 @@ class BunchFile extends Api
             $fileSize = filesize($txArchive);
             $filename = pathinfo($txArchive)['basename'];
 
-            header("Pragma: public");
-            header("Expires: 0");
-            header("Content-Type: application/octet-stream");
+            header('Pragma: public');
+            header('Expires: 0');
+            header('Content-Type: application/octet-stream');
             header("Content-Disposition: attachment; filename={$filename}");
-            header("Content-Transfer-Encoding: binary");
+            header('Content-Transfer-Encoding: binary');
             header("Content-Length: {$fileSize}");
 
             ob_clean();

@@ -2,10 +2,10 @@
 
 namespace Saseul\Custom\Transaction;
 
-use Saseul\Custom\Status\AuthToken;
-use Saseul\Constant\Decision;
-use Saseul\System\Key;
 use Saseul\Common\Transaction;
+use Saseul\Constant\Decision;
+use Saseul\Custom\Status\AuthToken;
+use Saseul\System\Key;
 use Saseul\Version;
 
 class UseAuthToken extends Transaction
@@ -75,7 +75,7 @@ class UseAuthToken extends Transaction
     public function _LoadStatus()
     {
         $this->auth_code = Key::makePublicKey($this->token_authkey);
-        $this->tid = $this->token_code . "_" . $this->auth_code;
+        $this->tid = $this->token_code . '_' . $this->auth_code;
         AuthToken::LoadToken($this->tid);
     }
 

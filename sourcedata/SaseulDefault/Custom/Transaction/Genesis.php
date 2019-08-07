@@ -2,14 +2,14 @@
 
 namespace Saseul\Custom\Transaction;
 
+use Saseul\Common\Transaction;
+use Saseul\Constant\Decision;
+use Saseul\Constant\Role;
 use Saseul\Core\Block;
+use Saseul\Core\Env;
 use Saseul\Custom\Status\Attributes;
 use Saseul\Custom\Status\Coin;
-use Saseul\Constant\Decision;
-use Saseul\Core\Env;
 use Saseul\System\Key;
-use Saseul\Constant\Role;
-use Saseul\Common\Transaction;
 use Saseul\Version;
 
 class Genesis extends Transaction

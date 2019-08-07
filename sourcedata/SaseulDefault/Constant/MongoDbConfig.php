@@ -1,5 +1,7 @@
 <?php
-# TODO: class명 정해야함. 일단 임시로 사용.
+
+// TODO: class명 정해야함. 일단 임시로 사용.
+
 namespace Saseul\Constant;
 
 class MongoDbConfig

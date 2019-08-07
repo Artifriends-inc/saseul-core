@@ -3,14 +3,12 @@
 namespace Saseul\Api;
 
 use Saseul\Common\Api;
-use Saseul\Constant\Structure;
 use Saseul\Core\Chunk;
 use Saseul\Core\NodeInfo;
 use Saseul\Core\Tracker;
 use Saseul\System\Cache;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
-use Saseul\Util\TypeChecker;
 
 class Broadcast3 extends Api
 {
@@ -30,7 +28,7 @@ class Broadcast3 extends Api
     public function _init()
     {
         $this->broadcast_code = $this->getParam($_REQUEST, 'broadcast_code', ['default' => '']);
-        $this->s_timestamp = (int)$this->getParam($_REQUEST, 's_timestamp', ['default' => 0]);
+        $this->s_timestamp = (int) $this->getParam($_REQUEST, 's_timestamp', ['default' => 0]);
         $this->req_time = (int) $this->getParam($_REQUEST, 'req_time');
         $this->public_key = $this->getParam($_REQUEST, 'public_key');
         $this->signature = $this->getParam($_REQUEST, 'signature');

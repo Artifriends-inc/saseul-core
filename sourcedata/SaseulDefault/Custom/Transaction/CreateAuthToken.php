@@ -2,11 +2,11 @@
 
 namespace Saseul\Custom\Transaction;
 
+use Saseul\Common\Transaction;
+use Saseul\Constant\Decision;
 use Saseul\Custom\Status\AuthToken;
 use Saseul\Custom\Status\AuthTokenInfo;
-use Saseul\Constant\Decision;
 use Saseul\System\Key;
-use Saseul\Common\Transaction;
 use Saseul\Version;
 
 class CreateAuthToken extends Transaction
@@ -91,7 +91,7 @@ class CreateAuthToken extends Transaction
     public function _MakeDecision()
     {
         foreach ($this->token_info as $token_info_item) {
-            if (isset($token_info_item['name']) && isset($token_info_item['value'])) {
+            if (isset($token_info_item['name'], $token_info_item['value'])) {
                 continue;
             }
 
@@ -110,7 +110,7 @@ class CreateAuthToken extends Transaction
         AuthTokenInfo::SetInfo($this->token_code, $this->token_info);
 
         foreach ($this->token_list as $v) {
-            $tid = $this->token_code . "_" . $v;
+            $tid = $this->token_code . '_' . $v;
             $value = [
                 'owner' => $this->from,
                 'code' => $this->token_code,

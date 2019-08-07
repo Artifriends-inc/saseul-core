@@ -70,7 +70,7 @@ class ApiLoader
         if (!headers_sent()) {
             $header = $resp->getHeader();
             foreach ($header as $key => $value) {
-                header("${key}: ${value}");
+                header("{$key}: {$value}");
             }
         }
 
@@ -83,7 +83,7 @@ class ApiLoader
         Terminator::exit();
     }
 
-    private function getApiClassName(string $apiName) : string
+    private function getApiClassName(string $apiName): string
     {
         $parent = ROOT_DIR . '/Saseul/Api';
         $target = $apiName;
@@ -92,7 +92,7 @@ class ApiLoader
             $target = "{$target}.php";
         }
 
-        $dir = explode('/' , $target);
+        $dir = explode('/', $target);
         $apiClassName = '';
 
         foreach ($dir as $item) {
@@ -108,12 +108,11 @@ class ApiLoader
 
         $apiClassName = preg_replace('/\.php$/', '', $apiClassName);
         $apiClassName = preg_replace('/\\/{1,}/', '\\', $apiClassName);
-        $apiClassName = "Saseul\\Api{$apiClassName}";
 
-        return $apiClassName;
+        return "Saseul\\Api{$apiClassName}";
     }
 
-    private function getChildName(string $parent, string $child) : string
+    private function getChildName(string $parent, string $child): string
     {
         if (is_dir($parent)) {
             $dir = scandir($parent);
