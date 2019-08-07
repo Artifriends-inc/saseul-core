@@ -35,7 +35,7 @@ before_script:
 script:
   # Skip
   #- PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan
-  - ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+  - ./dev.sh fix
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

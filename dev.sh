@@ -95,19 +95,14 @@ function composer_test() {
 }
 
 function composer_fix() {
-    case $1 in
-    api | components | saseuld | script)
-        api_exec 'cd ./'"${1}"' && composer fixer'
-        ;;
-    *)
-        api_exec '
-        for script_name in api components saseuld script
-        do
-            cd ${script_name} && composer fixer && cd ..
-        done
-        '
-        ;;
-    esac
+  case $1 in
+  f)
+    ./vendor/bin/php-cs-fixer fix --using-cache=no
+    ;;
+  *)
+    ./vendor/bin/php-cs-fixer fix --using-cache=no --dry-run --diff
+    ;;
+  esac
 }
 
 function composer_phan() {
@@ -190,14 +185,12 @@ case $1 in
         composer_test $2
         ;;
     fix)
-        check_env_command
-        # fix [*|api|common|saseuld|script]  # 각 컴포넌트 별로 fixer를 진행합니다. (변수를 넣지 않으면 모든 fixer)
+        # fix [*|f]   # 각 컴포넌트 별로 fixer를 진행합니다. (f를 추가하면 자동으로 맞춰준다)
         composer_fix $2
         ;;
     phan)
-        check_env_command
-        # phan [*|api|saseuld] # 각 컨포넌트 별로 정적 분석을 합니다. (변수를 넣지 않으면 모든 정적코드)
-        composer_phan $2
+        # phan  # 각 컨포넌트 별로 정적 분석을 합니다.
+        composer_phan
         ;;
     cleanup)
         # cleanup  # node 생성에 필요한 정보들을 삭제한다.
