@@ -79,30 +79,11 @@ function composer_update() {
 }
 
 function composer_test() {
-    case $1 in
-    api | components | saseuld | script)
-        api_exec 'cd ./'"${1}"' && composer test'
-        ;;
-    *)
-        api_exec '
-        for script_name in api components saseuld script
-        do
-            cd ${script_name} && composer test && cd ..
-        done
-        '
-        ;;
-    esac
+    api_exec './vendor/bin/phpunit --coverage-text'
 }
 
 function composer_fix() {
-  case $1 in
-  f)
     ./vendor/bin/php-cs-fixer fix --using-cache=no
-    ;;
-  *)
-    ./vendor/bin/php-cs-fixer fix --using-cache=no --dry-run --diff
-    ;;
-  esac
 }
 
 function composer_phan() {
@@ -132,6 +113,14 @@ function node_genesis() {
     sleep 5
     up
     echo "Genesis.."
+}
+
+function ci_fix() {
+    ./vendor/bin/php-cs-fixer fix --using-cache=no --dry-run --diff
+}
+
+function ci_test() {
+    ./vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
 }
 
 case $1 in
@@ -180,13 +169,12 @@ case $1 in
         logs $2
         ;;
     test)
-        check_env_command
-        # test [*|api|common|saseuld|script]  # 각 컴포넌트 별로 테스트를 진행합니다. (변수를 넣지 않으면 모든 테스트)
-        composer_test $2
+        # test  # 각 컴포넌트 별로 테스트를 진행합니다.
+        composer_test
         ;;
     fix)
-        # fix [*|f]   # 각 컴포넌트 별로 fixer를 진행합니다. (f를 추가하면 자동으로 맞춰준다)
-        composer_fix $2
+        # fix   # 각 컴포넌트 별로 fixer를 진행합니다.
+        composer_fix
         ;;
     phan)
         # phan  # 각 컨포넌트 별로 정적 분석을 합니다.
@@ -201,6 +189,12 @@ case $1 in
         check_env_command
         # genesis  # saseul origin 네트워크를 stand alone 으로 실행할 수 있도록 띄운다.
         node_genesis
+        ;;
+    ci-test)
+        ci_test
+        ;;
+    ci-fix)
+        ci_fix
         ;;
     help|*)
         print_help

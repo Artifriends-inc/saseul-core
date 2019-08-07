@@ -10,18 +10,23 @@
     ],
     "autoload": {
         "psr-4": {
-            "src\\": "./src/",
-            "Saseul\\": "./src/Saseul/",
-            "Saseul\\API\\": "./src/Saseul/SaseulDefault/API/",
-            "Saseul\\Common\\": "./src/Saseul/SaseulDefault/Common/",
-            "Saseul\\Consensus\\": "./src/Saseul/SaseulDefault/Consensus/",
-            "Saseul\\Constant\\": "./src/Saseul/SaseulDefault/Constant/",
-            "Saseul\\Core\\": "./src/Saseul/SaseulDefault/Core/",
-            "Saseul\\Custom\\": "./src/Saseul/SaseulDefault/Custom/",
-            "Saseul\\Daemon\\": "./src/Saseul/SaseulDefault/Daemon/",
-            "Saseul\\System\\": "./src/Saseul/SaseulDefault/System/",
-            "Saseul\\Util\\": "./src/Saseul/SaseulDefault/Util/",
-            "Saseul\\Script\\": "./src/Saseul/SaseulDefault/Script/"
+            "src\\": "src/",
+            "Saseul\\": "src/Saseul/",
+            "Saseul\\API\\": "src/Saseul/API/",
+            "Saseul\\Common\\": "src/Saseul/Common/",
+            "Saseul\\Consensus\\": "src/Saseul/Consensus/",
+            "Saseul\\Constant\\": "src/Saseul/Constant/",
+            "Saseul\\Core\\": "src/Saseul/Core/",
+            "Saseul\\Custom\\": "src/Saseul/Custom/",
+            "Saseul\\Daemon\\": "src/Saseul/Daemon/",
+            "Saseul\\System\\": "src/Saseul/System/",
+            "Saseul\\Util\\": "src/Saseul/Util/",
+            "Saseul\\Script\\": "src/Saseul/Script/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sasuel\\Tests\\": "./tests"
         }
     },
     "require": {
@@ -34,6 +39,8 @@
         "friendsofphp/php-cs-fixer": "^2"
     },
     "scripts": {
-        "phan": "PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan"
+        "phan": "./dev.sh phan",
+        "fix": "./dev.sh fix",
+        "test": "./dev.sh test"
     }
 }
