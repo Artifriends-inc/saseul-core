@@ -2,13 +2,13 @@
 
 namespace Saseul\Core;
 
-use Saseul\Util\TypeChecker;
 use Saseul\Constant\Directory;
 use Saseul\Constant\Structure;
-use Saseul\System\Key;
 use Saseul\System\IPChecker;
+use Saseul\System\Key;
 use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
+use Saseul\Util\TypeChecker;
 
 class NodeInfo
 {
@@ -82,10 +82,11 @@ class NodeInfo
         if ($host === '') {
             unlink(Directory::NODE_INFO);
             Logger::Error('sign error; ');
+
             return;
         }
 
-        self::addHostInfo(Directory::NODE_INFO, $host);;
+        self::addHostInfo(Directory::NODE_INFO, $host);
     }
 
     protected static function readNodeInfo()

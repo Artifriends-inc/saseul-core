@@ -27,7 +27,7 @@ class Chunk
                 continue;
             }
 
-            $time = (int)(pathinfo($filePath)['filename']);
+            $time = (int) (pathinfo($filePath)['filename']);
 
             if ($maxTime >= $time && $time > $minTime) {
                 $contents = '[' . preg_replace('/\,*?$/', '', file_get_contents($filePath)) . ']';
@@ -46,11 +46,9 @@ class Chunk
                     break;
                 }
             }
-        };
+        }
 
-        $txs = array_slice($txs, 0, $maxCount);
-
-        return $txs;
+        return array_slice($txs, 0, $maxCount);
     }
 
     public static function broadcastChunk(string $fileName): array
@@ -59,8 +57,7 @@ class Chunk
 
         $chunks = self::chunkList(Directory::BROADCAST_CHUNKS);
 
-        foreach ($chunks as $filePath)
-        {
+        foreach ($chunks as $filePath) {
             if (!is_file($filePath)) {
                 continue;
             }
@@ -91,17 +88,17 @@ class Chunk
         sort($validatorAddress);
 
         foreach (scandir(Directory::BROADCAST_CHUNKS) as $item) {
-            if (preg_match("/{$timestamp}\.json$/", $item)) {
-                $address = preg_replace("/_{$timestamp}\.json/", '', $item);
+            if (preg_match("/{$timestamp}\\.json$/", $item)) {
+                $address = preg_replace("/_{$timestamp}\\.json/", '', $item);
                 $collectedAddress[] = $address;
             }
         }
 
         foreach ($validatorAddress as $address) {
             if (in_array($address, $collectedAddress)) {
-                $broadcastCode.= '1';
+                $broadcastCode .= '1';
             } else {
-                $broadcastCode.= '0';
+                $broadcastCode .= '0';
             }
         }
 
@@ -114,7 +111,7 @@ class Chunk
         $directory = Directory::BROADCAST_CHUNKS;
 
         foreach (scandir($directory) as $item) {
-            if (preg_match("/{$timestamp}\.json$/", $item)) {
+            if (preg_match("/{$timestamp}\\.json$/", $item)) {
                 $files[] = pathinfo("{$directory}/{$item}")['filename'];
             }
         }
@@ -442,7 +439,7 @@ class Chunk
         } while ($lastBunchNumber > Rule::BUNCH);
 
         do {
-            # 바로 이전 세대를 남기기 위해 한번 더 라스트로 이동;
+            // 바로 이전 세대를 남기기 위해 한번 더 라스트로 이동;
             $lastGenerationNumber = Block::generationOriginNumber($lastGenerationNumber);
             $query = ['block_number' => ['$lt' => $lastGenerationNumber]];
             $blocks = Block::datas(MongoDbConfig::NAMESPACE_BLOCK, Rule::GENERATION, $query);

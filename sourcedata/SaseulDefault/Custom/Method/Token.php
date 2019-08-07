@@ -29,8 +29,8 @@ class Token
 
         foreach ($rs as $item) {
             $all[$item->address][] = [
-                "name" => $item->token_name,
-                "balance" => (int) $item->balance
+                'name' => $item->token_name,
+                'balance' => (int) $item->balance
             ];
         }
 

@@ -2,12 +2,12 @@
 
 namespace Saseul\Custom\Transaction;
 
+use Saseul\Common\Transaction;
+use Saseul\Constant\Decision;
 use Saseul\Custom\Status\Coin;
 use Saseul\Custom\Status\Token;
 use Saseul\Custom\Status\TokenList;
-use Saseul\Constant\Decision;
 use Saseul\System\Key;
-use Saseul\Common\Transaction;
 use Saseul\Version;
 
 class Exchange extends Transaction

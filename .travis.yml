@@ -24,7 +24,7 @@ env:
 install:
   - ./.travis/set_php.sh
   - composer global require hirak/prestissimo
-  - composer install
+  - composer install --prefer-dist
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -35,7 +35,7 @@ before_script:
 script:
   # Skip
   #- PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan
-  - echo 'Test'
+  - ./dev.sh fix
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

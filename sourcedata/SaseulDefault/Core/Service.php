@@ -34,7 +34,8 @@ class Service
         }
     }
 
-    public static function isDaemonRunning() {
+    public static function isDaemonRunning()
+    {
         if (!is_file('/var/saseul-origin/saseuld.pid') || !Property::isReady()) {
             return false;
         }
@@ -93,25 +94,30 @@ class Service
         switch (Tracker::GetRole(NodeInfo::getAddress())) {
             case Role::LIGHT:
                 return Light::GetInstance();
+
                 break;
             case Role::VALIDATOR:
                 return Validator::GetInstance();
+
                 break;
             case Role::SUPERVISOR:
                 return Supervisor::GetInstance();
+
                 break;
             case Role::ARBITER:
                 return Arbiter::GetInstance();
+
                 break;
         }
 
         self::end('invalid role; please check node info; ');
+
         return Light::GetInstance();
     }
 
     public static function end($msg)
     {
-        echo(PHP_EOL. $msg. PHP_EOL);
+        echo PHP_EOL . $msg . PHP_EOL;
         exit();
     }
 }

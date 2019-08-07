@@ -2,8 +2,8 @@
 
 namespace Saseul\Custom\Status;
 
-use Saseul\System\Database;
 use Saseul\Common\Status;
+use Saseul\System\Database;
 use Saseul\Util\Parser;
 
 class Exchange extends Status

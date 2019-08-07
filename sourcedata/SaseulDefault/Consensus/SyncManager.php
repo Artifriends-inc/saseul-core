@@ -4,7 +4,6 @@ namespace Saseul\Consensus;
 
 use Saseul\Constant\Directory;
 use Saseul\Constant\Structure;
-use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
@@ -36,14 +35,14 @@ class SyncManager
 
         if (mime_content_type($tmpGz) === 'application/x-gzip') {
             return $tmpGz;
-        } else {
-            unlink($tmpGz);
         }
+        unlink($tmpGz);
 
         return '';
     }
 
-    public function getBlockFile($host, $blockNumber) {
+    public function getBlockFile($host, $blockNumber)
+    {
         $urlJson = "http://{$host}/blockfile?block_number={$blockNumber}";
 
         $blockContent = file_get_contents($urlJson);
@@ -73,7 +72,7 @@ class SyncManager
         $chunkTimes = [];
 
         foreach (scandir($tmpFolder) as $item) {
-            if (preg_match("/\.json$/", $item)) {
+            if (preg_match('/\\.json$/', $item)) {
                 $chunkFiles[] = $item;
                 $chunkTimes[] = mb_substr($item, 64, mb_strpos($item, '.') - 64);
             }
@@ -161,11 +160,13 @@ class SyncManager
         return $bunchInfos;
     }
 
-    public function selectBlockInfo($blockInfos) {
+    public function selectBlockInfo($blockInfos)
+    {
         return TypeChecker::findMostItem($blockInfos, 'blockhash');
     }
 
-    public function selectBunchInfo($bunchInfos) {
+    public function selectBunchInfo($bunchInfos)
+    {
         return TypeChecker::findMostItem($bunchInfos, 'final_blockhash');
     }
 }

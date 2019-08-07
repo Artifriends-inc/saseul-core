@@ -2,8 +2,6 @@
 
 namespace Saseul\Core;
 
-use Saseul\Version;
-use Saseul\Util\TypeChecker;
 use Saseul\Constant\Directory;
 use Saseul\Constant\MongoDbConfig;
 use Saseul\Constant\Rule;
@@ -12,6 +10,8 @@ use Saseul\System\Database;
 use Saseul\Util\File;
 use Saseul\Util\Merkle;
 use Saseul\Util\Parser;
+use Saseul\Util\TypeChecker;
+use Saseul\Version;
 
 class Generation
 {
@@ -47,6 +47,7 @@ class Generation
 
         if (!TypeChecker::StructureCheck(Structure::GENERATION, $generation)) {
             IMLog::add('Error : invalid generation structure. finalization failed. ');
+
             return;
         }
 
@@ -59,7 +60,8 @@ class Generation
         }
     }
 
-    public static function getItem($query = []) {
+    public static function getItem($query = [])
+    {
         $db = Database::GetInstance();
 
         $opt = ['sort' => ['origin_block_number' => -1]];
@@ -94,7 +96,8 @@ class Generation
         return self::getItem([]);
     }
 
-    public static function generationByNumber(int $originBlockNumber) {
+    public static function generationByNumber(int $originBlockNumber)
+    {
         return self::getItem(['origin_block_number' => $originBlockNumber]);
     }
 
@@ -114,7 +117,7 @@ class Generation
         Property::sourceHash($sourceHash);
         Property::sourceVersion(Version::CURRENT);
 
-        $generation = Generation::current();
+        $generation = self::current();
         self::finalize($generation['origin_blockhash'], $generation['final_blockhash'], $sourceHash, Version::CURRENT);
 
         if (is_file($sourceFile)) {

@@ -2,12 +2,12 @@
 
 namespace Saseul\Custom\Transaction;
 
+use Saseul\Common\Transaction;
+use Saseul\Constant\Decision;
+use Saseul\Constant\Role;
 use Saseul\Custom\Status\Attributes;
 use Saseul\Custom\Status\Coin;
-use Saseul\Constant\Decision;
 use Saseul\System\Key;
-use Saseul\Constant\Role;
-use Saseul\Common\Transaction;
 use Saseul\Version;
 
 class ChangeRole extends Transaction

@@ -10,12 +10,12 @@ class BunchInfo extends Api
 {
     private $block_number;
 
-    function _init()
+    public function _init()
     {
         $this->block_number = $this->getParam($_REQUEST, 'block_number');
     }
 
-    function _process()
+    public function _process()
     {
         $fileExists = is_file(Chunk::txArchive($this->block_number));
         $bunchFinalNumber = Block::bunchFinalNumber($this->block_number);

@@ -69,8 +69,9 @@ class TrackerManager
         }
     }
 
-    public function collect($aliveNodes, $alives) {
-        # TODO: last_block 다르면 fork 처리 해야함.
+    public function collect($aliveNodes, $alives)
+    {
+        // TODO: last_block 다르면 fork 처리 해야함.
         $infos = [];
         $hosts = [];
 
@@ -83,18 +84,18 @@ class TrackerManager
         foreach ($results as $item) {
             $r = json_decode($item['result'], true);
 
-            # check result;
+            // check result;
             if (!isset($r['data']) || !is_array($r['data'])) {
                 continue;
             }
 
             foreach ($r['data'] as $node) {
-                # check structure;
+                // check structure;
                 if (TypeChecker::StructureCheck(Structure::TRACKER, $node) === false) {
                     continue;
                 }
 
-                # target;
+                // target;
                 if ($node['host'] === $item['host']) {
                     $infos[$node['host']] = [
                         'address' => $node['address'],
@@ -102,7 +103,7 @@ class TrackerManager
                     ];
                 }
 
-                # etc;
+                // etc;
                 if (!isset($infos[$node['host']]) && $node['address'] !== '') {
                     $infos[$node['host']] = [
                         'address' => $node['address'],
@@ -119,7 +120,7 @@ class TrackerManager
     {
         $infos = [];
 
-        # die;
+        // die;
         foreach ($nodes as $node) {
             if (in_array($node['address'], $alives)) {
                 $infos[$node['host']] = [

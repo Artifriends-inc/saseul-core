@@ -24,18 +24,18 @@ class Validator extends Node
         return self::$instance;
     }
 
-    function round()
+    public function round()
     {
-        /** 원래 validator한테만 sync 받았었음. $lastBlock */
+        // 원래 validator한테만 sync 받았었음. $lastBlock
 
-        # start;
+        // start
         $this->stime = DateTime::Microtime();
         IMLog::add('[Log] round start : 0 s');
 
         $result = Event::NOTHING;
         Property::excludedHost($this->excludedHosts);
 
-        # check round;
+        // check round
         $lastBlock = Block::GetLastBlock();
         $nodes = Tracker::getAccessibleNodes();
         $nodes = $this->mergedNode($nodes);
@@ -79,7 +79,7 @@ class Validator extends Node
             IMLog::add('[All] consensus : ' . $completeTime . ' s');
             IMLog::add('[All] length : ' . $this->length);
             IMLog::add('#############################################');
-        } else if ($myRoundNumber < $netRoundNumber) {
+        } elseif ($myRoundNumber < $netRoundNumber) {
             $result = $this->sync($aliveNodes, $lastBlock, $myRoundNumber, $netRoundNumber);
             IMLog::add('[All] sync : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');
             IMLog::add('#############################################');
@@ -88,7 +88,7 @@ class Validator extends Node
         $this->finishingWork($result);
     }
 
-    function consensus($aliveValidators, $lastBlock, $myRound, $roundInfo): string # Event
+    public function consensus($aliveValidators, $lastBlock, $myRound, $roundInfo): string // Event
     {
         $lastStandardTimestamp = $lastBlock['s_timestamp'];
         $expectStandardTimestamp = $roundInfo['net_s_timestamp'];
@@ -99,7 +99,7 @@ class Validator extends Node
             return Event::NOTHING;
         }
 
-        # collect chunks;
+        // collect chunks
         $this->commit_manager->init();
 
         $chunks = $this->commit_manager->collectApiChunk($aliveValidators, ['keys' => [], 'txs' => []], $lastStandardTimestamp, $expectStandardTimestamp);
@@ -115,32 +115,33 @@ class Validator extends Node
 
         if (count($transactions) === 0) {
             Property::subjectNode($this->subjectNodeByAddress($aliveValidators, $roundLeader));
+
             return Event::WAIT;
         }
 
-        # commit-manager init;
-        # merge & sort;
+        // commit-manager init
+        // merge & sort
         array_multisort($keys, $transactions);
         $completedTransactions = $this->commit_manager->completeTransactions($transactions);
 
-        # make expect block info;
+        // make expect block info
         $txCount = count($completedTransactions);
         $myBlockhash = Merkle::MakeBlockHash($lastBlockHash, Merkle::MakeMerkleHash($completedTransactions), $expectStandardTimestamp);
         $expectBlock = $this->commit_manager->nextBlock($lastBlock, $myBlockhash, $txCount, $expectStandardTimestamp);
 
-        ## Consensus; ######################
-        # check net hash;
+        // Consensus
+        // check net hash
         $roundKey = $myRound['decision']['round_key'];
         $myHashInfo = $this->hash_manager->myHashInfo($myRound, $expectBlock);
         $netHashInfo = $this->hash_manager->netHashInfo($roundKey, $aliveValidators);
 
-        # find best;
+        // find best
         $bestHashInfo = $this->hash_manager->bestHashInfo($myHashInfo, $netHashInfo);
         $expectBlockhash = $bestHashInfo['blockhash'];
 
-        # TODO: best hash 아니면 내 hash를 포기하자구.
+        // TODO: best hash 아니면 내 hash를 포기하자구.
 
-        ## Consensus; ######################
+        // Consensus
 
         if ($expectBlockhash === $myBlockhash) {
             $this->commit_manager->commit($completedTransactions, $lastBlock, $expectBlock);
@@ -148,12 +149,13 @@ class Validator extends Node
 
             IMLog::add(json_encode($expectBlock));
 
-            /** tracker **/
+            // tracker
             $this->tracker_manager->GenerateTracker();
+
             return Event::SUCCESS;
         }
 
-        # banish;
+        // banish
         return Event::DIFFERENT;
     }
 }

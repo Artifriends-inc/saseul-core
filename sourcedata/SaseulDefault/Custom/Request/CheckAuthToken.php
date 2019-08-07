@@ -2,9 +2,9 @@
 
 namespace Saseul\Custom\Request;
 
+use Saseul\Common\Request;
 use Saseul\Custom\Method\AuthToken;
 use Saseul\System\Key;
-use Saseul\Common\Request;
 use Saseul\Version;
 
 class CheckAuthToken extends Request
@@ -49,8 +49,6 @@ class CheckAuthToken extends Request
 
     public function getResponse(): array
     {
-        $token = AuthToken::CheckToken($this->authkey);
-
-        return $token;
+        return AuthToken::CheckToken($this->authkey);
     }
 }

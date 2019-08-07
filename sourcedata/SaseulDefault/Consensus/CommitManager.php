@@ -13,7 +13,6 @@ use Saseul\Custom\Status\Fee;
 use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
-use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
@@ -26,6 +25,14 @@ class CommitManager
     private $transaction_manager;
     private $status_manager;
 
+    public function __construct()
+    {
+        $this->db = Database::GetInstance();
+        $this->rest = RestCall::GetInstance();
+        $this->transaction_manager = new TransactionManager();
+        $this->status_manager = new StatusManager();
+    }
+
     public static function GetInstance()
     {
         if (self::$instance === null) {
@@ -33,14 +40,6 @@ class CommitManager
         }
 
         return self::$instance;
-    }
-
-    public function __construct()
-    {
-        $this->db = Database::GetInstance();
-        $this->rest = RestCall::GetInstance();
-        $this->transaction_manager = new TransactionManager();
-        $this->status_manager = new StatusManager();
     }
 
     public function init()
@@ -83,12 +82,13 @@ class CommitManager
         Chunk::RemoveBroadcastChunk($lastBlock['s_timestamp']);
     }
 
-    public function orderedTransactions($transactions, $minTimestamp, $maxTimestamp) {
+    public function orderedTransactions($transactions, $minTimestamp, $maxTimestamp)
+    {
         $orderKey = [];
         $txs = [];
 
         $this->status_manager->Reset();
-        
+
         foreach ($transactions as $key => $item) {
             if (TypeChecker::StructureCheck(Structure::TX_ITEM, $item) === false) {
                 continue;
@@ -150,13 +150,13 @@ class CommitManager
 //                'cnt' => count($result['data']['items']),
 //            ];
 
-            # check structure;
+            // check structure;
             if (!isset($result['data']['items']) || !is_array($result['data']['items'])) {
                 continue;
             }
 
             foreach ($result['data']['items'] as $item) {
-                # check structure;
+                // check structure;
                 if (TypeChecker::StructureCheck(Structure::BROADCAST_ITEM, $item) === false) {
                     continue;
                 }
@@ -167,13 +167,13 @@ class CommitManager
                 $public_key = $item['public_key'];
                 $content_signature = $item['content_signature'];
 
-                # check request is valid;
+                // check request is valid;
                 if (!Key::isValidAddress($address, $public_key) ||
                     !Chunk::isValidContentSignaure($public_key, DateTime::toTime($maxTime), $content_signature, $transactions)) {
                     continue;
                 }
 
-                # add broadcast chunk;
+                // add broadcast chunk;
                 Chunk::makeBroadcastChunk($file_name, $public_key, $content_signature, $transactions);
 
                 $chunks = $this->mergedChunks($chunks, $transactions, $minTime, $maxTime);
@@ -205,9 +205,8 @@ class CommitManager
         }
 
         $results = $this->rest->MultiPOST($hosts, 'broadcast2', $data, false, [], 3);
-        $chunks = $this->collectChunk($results, $chunks, $minTime, $maxTime);
 
-        return $chunks;
+        return $this->collectChunk($results, $chunks, $minTime, $maxTime);
     }
 
     public function collectBroadcastChunk(array $aliveValidators, array $oldChunks, int $minTime, int $maxTime)
@@ -221,7 +220,7 @@ class CommitManager
             $hosts[] = $node['host'];
         }
 
-        # try;
+        // try;
         $broadcastCode = Chunk::broadcastCode(DateTime::toTime($maxTime));
         $data = [
             'broadcast_code' => $broadcastCode,
@@ -236,7 +235,7 @@ class CommitManager
         $broadcastCodes = $this->collectBroadcastCode($results, []);
         $most = TypeChecker::findMostItem(array_values($broadcastCodes), 'broadcast_code');
 
-        # 이거 살리면 확실하게 Stable;
+        // 이거 살리면 확실하게 Stable;
 //        if ($most['unique'] === true && $most['item']['broadcast_code'] === $broadcastCode) {
 //            return $chunks;
 //        }
@@ -244,7 +243,7 @@ class CommitManager
             return $chunks;
         }
 
-        # retry;
+        // retry;
         $broadcastCode = Chunk::broadcastCode(DateTime::toTime($maxTime));
         $data = [
             'broadcast_code' => $broadcastCode,
@@ -255,12 +254,10 @@ class CommitManager
         ];
 
         $results = $this->rest->MultiPOST($hosts, 'broadcast3', $data, false, [], 3);
-        $chunks = $this->collectChunk($results, $chunks, $minTime, $maxTime);
 
-        return $chunks;
-
-        # TODO : 리스크 실험 해야함.
-        # 이거 살리면 확실하게 Stable;
+        return $this->collectChunk($results, $chunks, $minTime, $maxTime);
+        // TODO : 리스크 실험 해야함.
+        //   이거 살리면 확실하게 Stable;
 //        $broadcastCodes = $this->collectBroadcastCode($results, $broadcastCodes);
 //        $most = TypeChecker::findMostItem(array_values($broadcastCodes), 'broadcast_code');
 //
@@ -278,12 +275,12 @@ class CommitManager
         foreach ($results as $rs) {
             $result = json_decode($rs['result'], true);
 
-            # check structure;
+            // check structure;
             if (!isset($result['data'])) {
                 continue;
             }
 
-            # check structure;
+            // check structure;
             if (TypeChecker::StructureCheck(Structure::BROADCAST_RESULT, $result['data']) === false) {
                 continue;
             }
@@ -297,7 +294,8 @@ class CommitManager
         return $broadcastCodes;
     }
 
-    public function mergedChunks(array $oldChunks, array $transactions, $minTimestamp, $maxTimestamp) {
+    public function mergedChunks(array $oldChunks, array $transactions, $minTimestamp, $maxTimestamp)
+    {
         $keys = $oldChunks['keys'];
         $txs = $oldChunks['txs'];
 
@@ -339,17 +337,15 @@ class CommitManager
             ];
         }
 
-        $chunks = [
+        return [
             'keys' => $keys,
             'txs' => $txs,
         ];
-
-        return $chunks;
     }
 
     public function completeTransactions($transactions)
     {
-        # load status;
+        // load status;
         $this->status_manager->Load();
 
         foreach ($transactions as $key => $item) {

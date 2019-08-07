@@ -2,8 +2,8 @@
 
 namespace Saseul\Custom\Method;
 
-use Saseul\System\Database;
 use Saseul\Constant\Role;
+use Saseul\System\Database;
 
 class Attributes
 {

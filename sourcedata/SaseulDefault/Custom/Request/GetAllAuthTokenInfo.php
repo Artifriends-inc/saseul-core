@@ -2,8 +2,8 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\System\Key;
 use Saseul\Common\Request;
+use Saseul\System\Key;
 use Saseul\Version;
 
 class GetAllAuthTokenInfo extends Request

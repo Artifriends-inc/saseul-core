@@ -2,9 +2,9 @@
 
 namespace Saseul\Custom\Request;
 
+use Saseul\Common\Request;
 use Saseul\Custom\Method\Attributes;
 use Saseul\System\Key;
-use Saseul\Common\Request;
 use Saseul\Version;
 
 class GetRole extends Request

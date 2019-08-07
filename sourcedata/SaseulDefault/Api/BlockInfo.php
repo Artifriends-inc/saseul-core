@@ -9,12 +9,12 @@ class BlockInfo extends Api
 {
     private $block_number;
 
-    function _init()
+    public function _init()
     {
         $this->block_number = $this->getParam($_REQUEST, 'block_number');
     }
 
-    function _process()
+    public function _process()
     {
         $block = Block::GetBlockByNumber($this->block_number);
         $lastBlock = Block::GetLastBlock();

@@ -2,11 +2,11 @@
 
 namespace Saseul\Custom\Transaction;
 
-use Saseul\Constant\Account;
-use Saseul\Custom\Status\Token;
-use Saseul\Constant\Decision;
-use Saseul\System\Key;
 use Saseul\Common\Transaction;
+use Saseul\Constant\Account;
+use Saseul\Constant\Decision;
+use Saseul\Custom\Status\Token;
+use Saseul\System\Key;
 use Saseul\Version;
 
 class SendToken extends Transaction

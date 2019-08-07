@@ -4,7 +4,6 @@ namespace Saseul\Consensus;
 
 use Saseul\Constant\Directory;
 use Saseul\Constant\Structure;
-use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
@@ -36,9 +35,8 @@ class SourceManager
 
         if (mime_content_type($tmpGz) === 'application/x-gzip') {
             return $tmpGz;
-        } else {
-            unlink($tmpGz);
         }
+        unlink($tmpGz);
 
         return '';
     }
@@ -62,10 +60,11 @@ class SourceManager
         return "{$sourceFullPath}";
     }
 
-    public function changeSourceFolder($sourceFolder) {
+    public function changeSourceFolder($sourceFolder)
+    {
         $saseulSource = Directory::SASEUL_SOURCE;
 
-        # symlink;
+        // symlink;
         if (file_exists($saseulSource)) {
             unlink($saseulSource);
         }
@@ -122,7 +121,8 @@ class SourceManager
         return array_values(array_unique($sourceHashs));
     }
 
-    public function selectGenerationInfo($bunchInfos) {
+    public function selectGenerationInfo($bunchInfos)
+    {
         return TypeChecker::findMostItem($bunchInfos, 'source_version');
     }
 }

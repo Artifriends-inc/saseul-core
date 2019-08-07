@@ -3,8 +3,6 @@
 namespace Saseul\Script;
 
 use Saseul\Common\Script;
-use Saseul\Core\Block;
-use Saseul\Core\Chunk;
 use Saseul\Util\Logger;
 
 class T extends Script
@@ -62,21 +60,21 @@ class T extends Script
         $ip_min = 1;
         $ip_max = 255;
 
-        $ip_array = explode(".", $ip);
+        $ip_array = explode('.', $ip);
 
-        if ((int)$ip_array[3] < $ip_max) {
-            $ip_array[3] = (int)$ip_array[3] + 1;
+        if ((int) $ip_array[3] < $ip_max) {
+            $ip_array[3] = (int) $ip_array[3] + 1;
         } else {
-            if ((int)$ip_array[2] < $ip_max) {
-                $ip_array[2] = (int)$ip_array[2] + 1;
+            if ((int) $ip_array[2] < $ip_max) {
+                $ip_array[2] = (int) $ip_array[2] + 1;
                 $ip_array[3] = $ip_min;
             } else {
-                if ((int)$ip_array[1] < $ip_max) {
-                    $ip_array[1] = (int)$ip_array[1] + 1;
+                if ((int) $ip_array[1] < $ip_max) {
+                    $ip_array[1] = (int) $ip_array[1] + 1;
                     $ip_array[2] = $ip_min;
                     $ip_array[3] = $ip_min;
                 } else {
-                    $ip_array[0] = (int)$ip_array[0] + 1;
+                    $ip_array[0] = (int) $ip_array[0] + 1;
                     $ip_array[1] = $ip_min;
                     $ip_array[2] = $ip_min;
                     $ip_array[3] = $ip_min;
@@ -84,8 +82,6 @@ class T extends Script
             }
         }
 
-        $return_ip = implode(".", $ip_array);
-
-        return $return_ip;
+        return implode('.', $ip_array);
     }
 }

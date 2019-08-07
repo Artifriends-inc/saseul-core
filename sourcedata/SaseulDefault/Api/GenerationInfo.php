@@ -3,22 +3,22 @@
 namespace Saseul\Api;
 
 use Saseul\Common\Api;
-use Saseul\Util\TypeChecker;
 use Saseul\Constant\Directory;
 use Saseul\Constant\Structure;
 use Saseul\Core\Block;
 use Saseul\Core\Generation;
+use Saseul\Util\TypeChecker;
 
 class GenerationInfo extends Api
 {
     private $block_number;
 
-    function _init()
+    public function _init()
     {
         $this->block_number = $this->getParam($_REQUEST, 'block_number');
     }
 
-    function _process()
+    public function _process()
     {
         $generationOriginNumber = Block::generationOriginNumber($this->block_number);
         $generation = Generation::generationByNumber($generationOriginNumber);

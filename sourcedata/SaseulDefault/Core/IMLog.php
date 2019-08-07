@@ -1,11 +1,12 @@
 <?php
-# Internal message log
+
+// Internal message log
 
 namespace Saseul\Core;
 
 class IMLog
 {
-    static function add($log)
+    public static function add($log)
     {
         $iMLogProperty = Property::iMLog();
 
@@ -15,8 +16,7 @@ class IMLog
 
         $iMLogProperty[] = $log;
 
-        if (count($iMLogProperty) > 100)
-        {
+        if (count($iMLogProperty) > 100) {
             unset($iMLogProperty[0]);
             $iMLogProperty = array_values($iMLogProperty);
         }
@@ -24,12 +24,12 @@ class IMLog
         Property::iMLog($iMLogProperty);
     }
 
-    static function reset()
+    public static function reset()
     {
         Property::iMLog([]);
     }
 
-    static function get()
+    public static function get()
     {
         $iMLogProperty = Property::iMLog();
 
@@ -40,17 +40,16 @@ class IMLog
         return self::parse($iMLogProperty);
     }
 
-    static function parse(array $iMLogProperty)
+    public static function parse(array $iMLogProperty)
     {
         $str = '';
 
-        foreach ($iMLogProperty as $row)
-        {
+        foreach ($iMLogProperty as $row) {
             if (!is_string($row)) {
                 continue;
             }
 
-            $str.= $row . PHP_EOL;
+            $str .= $row . PHP_EOL;
         }
 
         return $str;

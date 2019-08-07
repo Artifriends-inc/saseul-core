@@ -37,11 +37,12 @@ class AuthToken
         return $tokens;
     }
 
-    public static function CheckToken($authkey) {
+    public static function CheckToken($authkey)
+    {
         $db = Database::GetInstance();
         $token = [];
 
-        $var_pos = mb_strrpos($authkey, "_");
+        $var_pos = mb_strrpos($authkey, '_');
 
         $code = mb_substr($authkey, 0, $var_pos);
         $auth_prk = mb_substr($authkey, $var_pos + 1);
@@ -49,7 +50,7 @@ class AuthToken
         if (mb_strlen($auth_prk) === 64) {
             $auth_code = Key::makePublicKey($auth_prk);
 
-            $tid = $code . "_" . $auth_code;
+            $tid = $code . '_' . $auth_code;
 
             $filter = ['tid' => $tid];
 

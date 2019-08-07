@@ -2,10 +2,10 @@
 
 namespace Saseul\Custom\Request;
 
+use Saseul\Common\Request;
 use Saseul\Custom\Method\AuthToken;
 use Saseul\Custom\Method\AuthTokenInfo;
 use Saseul\System\Key;
-use Saseul\Common\Request;
 use Saseul\Version;
 
 class GetAuthToken extends Request
@@ -61,6 +61,7 @@ class GetAuthToken extends Request
                 $tokens[] = $tmp_item;
             }
         }
+
         return $tokens;
     }
 }

@@ -4,12 +4,12 @@ namespace Saseul\Script;
 
 use Saseul\Common\Script;
 use Saseul\Constant\Rule;
-use Saseul\Version;
 use Saseul\Core\NodeInfo;
 use Saseul\Core\Tracker;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
 use Saseul\Util\RestCall;
+use Saseul\Version;
 
 class NetTest extends Script
 {
@@ -58,7 +58,7 @@ class NetTest extends Script
         $pick = rand(0, $count - 1);
 
         if ($count === 0) {
-            echo PHP_EOL."There is no validator. ".PHP_EOL;
+            echo PHP_EOL . 'There is no validator. ' . PHP_EOL;
             exit();
         }
 

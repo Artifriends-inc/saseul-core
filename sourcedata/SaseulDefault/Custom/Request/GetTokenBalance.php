@@ -2,9 +2,9 @@
 
 namespace Saseul\Custom\Request;
 
+use Saseul\Common\Request;
 use Saseul\Custom\Method\Token;
 use Saseul\System\Key;
-use Saseul\Common\Request;
 use Saseul\Version;
 
 class GetTokenBalance extends Request
