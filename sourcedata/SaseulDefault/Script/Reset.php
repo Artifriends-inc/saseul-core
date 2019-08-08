@@ -82,7 +82,7 @@ class Reset extends Script
 
     public function RestoreOriginalSource()
     {
-        $original = Directory::ORIGINAL_SOURCE;
+        $original = Directory::RELATIVE_ORIGINAL_SOURCE;
         $saseulSource = Directory::SASEUL_SOURCE;
 
         if (file_exists($saseulSource)) {
