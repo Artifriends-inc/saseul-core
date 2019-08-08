@@ -2,14 +2,14 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\Request;
+use Saseul\Common\RequestInterface;
 use Saseul\Custom\Method\Attributes;
 use Saseul\Custom\Method\Coin;
 use Saseul\Custom\Method\Token;
 use Saseul\System\Key;
 use Saseul\Version;
 
-class GetAccountInfo extends Request
+class GetAccountInfo implements RequestInterface
 {
     public const TYPE = 'GetAccountInfo';
 

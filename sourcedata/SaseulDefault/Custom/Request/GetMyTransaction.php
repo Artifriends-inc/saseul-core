@@ -2,14 +2,14 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\Request;
+use Saseul\Common\RequestInterface;
 use Saseul\Constant\MongoDbConfig;
 use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\Parser;
 use Saseul\Version;
 
-class GetMyTransaction extends Request
+class GetMyTransaction implements RequestInterface
 {
     public const TYPE = 'GetMyTransaction';
 

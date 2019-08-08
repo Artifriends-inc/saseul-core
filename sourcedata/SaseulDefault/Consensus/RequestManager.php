@@ -2,7 +2,6 @@
 
 namespace Saseul\Consensus;
 
-use Saseul\Common\Request;
 use Saseul\Core\ScriptFinder;
 
 class RequestManager
@@ -13,9 +12,9 @@ class RequestManager
     public function __construct()
     {
         $this->request_interfaces = [];
-        $this->request = new Request();
 
         $request_interfaces = ScriptFinder::GetRequestInterfaces();
+        // TODO: 제거(미사용)
         $vrequest_interfaces = ScriptFinder::GetVRequestInterfaces();
 
         foreach ($request_interfaces as $request_interface) {
@@ -23,6 +22,7 @@ class RequestManager
             $this->request_interfaces[$request_interface] = new $class();
         }
 
+        // TODO: 제거(vrequest_interfaces 미사용)
         foreach ($vrequest_interfaces as $vrequest_interface) {
             $class = 'Saseul\\Custom\\VRequest\\' . $vrequest_interface;
             $this->request_interfaces[$vrequest_interface] = new $class();
@@ -31,7 +31,6 @@ class RequestManager
 
     public function initialize(): void
     {
-        $this->request = null;
     }
 
     public function initializeRequest($type, $request, $thash, $public_key, $signature): void

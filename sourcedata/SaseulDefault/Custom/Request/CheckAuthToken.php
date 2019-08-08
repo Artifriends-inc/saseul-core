@@ -2,12 +2,12 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\Request;
+use Saseul\Common\RequestInterface;
 use Saseul\Custom\Method\AuthToken;
 use Saseul\System\Key;
 use Saseul\Version;
 
-class CheckAuthToken extends Request
+class CheckAuthToken implements RequestInterface
 {
     public const TYPE = 'CheckAuthToken';
 
