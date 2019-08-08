@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
+# message
 function error_msg() {
     RED='\033[0;31m'
     NC='\033[0m'
@@ -22,14 +23,12 @@ function print_help() {
     egrep '^ *# ' ./dev.sh | sed "s,^ *,$0," | column -t -s '#'
 }
 
+# Common
 function api_exec() {
     docker-compose run --rm api bash -c "$1"
 }
 
-function docker_logs() {
-    docker-compose logs -f $1
-}
-
+# Env
 function setenv() {
     if [[ "$1" == 'other' ]]; then
         if [[ (-z $2) || (-z $3) ]]; then
@@ -44,12 +43,13 @@ function setenv() {
     cat ./env.example | sed 's/tutorial.saseul.net/web/g' > ./.env
 }
 
-function build() {
-    DOCKER_BUILDKIT=1 docker build --rm -t saseul-core .
+# Docker
+function docker_logs() {
+    docker-compose logs -f $1
 }
 
-function composer() {
-    composer install && composer dump-autoload
+function build() {
+    DOCKER_BUILDKIT=1 docker build --rm -t saseul-core .
 }
 
 function up() {
@@ -69,25 +69,26 @@ function logs() {
     docker_logs $1
 }
 
+# composer
+function composer_install() {
+  composer install --ignore-platform-reqs && composer dump-autoload
+}
+
 function composer_update() {
-    api_exec '
-    for project_name in api components saseuld script
-    do
-        cd ${project_name} && composer update && cd ..
-    done
-    '
+  composer update --ignore-platform-reqs
 }
 
-function composer_test() {
-    api_exec './vendor/bin/phpunit --coverage-text'
+# Code quality
+function fix() {
+  ./vendor/bin/php-cs-fixer fix --using-cache=no
 }
 
-function composer_fix() {
-    ./vendor/bin/php-cs-fixer fix --using-cache=no
+function test() {
+  api_exec './vendor/bin/phpunit --coverage-text'
 }
 
-function composer_phan() {
-    api_exec 'PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan'
+function phan() {
+  api_exec 'PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan'
 }
 
 function node_data_cleanup() {
@@ -137,15 +138,6 @@ case $1 in
         # build     # Docker 이미지를 생성한다.
         build
         ;;
-    install)
-        check_env_command
-        # install   # composer 패키지를 설치합니다.
-        composer
-        ;;
-    update)
-        check_env_command
-        composer_update
-        ;;
     up)
         check_env_command
         # up    # 연관된 컨테이너를 실행한다.
@@ -168,18 +160,28 @@ case $1 in
         # logs [api|node|web|memcached|mongo]  # 각 서비스에 대한 로그를 확인한다.
         logs $2
         ;;
-    test)
-        # test  # 각 컴포넌트 별로 테스트를 진행합니다.
-        composer_test
-        ;;
-    fix)
-        # fix   # 각 컴포넌트 별로 fixer를 진행합니다.
-        composer_fix
-        ;;
-    phan)
-        # phan  # 각 컨포넌트 별로 정적 분석을 합니다.
-        composer_phan
-        ;;
+  # composer
+  install)
+    # install   # composer 패키지를 설치합니다.
+    composer_install
+    ;;
+  update)
+    # update    # composer 패키지를 업데이트 합니다.
+    composer_update
+    ;;
+  # Code quality
+  test)
+    # test  # 각 컴포넌트 별로 테스트를 진행합니다.
+    test
+    ;;
+  fix)
+    # fix   # 각 컴포넌트 별로 fixer를 진행합니다.
+    fix
+    ;;
+  phan)
+    # phan  # 각 컨포넌트 별로 정적 분석을 합니다.
+    phan
+    ;;
     cleanup)
         # cleanup  # node 생성에 필요한 정보들을 삭제한다.
         down
