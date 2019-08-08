@@ -2,6 +2,14 @@
 
 namespace Saseul\Util;
 
+use Monolog;
+use Monolog\Formatter\JsonFormatter;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Processor\IntrospectionProcessor;
+use Monolog\Processor\PsrLogMessageProcessor;
+
 /**
  * Logger provides functions for logging.
  */
@@ -52,5 +60,34 @@ class Logger
         }
 
         exit();
+    }
+
+    /**
+     * Monolog logger.
+     *
+     * @param string $appName
+     *
+     * @throws \Exception
+     *
+     * @return Monolog\Logger
+     *
+     * @codeCoverageIgnore
+     */
+    public static function getLogger(string $appName): Monolog\Logger
+    {
+        $logger = new Monolog\Logger($appName);
+
+        $fileHandler = new RotatingFileHandler(SASEUL_DIR . "/data/logs/{$appName}.log", 30, Monolog\Logger::DEBUG);
+        $fileHandler->setFormatter(new JsonFormatter());
+        $fileHandler->pushProcessor(new IntrospectionProcessor());
+
+        $streamHandler = new StreamHandler('php://stdout', Monolog\Logger::DEBUG);
+        $streamHandler->setFormatter(new LineFormatter());
+        $streamHandler->pushProcessor(new PsrLogMessageProcessor());
+
+        $logger->pushHandler($fileHandler);
+        $logger->pushHandler($streamHandler);
+
+        return $logger;
     }
 }
