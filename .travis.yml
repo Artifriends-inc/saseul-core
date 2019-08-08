@@ -33,8 +33,7 @@ before_script:
   - ./.travis/mongo_test.sh
 
 script:
-  # Skip
-  #- PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan
+  #- ./dev.sh ci-phan
   - ./dev.sh ci-fix
   - ./dev.sh ci-test
 
