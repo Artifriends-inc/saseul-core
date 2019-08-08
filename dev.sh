@@ -91,16 +91,19 @@ function phan() {
   api_exec 'PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan'
 }
 
+# SASEUL
 function node_data_cleanup() {
-    rm -rf ./data/blockchain/apichunks/*
-    rm -rf ./data/blockchain/broadcastchunks/*
-    rm -rf ./data/blockchain/transactions/*
-    rm -rf ./data/db/*
+  rm -rf ./blockdata/apichunks/*
+  rm -rf ./blockdata/broadcastchunks/*
+  rm -rf ./blockdata/transactions/*
+  rm -rf ./blockdata/txarchives/*
+  rm -rf ./data/db/*
 
-    touch ./data/blockchain/apichunks/.keep
-    touch ./data/blockchain/broadcastchunks/.keep
-    touch ./data/blockchain/transactions/.keep
-    echo "Cleanup SASEUL data"
+  touch ./blockdata/apichunks/.keep
+  touch ./blockdata/broadcastchunks/.keep
+  touch ./blockdata/transactions/.keep
+  touch ./blockdata/txarchives/.keep
+  echo "Cleanup SASEUL data"
 }
 
 function node_genesis() {
@@ -182,11 +185,11 @@ case $1 in
     # phan  # 각 컨포넌트 별로 정적 분석을 합니다.
     phan
     ;;
-    cleanup)
-        # cleanup  # node 생성에 필요한 정보들을 삭제한다.
-        down
-        node_data_cleanup
-        ;;
+  cleanup)
+    # cleanup  # node 생성에 필요한 정보들을 삭제한다.
+    down
+    node_data_cleanup
+    ;;
     genesis)
         check_env_command
         # genesis  # saseul origin 네트워크를 stand alone 으로 실행할 수 있도록 띄운다.
