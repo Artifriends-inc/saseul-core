@@ -24,7 +24,7 @@ env:
 install:
   - ./.travis/set_php.sh
   - composer global require hirak/prestissimo
-  - composer install --prefer-dist && composer dump-autoload
+  - ./dev.sh install
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
