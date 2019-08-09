@@ -114,6 +114,14 @@ class Property
         return $properties;
     }
 
+    /**
+     * Cache 에서 값을 가져온다.
+     *
+     * @param      $name
+     * @param null $value
+     *
+     * @return null|mixed
+     */
     private static function gs($name, $value = null)
     {
         if ($value === null) {

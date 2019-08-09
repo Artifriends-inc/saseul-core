@@ -6,9 +6,11 @@ class Directory
 {
     public const BLOCKDATA = SASEUL_DIR . '/blockdata';
     public const SOURCE = SASEUL_DIR . '/sourcedata';
+    public const RELATIVE_SOURCE = '/sourcedata';
     public const TEMP = SASEUL_DIR . '/tmp';
 
-    public const ORIGINAL_SOURCE = self::SOURCE . '/SaseulDefault';
+    // Reset Script 에서만 사용한다.
+    public const RELATIVE_ORIGINAL_SOURCE = '..' . self::RELATIVE_SOURCE . '/SaseulDefault';
     public const SASEUL_SOURCE = SASEUL_DIR . '/src/Saseul';
 
     public const NODE_INFO = SASEUL_DIR . '/node.info';

@@ -20,7 +20,7 @@ class Cache extends Memcached
         $this->port = Env::$memcached['port'];
     }
 
-    public static function GetInstance()
+    public static function GetInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();

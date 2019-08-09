@@ -14,7 +14,7 @@ class Merkle
      *
      * @return string a hash value
      */
-    public static function MakeMerkleHash($array)
+    public static function MakeMerkleHash($array): string
     {
         if (count($array) === 0) {
             return hash('sha256', json_encode($array));
@@ -30,6 +30,7 @@ class Merkle
             $tmp_array = $hash_array;
             $hash_array = [];
 
+            // Todo: Count 부분을 수정한다.
             for ($i = 0; $i < count($tmp_array); $i = $i + 2) {
                 if ($i === count($tmp_array) - 1) {
                     $hash_array[] = $tmp_array[$i];

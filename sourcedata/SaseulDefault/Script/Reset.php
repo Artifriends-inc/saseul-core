@@ -37,7 +37,7 @@ class Reset extends Script
         $this->noAsk = $noAsk;
     }
 
-    public function _process()
+    public function _process(): void
     {
         if (isset($this->arg[0]) && $this->arg[0] === '-r') {
             $this->noAsk = true;
@@ -49,6 +49,7 @@ class Reset extends Script
             }
         }
 
+        // Round 가 끝나길 기다린다.
         if (Service::isDaemonRunning() === true) {
             Property::isReady(false);
 
@@ -68,21 +69,34 @@ class Reset extends Script
         $this->CreateDatabase();
         $this->CreateIndex();
         $this->CreateGenesisTracker();
+
+        // Patch DB 정보를 넣는다.
+        // Todo: 해당 부분은 그냥 묶어서 넣어도 된다.
         $this->patch_contract->Exec();
         $this->patch_exchange->Exec();
         $this->patch_token->Exec();
+        // Todo: AuthToken 부분은 삭제한다.
         $this->patch_auth_token->Exec();
+
+        // Source 를 업데이트 한다.
         $this->RestoreOriginalSource();
         sleep(2);
 
+        Logger::EchoLog('Set property');
         Property::init();
+
+        Logger::EchoLog('Source archive');
         Generation::makeSourceArchive();
+
         Logger::EchoLog('Success');
     }
 
-    public function RestoreOriginalSource()
+    /**
+     * source data dir 를 업데이트 한다.
+     */
+    public function RestoreOriginalSource(): void
     {
-        $original = Directory::ORIGINAL_SOURCE;
+        $original = Directory::RELATIVE_ORIGINAL_SOURCE;
         $saseulSource = Directory::SASEUL_SOURCE;
 
         if (file_exists($saseulSource)) {
@@ -92,7 +106,10 @@ class Reset extends Script
         symlink($original, $saseulSource);
     }
 
-    public function DeleteFiles()
+    /**
+     * Block 파일을 삭제한다.
+     */
+    public function DeleteFiles(): void
     {
         Logger::EchoLog('Delete Files : API Chunk ');
         File::rrmdir(Directory::API_CHUNKS);
@@ -131,12 +148,18 @@ class Reset extends Script
         file_put_contents(Directory::TEMP . '/.keep', '');
     }
 
-    public function FlushCache()
+    /**
+     * Memcached 저장된 값들을 정리한다.
+     */
+    public function FlushCache(): void
     {
         $this->cache->flush();
     }
 
-    public function DropDatabase()
+    /**
+     * MongoDB 데이타를 삭제한다.
+     */
+    public function DropDatabase(): void
     {
         Logger::EchoLog('Drop Database');
 
@@ -144,7 +167,10 @@ class Reset extends Script
         $this->db->Command(MongoDbConfig::DB_TRACKER, ['dropDatabase' => 1]);
     }
 
-    public function CreateDatabase()
+    /**
+     * 사용한 DB 를 생성한다.
+     */
+    public function CreateDatabase(): void
     {
         Logger::EchoLog('Create Database');
 
@@ -158,7 +184,10 @@ class Reset extends Script
         $this->db->Command(MongoDbConfig::DB_TRACKER, ['create' => 'tracker']);
     }
 
-    public function CreateIndex()
+    /**
+     * MongoDB 에 Index 를 설정한다.
+     */
+    public function CreateIndex(): void
     {
         Logger::EchoLog('Create Index');
 
@@ -210,9 +239,12 @@ class Reset extends Script
         ]);
     }
 
-    public function CreateGenesisTracker()
+    /**
+     * Genesis Tracker 를 생성한다.
+     */
+    public function CreateGenesisTracker(): void
     {
-        Logger::EchoLog('CreateGenesisTracker');
+        Logger::EchoLog('Create Genesis Tracker');
         Tracker::reset();
     }
 }

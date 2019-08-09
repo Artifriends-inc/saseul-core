@@ -29,6 +29,14 @@ class Generation
         self::update($generation);
     }
 
+    /**
+     * 종착을 짓는다.
+     *
+     * @param string $originBlockhash
+     * @param string $finalBlockhash
+     * @param string $sourceHash
+     * @param string $sourceVersion
+     */
     public static function finalize(string $originBlockhash, string $finalBlockhash, string $sourceHash, string $sourceVersion): void
     {
         $generation = [
@@ -87,6 +95,11 @@ class Generation
         return $generation;
     }
 
+    /**
+     * 현재 generation 값을 가져온다.
+     *
+     * @return array
+     */
     public static function current(): array
     {
         if (self::getItem([]) === []) {
@@ -101,7 +114,10 @@ class Generation
         return self::getItem(['origin_block_number' => $originBlockNumber]);
     }
 
-    public static function makeSourceArchive()
+    /**
+     * source data dir 를 압축한다.
+     */
+    public static function makeSourceArchive(): void
     {
         $target = Directory::SASEUL_SOURCE;
 

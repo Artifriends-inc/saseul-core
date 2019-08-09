@@ -243,10 +243,14 @@ class Tracker
         Property::registerRequest($newRequest);
     }
 
-    public static function reset()
+    /**
+     * Reset 스크립트에서 Genesis Tracker 정보를 저장한다.
+     */
+    public static function reset(): void
     {
         $db = Database::GetInstance();
 
+        // Todo: 해당 부분을 basmith 에서 추가할 수 있도록 해야한다.
         if (NodeInfo::getAddress() === Env::$genesis['address']) {
             $db->bulk->insert([
                 'host' => NodeInfo::getHost(),
