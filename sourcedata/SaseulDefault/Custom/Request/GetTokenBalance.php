@@ -2,12 +2,12 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\Request;
+use Saseul\Common\RequestInterface;
 use Saseul\Custom\Method\Token;
 use Saseul\System\Key;
 use Saseul\Version;
 
-class GetTokenBalance extends Request
+class GetTokenBalance implements RequestInterface
 {
     public const TYPE = 'GetTokenBalance';
 

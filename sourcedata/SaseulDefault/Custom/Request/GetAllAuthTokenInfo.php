@@ -2,11 +2,11 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\Request;
+use Saseul\Common\RequestInterface;
 use Saseul\System\Key;
 use Saseul\Version;
 
-class GetAllAuthTokenInfo extends Request
+class GetAllAuthTokenInfo implements RequestInterface
 {
     public const TYPE = 'GetAllAuthTokenInfo';
 

@@ -2,12 +2,12 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\Request;
+use Saseul\Common\RequestInterface;
 use Saseul\Custom\Method\Attributes;
 use Saseul\System\Key;
 use Saseul\Version;
 
-class GetRole extends Request
+class GetRole implements RequestInterface
 {
     public const TYPE = 'GetRole';
 

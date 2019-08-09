@@ -50,6 +50,7 @@ class ScriptFinder
      *
      * @return array The PHP file names that implement the VRequest interface.
      */
+    // TODO: 더 이상 사용되지 않으므로 제거
     public static function GetVRequestInterfaces($opt = true)
     {
         return self::GetInterfaces(ROOT_DIR . '/Saseul/Custom/VRequest', $opt);

@@ -2,12 +2,12 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\Request;
+use Saseul\Common\RequestInterface;
 use Saseul\Custom\Method\Coin;
 use Saseul\System\Key;
 use Saseul\Version;
 
-class GetBalance extends Request
+class GetBalance implements RequestInterface
 {
     public const TYPE = 'GetBalance';
 

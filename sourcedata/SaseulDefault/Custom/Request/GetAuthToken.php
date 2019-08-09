@@ -2,13 +2,13 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\Request;
+use Saseul\Common\RequestInterface;
 use Saseul\Custom\Method\AuthToken;
 use Saseul\Custom\Method\AuthTokenInfo;
 use Saseul\System\Key;
 use Saseul\Version;
 
-class GetAuthToken extends Request
+class GetAuthToken implements RequestInterface
 {
     public const TYPE = 'GetAuthToken';
 
