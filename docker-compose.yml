@@ -7,8 +7,10 @@ services:
       - back
   mongo:
     image: mongo
+    ports:
+      - 27017:27017
     networks:
-      - front
+      - back
     volumes:
       - ./data/db:/data/db
   node:
