@@ -78,20 +78,6 @@ function phan() {
 }
 
 # SASEUL
-function node_data_cleanup() {
-  rm -rf ./blockdata/apichunks/*
-  rm -rf ./blockdata/broadcastchunks/*
-  rm -rf ./blockdata/transactions/*
-  rm -rf ./blockdata/txarchives/*
-  rm -rf ./data/db/*
-
-  touch ./blockdata/apichunks/.keep
-  touch ./blockdata/broadcastchunks/.keep
-  touch ./blockdata/transactions/.keep
-  touch ./blockdata/txarchives/.keep
-  echo "Cleanup SASEUL data"
-}
-
 function node_genesis() {
   up
   sleep 5
@@ -175,11 +161,6 @@ case $1 in
   phan)
     # phan  # 각 컨포넌트 별로 정적 분석을 합니다.
     phan
-    ;;
-  cleanup)
-    # cleanup  # node 생성에 필요한 정보들을 삭제한다.
-    down
-    node_data_cleanup
     ;;
   genesis)
     check_env_command

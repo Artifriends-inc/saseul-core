@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "saseul-core-cmd"
+version = "0.1.0"
+description = "SASEUL Core shell command executer."
+authors = ["Anchor Team <anchor@artifriends.com>"]
+license = "MIT"
+
+packages = [
+    { include='cli', from='.' },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+httpx = "^0.6.8"
+invoke = "^1.3"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+cli = 'cli.main:run'
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
