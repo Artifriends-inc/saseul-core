@@ -14,3 +14,4 @@ phpize
 make
 make install
 cp ./modules/ed25519.so  ~/.phpenv/versions/$(phpenv version-name)/lib/php/extensions/no-debug-zts-20180731/
+echo "extension = ed25519.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
