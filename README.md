@@ -16,7 +16,7 @@
 ### 필요하면 고칠 수 있는 부분
 
 * [ ] env 로직 수정
-* [ ] Validator 고의 트롤시 ban하는거 public/private 옵션 줄 수 있도록 해야함. 
+* [ ] Validator 고의 트롤시 ban하는거 public/private 옵션 줄 수 있도록 해야함.
 
 ## Node 실행 순서
 
@@ -51,10 +51,14 @@ Python으로 구성된 명령어 모음
 $ peotry run cli --list
 Subcommands:
 
-  docker.down   Docker 네트워크와 이미지를 terminate 한다.
-  node.clean    Block data 와 DB 데이터를 삭제한다.
+  docker.down        Docker 네트워크와 이미지를 terminate 한다.
+  docker.up          Docker 네트워크와 이미지를 데몬으로 실행한다.
+  env.make           개발용 SASEUL Core 에서 사용할 env 파일을 생성한다.
+  node.clean         Block data 와 DB 데이터를 삭제한다.
+  node.mk-mongo-db   MongoDB 데이터베이스와 인덱스를 생성한다.
+  node.reset         SASEUL 블록 정보들을 전부 재 생성한다.
 
-``` 
+```
 
 [maintainability-badges]: https://api.codeclimate.com/v1/badges/ab103c8f70fafe7ed3b6/maintainability
 [maintainability-repos]: https://codeclimate.com/repos/5d47e92991b75a019f001554/maintainability
