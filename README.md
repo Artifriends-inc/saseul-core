@@ -37,6 +37,25 @@
 1. registerRequest Queue 초기화 추가;
 
 
+## Dev Command
+
+### `dev.sh`
+
+Shell로 구성된 파일이다.
+
+### `poetry run cli`
+
+Python으로 구성된 명령어 모음
+
+```shell script
+$ peotry run cli --list
+Subcommands:
+
+  docker.down   Docker 네트워크와 이미지를 terminate 한다.
+  node.clean    Block data 와 DB 데이터를 삭제한다.
+
+``` 
+
 [maintainability-badges]: https://api.codeclimate.com/v1/badges/ab103c8f70fafe7ed3b6/maintainability
 [maintainability-repos]: https://codeclimate.com/repos/5d47e92991b75a019f001554/maintainability
 [cov-badges]: https://api.codeclimate.com/v1/badges/ab103c8f70fafe7ed3b6/test_coverage
