@@ -2,14 +2,14 @@
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Common\AbstractRequest;
-use Saseul\Custom\Request\GetTransaction;
+use Saseul\Custom\Request\GetTokenBalance;
 
-class GetTransactionTest extends TestCase
+class GetTokenBalanceTest extends TestCase
 {
     public function testSutInheritsAbstractRequest()
     {
         # Arrange
-        $sut = new GetTransaction();
+        $sut = new GetTokenBalance();
 
         # Assert
         $this->assertInstanceOf(AbstractRequest::class, $sut);
