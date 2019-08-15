@@ -33,28 +33,6 @@ function setenv() {
   sed 's/tutorial.saseul.net/web/g' ./env.example > ./.env
 }
 
-# Docker
-function build() {
-  DOCKER_BUILDKIT=1 docker build --rm -t saseul-core .
-}
-
-function up() {
-  docker-compose up -d
-}
-
-function down() {
-  docker-compose down
-}
-
-function logs() {
-  if [[ -z "$1" ]]; then
-    echo 'container service 이름을 입력해주세요'
-    exit 1
-  fi
-
-  docker-compose logs -f $1
-}
-
 # composer
 function composer_install() {
   composer install --ignore-platform-reqs && composer dump-autoload
@@ -111,34 +89,6 @@ case $1 in
   setenv_other)
     # setenv_other [genesis_host_name] [node_id]    # 기존 노드에 붙거나,
     setenv other $2 $3
-    ;;
-  # Docker
-  build)
-    check_env_command
-    # build     # Docker 이미지를 생성한다.
-    build
-    ;;
-  up)
-    check_env_command
-    # up    # 연관된 컨테이너를 실행한다.
-    up
-    ;;
-  buildup)
-    check_env_command
-    # buildup   # Docker 이미지를 빌드하고 패키지를 설치한 뒤, 모든 컨테이너를 실행한다.
-    build
-    composer
-    up
-    ;;
-  down)
-    check_env_command
-    # down  # 실행한 컨테이너를 정지(halt)시킨다.
-    down
-    ;;
-  logs)
-    check_env_command
-    # logs [api|node|web|memcached|mongo]  # 각 서비스에 대한 로그를 확인한다.
-    logs $2
     ;;
   # composer
   install)

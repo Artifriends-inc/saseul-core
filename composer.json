@@ -40,6 +40,21 @@
         "friendsofphp/php-cs-fixer": "^2"
     },
     "scripts": {
+        "docker-build": [
+            "DOCKER_BUILDKIT=1 docker build -t saseul-core ."
+        ],
+        "docker-up": [
+            "docker-compose up -d"
+        ],
+        "docker-down": [
+            "docker-compose down"
+        ],
+        "docker-log": [
+            "docker-compose logs -f"
+        ],
+        "make-env": [
+            "cp ./env.example ./.env"
+        ],
         "phan": "./dev.sh phan",
         "fix": "./dev.sh fix",
         "test": "./dev.sh test"
