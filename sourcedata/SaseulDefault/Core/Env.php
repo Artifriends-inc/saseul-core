@@ -30,39 +30,16 @@ class Env
         'address' => '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85',
         'coin_amount' => '1000000000000000',
         'deposit_amount' => '200000000000000',
-        'key' => [
-            'genesis_message' => 'Imagine Beyond and Invent Whatever, Wherever - Published by ArtiFriends. '
-                . 'Thank you for help - YJ.Lee, JW.Lee, SH.Shin, YS.Han, WJ.Choi, DH.Kang, HG.Lee, KH.Kim, '
-                . 'HK.Lee, JS.Han, SM.Park, SJ.Chae, YJ.Jeon, KM.Lee, JH.Kim, '
-                . 'mika, ashal, datalater, namedboy, masterguru9, ujuc, johngrib, kimpi, greenmon, '
-                . 'HS.Lee, TW.Nam, EH.Park, MJ.Mok',
-            'special_thanks' => 'Michelle, Francis, JS.Han, Pang, Jeremy, JG, TY.Lee, SH.Ji, HK.Lim, IS.Choi, '
-                . 'CH.Park, SJ.Park, DH.Shin and CK.Park',
-            'etc_messages' => [
-                [
-                    'writer' => 'Michelle.Kim',
-                    'message' => 'I love jjal. ',
-                ],
-                [
-                    'writer' => 'Francis.W.Han',
-                    'message' => 'khan@artifriends.com, I\'m here with JG and SK. ',
-                ],
-                [
-                    'writer' => 'JG.Lee',
-                    'message' => 'In the beginning God created the blocks and the chains. '
-                        . 'God said, \'Let there be SASEUL\' and saw that it was very good. ',
-                ],
-                [
-                    'writer' => 'namedboy',
-                    'message' => 'This is \'SASEUL\', Welcome to new world.',
-                ],
-                [
-                    'writer' => 'ujuc',
-                    'message' => 'Hello Saseul! :)',
-                ]
-            ]
-        ]
+        'key' => []
     ];
+
+    public static function loadGenesisKey(string $path): void
+    {
+        $get_key = file_get_contents($path);
+        $genesis_key = json_decode($get_key, true);
+
+        self::$genesis['key'] = $genesis_key;
+    }
 
     public static function load(): void
     {
@@ -80,5 +57,7 @@ class Env
             self::$nodeInfo = $env['node_info'];
             self::$genesis = $env['genesis'];
         }
+
+        self::loadGenesisKey(SASEUL_DIR . '/data/genesis_key.json');
     }
 }
