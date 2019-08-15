@@ -21,7 +21,8 @@
             "Saseul\\Daemon\\": "src/Saseul/Daemon/",
             "Saseul\\System\\": "src/Saseul/System/",
             "Saseul\\Util\\": "src/Saseul/Util/",
-            "Saseul\\Script\\": "src/Saseul/Script/"
+            "Saseul\\Script\\": "src/Saseul/Script/",
+            "Cmd\\": "cmd/"
         }
     },
     "autoload-dev": {
@@ -32,12 +33,15 @@
     "require": {
         "monolog/monolog": "^1.24",
         "ext-posix": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-mongodb": "*"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-master",
         "phpunit/phpunit": "^8",
         "phan/phan": "^2",
-        "friendsofphp/php-cs-fixer": "^2"
+        "friendsofphp/php-cs-fixer": "^2",
+        "composer/composer": "^1"
     },
     "scripts": {
         "docker-build": [
@@ -67,8 +71,18 @@
             "composer update --ignore-platform-reqs",
             "composer dump-autoload"
         ],
+        "node-clean": [
+            "@docker-down",
+            "sh ./cmd/rm_block_data.sh",
+            "@docker-up mongo",
+            "sleep 10",
+            "docker-compose run --rm node bash -c './src/saseul_script MakeMongoDB'",
+            "@docker-down"
+        ],
         "phan": "./dev.sh phan",
         "fix": "./dev.sh fix",
         "test": "./dev.sh test"
+    },
+    "scripts-descriptions": {
     }
 }
