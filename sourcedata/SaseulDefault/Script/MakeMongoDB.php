@@ -8,13 +8,11 @@ use MongoDB\Driver\Manager;
 use Saseul\Common\Script;
 
 /**
- * Class MakeMongoDB
+ * Class MakeMongoDB.
  *
  * composer 스크립트를 사용하기 위해서 작성하였다.
  *
  * @todo    이 함수를 여기가 두어서는 안된다.
- *
- * @package Saseul\Script
  */
 class MakeMongoDB extends Script
 {
