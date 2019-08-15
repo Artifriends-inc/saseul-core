@@ -33,15 +33,6 @@ function setenv() {
   sed 's/tutorial.saseul.net/web/g' ./env.example > ./.env
 }
 
-# composer
-function composer_install() {
-  composer install --ignore-platform-reqs && composer dump-autoload
-}
-
-function composer_update() {
-  composer update --ignore-platform-reqs
-}
-
 # Code quality
 function fix() {
   ./vendor/bin/php-cs-fixer fix --using-cache=no
@@ -89,15 +80,6 @@ case $1 in
   setenv_other)
     # setenv_other [genesis_host_name] [node_id]    # 기존 노드에 붙거나,
     setenv other $2 $3
-    ;;
-  # composer
-  install)
-    # install   # composer 패키지를 설치합니다.
-    composer_install
-    ;;
-  update)
-    # update    # composer 패키지를 업데이트 합니다.
-    composer_update
     ;;
   # Code quality
   test)

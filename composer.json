@@ -55,6 +55,18 @@
         "make-env": [
             "cp ./env.example ./.env"
         ],
+        "add": [
+            "composer require --ignore-platform-reqs",
+            "composer dump-autoload"
+        ],
+        "local-install": [
+            "composer install --ignore-platform-reqs",
+            "composer dump-autoload"
+        ],
+        "local-update": [
+            "composer update --ignore-platform-reqs",
+            "composer dump-autoload"
+        ],
         "phan": "./dev.sh phan",
         "fix": "./dev.sh fix",
         "test": "./dev.sh test"
