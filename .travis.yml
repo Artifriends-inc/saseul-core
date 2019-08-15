@@ -24,7 +24,7 @@ env:
 install:
   - ./.travis/set_php.sh
   - composer global require hirak/prestissimo
-  - ./dev.sh install
+  - composer local-install
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -33,9 +33,9 @@ before_script:
   - ./.travis/mongo_test.sh
 
 script:
-  #- ./dev.sh ci-phan
-  - ./dev.sh ci-fix
-  - ./dev.sh ci-test
+  #- composer ci-phan
+  - composer ci-fix
+  - composer ci-test
 
 after_script:
   - ./cc-test-reporter after-build  -t clover --exit-code $TRAVIS_TEST_RESULT
