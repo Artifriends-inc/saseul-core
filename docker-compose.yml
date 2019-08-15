@@ -25,7 +25,7 @@ services:
     volumes:
       - .:/var/saseul-origin
       - ./data/logs:/var/log/saseul-origin
-#    env_file: .env
+    env_file: .env
   api:
     image: saseul-core
     networks:
@@ -37,7 +37,7 @@ services:
     volumes:
       - .:/var/saseul-origin
       - ./data/logs:/var/log/saseul-origin
-#    env_file: .env
+    env_file: .env
   web:
     image: nginx:alpine
     networks:
