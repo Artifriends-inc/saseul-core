@@ -11,6 +11,7 @@ RUN composer install \
     --no-plugins \
     --no-scripts \
     --prefer-dist \
+    --no-dev \
     && composer dump-autoload -o
 
 #
