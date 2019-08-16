@@ -18,7 +18,7 @@ class GetTransaction extends AbstractRequest
         string $signature
     ): void {
         parent::initialize($request, $thash, $public_key, $signature);
-        $this->find_thash = $this->request['thash'] ?? '';
+        $this->find_thash = $request['thash'] ?? '';
     }
 
     public function getResponse(): array
