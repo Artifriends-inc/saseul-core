@@ -83,7 +83,7 @@ class Genesis extends Transaction
     {
         $this->from_balance = Coin::GetBalance($this->from);
         $this->from_role = Attributes::GetRole($this->from);
-        $this->block_count = Block::GetCount();
+        $this->block_count = Block::getCount();
     }
 
     public function _MakeDecision()
