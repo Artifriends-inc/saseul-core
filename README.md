@@ -45,7 +45,7 @@
 scripts:
   docker-build   Build SASEUL docker image
   docker-up      사슬에 연관된 도커 이미지들 대몬 형식으로 실행
-  docker-down    사슬에 연관된 도커 이미지 terminator
+  docker-down    사슬에 연관된 도커 이미지 관련 내용 삭제
   docker-log     서비스 로그 확인
   make-env       env 파일 생성
   add            패키지 추가
