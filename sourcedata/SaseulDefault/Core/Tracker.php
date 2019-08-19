@@ -279,6 +279,63 @@ class Tracker
         }
     }
 
+    /**
+     * Genesis 노드를 DB 에 추가한다.
+     *
+     * @return bool
+     */
+    public static function addGenesisTracker(): bool
+    {
+        $db = Database::GetInstance();
+
+        if (NodeInfo::getAddress() !== Env::$genesis['address']) {
+            return false;
+        }
+
+        $db->bulk->insert([
+            'host' => Env::$nodeInfo['host'],
+            'address' => Env::$genesis['address'],
+            'rank' => Rank::VALIDATOR,
+            'status' => 'admitted',
+        ]);
+
+        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+
+        return true;
+    }
+
+    /**
+     * Light 노드를 DB에 추가한다.
+     *
+     * @return bool
+     */
+    public static function addLigthTracker(): bool
+    {
+        $db = Database::GetInstance();
+
+        if (NodeInfo::getAddress() === Env::$genesis['address']) {
+            return false;
+        }
+
+        $db->bulk->insert([
+            'host' => '',
+            'address' => Env::$genesis['address'],
+            'rank' => Rank::VALIDATOR,
+            'status' => 'admitted',
+        ]);
+
+        $db->bulk->insert([
+            'host' => Env::$nodeInfo['host'],
+            'address' => Env::$nodeInfo['address'],
+            'rank' => Rank::LIGHT,
+            'status' => 'admitted',
+        ]);
+
+        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+
+        return true;
+    }
+
     public static function updateData($filter, $item)
     {
         $db = Database::GetInstance();
