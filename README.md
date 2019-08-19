@@ -52,7 +52,7 @@ scripts:
   local-install  패키지 설치
   local-update   패키지 업데이트
   node-clean     SASEUL 노드에 관련된 정보들을 전부 삭제
-  phan           정적 분석기
+  phan           정적 분석 실행( 수정 X )
   fix            문법 오류 수정
   test           테스트 코드 실행
   ci-phan        [CI] 정적 분석기
