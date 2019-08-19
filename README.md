@@ -39,26 +39,28 @@
 
 ## Dev Command
 
-### `dev.sh`
+### `compoer`
 
-Shell로 구성된 파일이다.
-
-### `poetry run cli`
-
-Python으로 구성된 명령어 모음
-
-```shell script
-$ peotry run cli --list
-Subcommands:
-
-  docker.down        Docker 네트워크와 이미지를 terminate 한다.
-  docker.up          Docker 네트워크와 이미지를 데몬으로 실행한다.
-  env.make           개발용 SASEUL Core 에서 사용할 env 파일을 생성한다.
-  node.clean         Block data 와 DB 데이터를 삭제한다.
-  node.mk-mongo-db   MongoDB 데이터베이스와 인덱스를 생성한다.
-  node.reset         SASEUL 블록 정보들을 전부 재 생성한다.
-
+```script
+scripts:
+  docker-build   Build SASEUL docker image
+  docker-up      사슬에 연관된 도커 이미지들 대몬 형식으로 실행
+  docker-down    사슬에 연관된 도커 이미지 관련 내용 삭제
+  docker-log     서비스 로그 확인
+  make-env       env 파일 생성
+  add            패키지 추가
+  local-install  패키지 설치
+  local-update   패키지 업데이트
+  node-clean     SASEUL 노드에 관련된 정보들을 전부 삭제
+  phan           정적 분석 실행( 수정 X )
+  fix            문법 오류 수정
+  test           테스트 코드 실행
+  ci-phan        [CI] 정적 분석기
+  ci-fix         [CI] 문법 오류 확인
+  ci-test        [CI] 테스트 코드 실행
 ```
+
+* 추가한 명령을 확인하려면 `composer run -l` 명령을 이용한다.
 
 [maintainability-badges]: https://api.codeclimate.com/v1/badges/ab103c8f70fafe7ed3b6/maintainability
 [maintainability-repos]: https://codeclimate.com/repos/5d47e92991b75a019f001554/maintainability
