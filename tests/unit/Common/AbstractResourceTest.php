@@ -1,9 +1,9 @@
 <?php
 
-use Saseul\Common\AbstractResource;
 use PHPUnit\Framework\TestCase;
-use Saseul\Util\DateTime;
+use Saseul\Common\AbstractResource;
 use Saseul\System\Key;
+use Saseul\Util\DateTime;
 
 class AbstractResourceTest extends TestCase
 {

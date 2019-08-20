@@ -10,13 +10,15 @@ use Saseul\Core\Env;
 /**
  * Class Genesis.
  *
- * Genesis chunk 를 만들기 위한 API이다.
+ * Genesis chunk 를 만들기 위한 API 이다.
+ *
+ * @package Saseul\Custom\Resource
  */
 class Genesis extends AbstractResource
 {
-    public function initialize(array $request, string $thash, string $public_key, string $signature): void
+    public function initialize(array $request, string $thash, string $publicKey, string $signature): void
     {
-        parent::initialize($request, $thash, $public_key, $signature);
+        parent::initialize($request, $thash, $publicKey, $signature);
     }
 
     public function getValidity(): bool
@@ -29,7 +31,7 @@ class Genesis extends AbstractResource
     {
         $genesisTransactionContent = [
             'transaction' => $this->request,
-            'public_key' => $this->public_key,
+            'public_key' => $this->publicKey,
             'signature' => $this->signature,
         ];
 

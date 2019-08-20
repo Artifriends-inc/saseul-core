@@ -15,18 +15,18 @@ abstract class AbstractResource implements ResourceInterface
 {
     protected $request;
     protected $thash;
-    protected $public_key;
+    protected $publicKey;
     protected $signature;
 
     protected $type;
     protected $from;
     protected $timestamp;
 
-    public function initialize(array $request, string $thash, string $public_key, string $signature): void
+    public function initialize(array $request, string $thash, string $publicKey, string $signature): void
     {
         $this->request = $request;
         $this->thash = $thash;
-        $this->public_key = $public_key;
+        $this->publicKey = $publicKey;
         $this->signature = $signature;
 
         $this->type = $request['type'] ?? '';
@@ -39,9 +39,9 @@ abstract class AbstractResource implements ResourceInterface
         $calledRequest = new ReflectionClass(get_class($this));
 
         return $this->type === $calledRequest->getShortName()
-            && Env::$nodeInfo['public_key'] === $this->public_key
-            && Key::isValidAddress($this->from, $this->public_key)
-            && Key::isValidSignature($this->thash, $this->public_key, $this->signature);
+            && Env::$nodeInfo['public_key'] === $this->publicKey
+            && Key::isValidAddress($this->from, $this->publicKey)
+            && Key::isValidSignature($this->thash, $this->publicKey, $this->signature);
     }
 
     abstract public function process(): void;

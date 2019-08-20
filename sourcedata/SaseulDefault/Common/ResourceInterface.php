@@ -7,7 +7,7 @@ interface ResourceInterface
     public function initialize(
         array $request,
         string $thash,
-        string $public_key,
+        string $publicKey,
         string $signature
     ): void;
 
