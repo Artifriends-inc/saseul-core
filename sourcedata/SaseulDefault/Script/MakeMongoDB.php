@@ -36,6 +36,7 @@ class MakeMongoDB extends Script
 
     private function executeCommand(string $db, array $commands): void
     {
+        // Todo: bulk 로 입력하자.
         foreach ($commands as $command) {
             try {
                 $this->manager->executeCommand($db, $command);

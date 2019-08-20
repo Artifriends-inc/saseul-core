@@ -60,8 +60,7 @@
             "cp ./env.example ./.env"
         ],
         "add": [
-            "composer require --ignore-platform-reqs",
-            "composer dump-autoload"
+            "composer require --ignore-platform-reqs"
         ],
         "local-install": [
             "composer install --ignore-platform-reqs",

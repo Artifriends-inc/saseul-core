@@ -12,7 +12,7 @@ RUN composer install \
     --no-scripts \
     --prefer-dist \
     --no-dev \
-    && composer dump-autoload -o
+    && composer dump-autoload -o --no-dev
 
 #
 # Extenstions
