@@ -258,12 +258,19 @@ class Chunk
         }
     }
 
-    public static function GetChunk($filename)
+    /**
+     * Chunk 파일을 읽어온다.
+     *
+     * @param $filename
+     *
+     * @return mixed
+     */
+    public static function getChunk($filename)
     {
-        $file = fopen($filename, 'r');
+        $file = fopen($filename, 'rb');
         $contents = fread($file, filesize($filename));
         fclose($file);
-        $contents = '[' . preg_replace('/\,*?$/', '', $contents) . ']';
+        $contents = '[' . preg_replace('/,*?$/', '', $contents) . ']';
 
         return json_decode($contents, true);
     }
