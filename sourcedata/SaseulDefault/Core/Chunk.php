@@ -267,7 +267,7 @@ class Chunk
      */
     public static function getChunk($filename)
     {
-        $file = fopen($filename, 'rb');
+        $file = fopen($filename, 'r');
         $contents = fread($file, filesize($filename));
         fclose($file);
         $contents = '[' . preg_replace('/,*?$/', '', $contents) . ']';
@@ -419,7 +419,7 @@ class Chunk
             $sign = true;
         }
 
-        $file = fopen($filename, 'ab');
+        $file = fopen($filename, 'a');
         fwrite($file, json_encode($contents) . ",\n");
         fclose($file);
 
@@ -434,7 +434,7 @@ class Chunk
      *
      * @param $timestamp
      *
-     * @return string|string[]|null
+     * @return null|string|string[]
      */
     public static function getId($timestamp): ?string
     {

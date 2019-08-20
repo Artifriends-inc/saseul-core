@@ -8,11 +8,9 @@ use Saseul\Core\Chunk;
 use Saseul\Core\Env;
 
 /**
- * Class Genesis
+ * Class Genesis.
  *
  * Genesis chunk 를 만들기 위한 API이다.
- *
- * @package Saseul\Custom\Resource
  */
 class Genesis extends AbstractResource
 {
@@ -25,12 +23,6 @@ class Genesis extends AbstractResource
     {
         return parent::getValidity()
             && $this->genesisValidity();
-    }
-
-    protected function genesisValidity(): bool
-    {
-        return $this->from !== Env::$genesis['address']
-            && Block::getCount() > 0;
     }
 
     public function process(): void
@@ -47,5 +39,11 @@ class Genesis extends AbstractResource
     public function getResponse(): array
     {
         return ['status' => 'success'];
+    }
+
+    private function genesisValidity(): bool
+    {
+        return $this->from !== Env::$genesis['address']
+            && Block::getCount() > 0;
     }
 }

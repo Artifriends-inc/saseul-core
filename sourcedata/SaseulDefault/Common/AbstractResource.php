@@ -7,11 +7,9 @@ use Saseul\Core\Env;
 use Saseul\System\Key;
 
 /**
- * Class AbstractResource
+ * Class AbstractResource.
  *
  * 시스템 환경을 구성하기 위한 API.
- *
- * @package Saseul\Common
  */
 abstract class AbstractResource implements ResourceInterface
 {

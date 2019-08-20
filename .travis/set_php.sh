@@ -4,7 +4,7 @@
 phpenv config-add $TRAVIS_BUILD_DIR/conf/php.ini
 
 # Install extension
-pecl install ast
+pecl install ast xdebug memcached mongodb
 
 # ed25519 extension
 git clone https://github.com/encedo/php-ed25519-ext.git
@@ -14,4 +14,7 @@ phpize
 make
 make install
 cp ./modules/ed25519.so  ~/.phpenv/versions/$(phpenv version-name)/lib/php/extensions/no-debug-zts-20180731/
-echo "extension = ed25519.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+echo "
+extension = ed25519.so
+extension = mongodb.so
+extension = memecached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
