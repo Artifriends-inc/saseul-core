@@ -3,16 +3,15 @@
 namespace Saseul\Custom\Resource;
 
 use Saseul\Common\AbstractResource;
-use Saseul\Core\Block;
 use Saseul\Core\Chunk;
 use Saseul\Core\Env;
 
 /**
- * Class Genesis.
+ * Class Deposit.
  *
- * Genesis chunk 를 만들기 위한 API 이다.
+ * Genesis 이후 실행되는 API 이다.
  */
-class Genesis extends AbstractResource
+class Deposit extends AbstractResource
 {
     public function initialize(array $request, string $thash, string $publicKey, string $signature): void
     {
@@ -22,18 +21,18 @@ class Genesis extends AbstractResource
     public function getValidity(): bool
     {
         return parent::getValidity()
-            && $this->genesisValidity();
+            && $this->depositValidaty();
     }
 
     public function process(): void
     {
-        $genesisTransactionContent = [
+        $depositTransactionContent = [
             'transaction' => $this->request,
             'public_key' => $this->publicKey,
             'signature' => $this->signature,
         ];
 
-        Chunk::saveApiChunk($genesisTransactionContent, $this->timestamp);
+        Chunk::saveApiChunk($depositTransactionContent, $this->timestamp);
     }
 
     public function getResponse(): array
@@ -41,9 +40,8 @@ class Genesis extends AbstractResource
         return ['status' => 'success'];
     }
 
-    private function genesisValidity(): bool
+    private function depositValidaty(): bool
     {
-        return $this->from !== Env::$genesis['address']
-            && Block::getCount() > 0;
+        return $this->from !== Env::$genesis['address'];
     }
 }
