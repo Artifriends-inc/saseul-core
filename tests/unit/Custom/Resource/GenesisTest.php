@@ -2,14 +2,14 @@
 
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Manager;
+use PHPUnit\Framework\TestCase;
 use Saseul\Common\AbstractResource;
+use Saseul\Constant\Directory;
 use Saseul\Constant\MongoDbConfig;
 use Saseul\Core\Chunk;
 use Saseul\Custom\Resource\Genesis;
-use PHPUnit\Framework\TestCase;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
-use Saseul\Constant\Directory;
 
 class GenesisTest extends TestCase
 {
@@ -32,7 +32,7 @@ class GenesisTest extends TestCase
             'timestamp' => 1562121077974200,
         ];
 
-        $this->sut = $this->createMock(Genesis::class);
+        $this->sut = new Genesis();
         $this->sutName = (new ReflectionClass(get_class($this->sut)))->getShortName();
         $this->timestamp = DateTime::Microtime();
     }
@@ -47,11 +47,8 @@ class GenesisTest extends TestCase
 
     public function testSutInheritsAbstractRequest(): void
     {
-        // Arrange
-        $sut = new Genesis();
-
         // Assert
-        $this->assertInstanceOf(AbstractResource::class, $sut);
+        $this->assertInstanceOf(AbstractResource::class, $this->sut);
     }
 
     public function testGivenInvalidAddressThenValidityMethodReturnsFalse(): void
@@ -67,6 +64,7 @@ class GenesisTest extends TestCase
         $privateKey = 'a745fbb3860f243293a66a5fcadf70efc1fa5fa5f0254b3100057e753ef0d9bb';
         $publicKey = '52017bcb4caca8911b3830c281d10f79359ceb3fbe061c990e043ccb589fccc3';
         $signature = Key::makeSignature($thash, $privateKey, $publicKey);
+
         $this->sut->initialize($request, $thash, $publicKey, $signature);
 
         // Act
@@ -89,6 +87,7 @@ class GenesisTest extends TestCase
         $privateKey = 'a745fbb3860f243293a66a5fcadf70efc1fa5fa5f0254b3100057e753ef0d9bb';
         $publicKey = '52017bcb4caca8911b3830c281d10f79359ceb3fbe061c990e043ccb589fccc3';
         $signature = Key::makeSignature($thash, $privateKey, $publicKey);
+
         $this->sut->initialize($request, $thash, $publicKey, $signature);
 
         $bulk = new BulkWrite();
@@ -105,7 +104,6 @@ class GenesisTest extends TestCase
     public function testGivenBlockDataThenProcess(): void
     {
         // Arrange
-        $sut = new Genesis();
         $request = [
             'type' => $this->sutName,
             'from' => '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85',
@@ -116,10 +114,10 @@ class GenesisTest extends TestCase
         $privateKey = 'a745fbb3860f243293a66a5fcadf70efc1fa5fa5f0254b3100057e753ef0d9bb';
         $publicKey = '52017bcb4caca8911b3830c281d10f79359ceb3fbe061c990e043ccb589fccc3';
         $signature = Key::makeSignature($thash, $privateKey, $publicKey);
-        $sut->initialize($request, $thash, $publicKey, $signature);
+        $this->sut->initialize($request, $thash, $publicKey, $signature);
 
         // Act
-        $sut->process();
+        $this->sut->process();
 
         // Assert
         $apiChunkId = Chunk::getId($this->timestamp);
