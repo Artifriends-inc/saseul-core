@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e50c78adade615eeb15abf392b2a7191",
+    "content-hash": "fc557aa27de9bac2f2bc34d17e99788c",
     "packages": [
         {
             "name": "monolog/monolog",
@@ -907,19 +907,23 @@
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v1.5.2",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "caf41ab74ac7252f5f46db6c16ab0a8358e2e55c"
+                "reference": "0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/caf41ab74ac7252f5f46db6c16ab0a8358e2e55c",
-                "reference": "caf41ab74ac7252f5f46db6c16ab0a8358e2e55c",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06",
+                "reference": "0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
+                "ext-pcre": "*",
+                "ext-reflection": "*",
+                "ext-spl": "*",
                 "php": ">=5.6"
             },
             "require-dev": {
@@ -945,7 +949,7 @@
                 }
             ],
             "description": "Map nested JSON structures onto PHP classes",
-            "time": "2019-08-04T19:56:28+00:00"
+            "time": "2019-08-15T19:41:25+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -994,16 +998,16 @@
         },
         {
             "name": "phan/phan",
-            "version": "2.2.10",
+            "version": "2.2.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phan/phan.git",
-                "reference": "a19dc65091abb4c87374a998912fcc9ae7de41d0"
+                "reference": "ce6cb621d473df36e0d71d9f8c2b2e421135204f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/a19dc65091abb4c87374a998912fcc9ae7de41d0",
-                "reference": "a19dc65091abb4c87374a998912fcc9ae7de41d0",
+                "url": "https://api.github.com/repos/phan/phan/zipball/ce6cb621d473df36e0d71d9f8c2b2e421135204f",
+                "reference": "ce6cb621d473df36e0d71d9f8c2b2e421135204f",
                 "shasum": ""
             },
             "require": {
@@ -1059,7 +1063,7 @@
                 "php",
                 "static"
             ],
-            "time": "2019-08-12T23:40:39+00:00"
+            "time": "2019-08-18T19:08:45+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -1099,18 +1103,18 @@
             "authors": [
                 {
                     "name": "Arne Blankerts",
-                    "email": "arne@blankerts.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "arne@blankerts.de"
                 },
                 {
                     "name": "Sebastian Heuer",
-                    "email": "sebastian@phpeople.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "sebastian@phpeople.de"
                 },
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Component for reading phar.io manifest information from a PHP Archive (PHAR)",
@@ -1530,8 +1534,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "FilterIterator implementation that filters files based on a list of suffixes.",
@@ -1572,8 +1576,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Simple template engine.",
@@ -1621,8 +1625,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Utility class for timing",
@@ -2021,8 +2025,8 @@
             "authors": [
                 {
                     "name": "Marco Pivetta",
-                    "email": "ocramius@gmail.com",
-                    "role": "maintainer"
+                    "role": "maintainer",
+                    "email": "ocramius@gmail.com"
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
@@ -2652,8 +2656,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Collection of value objects that represent the types of the PHP type system",
@@ -2695,8 +2699,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
@@ -3631,8 +3635,8 @@
             "authors": [
                 {
                     "name": "Arne Blankerts",
-                    "email": "arne@blankerts.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "arne@blankerts.de"
                 }
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",

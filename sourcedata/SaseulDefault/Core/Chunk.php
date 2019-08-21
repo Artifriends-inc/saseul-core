@@ -258,12 +258,19 @@ class Chunk
         }
     }
 
-    public static function GetChunk($filename)
+    /**
+     * Chunk 파일을 읽어온다.
+     *
+     * @param $filename
+     *
+     * @return mixed
+     */
+    public static function getChunk($filename)
     {
         $file = fopen($filename, 'r');
         $contents = fread($file, filesize($filename));
         fclose($file);
-        $contents = '[' . preg_replace('/\,*?$/', '', $contents) . ']';
+        $contents = '[' . preg_replace('/,*?$/', '', $contents) . ']';
 
         return json_decode($contents, true);
     }
@@ -396,9 +403,15 @@ class Chunk
         chmod($keyname, 0775);
     }
 
-    public static function SaveAPIChunk($contents, $timestamp)
+    /**
+     * 입력된 Transaction 데이터를 API chunk 폴더에 저장한다.
+     *
+     * @param $contents
+     * @param $timestamp
+     */
+    public static function saveApiChunk($contents, $timestamp): void
     {
-        $filename = Directory::API_CHUNKS . '/' . self::GetID($timestamp) . '.json';
+        $filename = Directory::API_CHUNKS . '/' . self::getId($timestamp) . '.json';
 
         $sign = false;
 
@@ -410,12 +423,20 @@ class Chunk
         fwrite($file, json_encode($contents) . ",\n");
         fclose($file);
 
+        // Todo: 해당 부분은 dir 옵션으로 처리가 가능하다.
         if ($sign) {
             chmod($filename, 0775);
         }
     }
 
-    public static function GetID($timestamp)
+    /**
+     * Transaction ID 값을 정의한다.
+     *
+     * @param $timestamp
+     *
+     * @return null|string|string[]
+     */
+    public static function getId($timestamp): ?string
     {
         $tid = $timestamp - ($timestamp % Rule::MICROINTERVAL_OF_CHUNK)
             + Rule::MICROINTERVAL_OF_CHUNK;

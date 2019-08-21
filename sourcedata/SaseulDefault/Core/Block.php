@@ -207,7 +207,12 @@ class Block
         return $ret;
     }
 
-    public static function GetCount()
+    /**
+     * Block 총수를 가져온다.
+     *
+     * @return int
+     */
+    public static function getCount(): int
     {
         $db = Database::GetInstance();
 

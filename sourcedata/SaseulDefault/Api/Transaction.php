@@ -67,7 +67,7 @@ class Transaction extends Api
 
     public function AddTransaction()
     {
-        Chunk::SaveAPIChunk([
+        Chunk::saveApiChunk([
             'transaction' => $this->transaction,
             'public_key' => $this->public_key,
             'signature' => $this->signature,

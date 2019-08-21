@@ -10,7 +10,7 @@ git:
 
 addons:
   hosts:
-    - monogo
+    - mongo
     - memcached
 
 services:

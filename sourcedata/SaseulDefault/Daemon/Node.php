@@ -370,7 +370,7 @@ class Node
 
         foreach ($chunks as $chunk) {
             $lastBlock = Block::GetLastBlock();
-            $transactions = Chunk::GetChunk("{$tempBunch}/{$chunk}");
+            $transactions = Chunk::getChunk("{$tempBunch}/{$chunk}");
             unlink("{$tempBunch}/{$chunk}");
 
             $fileBlockhash = mb_substr($chunk, 0, 64);
