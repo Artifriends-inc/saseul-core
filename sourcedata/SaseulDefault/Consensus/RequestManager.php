@@ -4,6 +4,8 @@ namespace Saseul\Consensus;
 
 use Saseul\Core\ScriptFinder;
 
+// TODO: 더 이상 사용되지 않으므로 제거될 예정
+
 class RequestManager
 {
     private $request_interfaces;
