@@ -51,12 +51,12 @@ class GenesisTest extends TestCase
         $this->assertInstanceOf(AbstractResource::class, $this->sut);
     }
 
-    public function testGivenInvalidAddressThenValidityMethodReturnsFalse(): void
+    public function testGivenInvalidFromAddressThenValidityMethodReturnsFalse(): void
     {
         // Arrange
         $request = [
             'type' => $this->sutName,
-            'form' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e20',
+            'from' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e20',
             'timestamp' => $this->timestamp
         ];
 

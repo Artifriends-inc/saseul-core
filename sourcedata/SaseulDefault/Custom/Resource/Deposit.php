@@ -40,6 +40,6 @@ class Deposit extends AbstractResource
 
     private function depositValidity(): bool
     {
-        return $this->from !== Env::$genesis['address'];
+        return $this->from !== Env::$nodeInfo['address'];
     }
 }
