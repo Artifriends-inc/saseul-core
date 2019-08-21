@@ -3,20 +3,15 @@
 namespace Saseul\Api;
 
 use Saseul\Common\Api;
-use Saseul\Consensus\RequestManager;
+
+// TODO: 단위 테스트 코드 필요 (2019. 08. 21 수동 검사 완료)
 
 class Request extends Api
 {
-    protected $request_manager;
-
-    protected $request;
-    protected $public_key;
-    protected $signature;
-
-    public function __construct()
-    {
-        $this->request_manager = new RequestManager();
-    }
+    private $request;
+    private $public_key;
+    private $signature;
+    private $requestedApi;
 
     public function _init()
     {
@@ -27,22 +22,52 @@ class Request extends Api
 
     public function _process()
     {
+        $className = $this->assembleRequestClassName();
+        $this->existRequestedApi($className);
+        $this->createRequestedApi($className);
+        $this->initializeRequestedApi();
+        $this->checkRequestValidation();
+    }
+
+    public function _end(): void
+    {
+        $this->data = $this->requestedApi->getResponse();
+    }
+
+    private function assembleRequestClassName(): string
+    {
         $type = $this->getParam($this->request, 'type');
-        $request = $this->request;
-        $thash = hash('sha256', json_encode($request));
-        $public_key = $this->public_key;
-        $signature = $this->signature;
 
-        $this->request_manager->initializeRequest($type, $request, $thash, $public_key, $signature);
-        $validity = $this->request_manager->getRequestValidity();
+        return 'Saseul\\Custom\\Request\\' . $type;
+    }
 
-        if ($validity == false) {
-            $this->Error('Invalid request');
+    private function existRequestedApi($className): void
+    {
+        if (class_exists($className) === false) {
+            $this->error('Invalid Request');
         }
     }
 
-    public function _end()
+    private function createRequestedApi($className): void
     {
-        $this->data = $this->request_manager->getResponse();
+        $this->requestedApi = (new \ReflectionClass($className))->newInstance();
+    }
+
+    private function initializeRequestedApi(): void
+    {
+        $thash = hash('sha256', json_encode($this->request));
+        $this->requestedApi->initialize(
+            $this->request,
+            $thash,
+            $this->public_key,
+            $this->signature
+        );
+    }
+
+    private function checkRequestValidation(): void
+    {
+        if ($this->requestedApi->getValidity() === false) {
+            $this->error('Invalid Request');
+        }
     }
 }
