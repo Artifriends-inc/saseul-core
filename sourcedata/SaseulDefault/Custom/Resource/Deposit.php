@@ -21,7 +21,7 @@ class Deposit extends AbstractResource
     public function getValidity(): bool
     {
         return parent::getValidity()
-            && $this->depositValidaty();
+            && $this->depositValidity();
     }
 
     public function process(): void
@@ -40,7 +40,7 @@ class Deposit extends AbstractResource
         return ['status' => 'success'];
     }
 
-    private function depositValidaty(): bool
+    private function depositValidity(): bool
     {
         return $this->from !== Env::$genesis['address'];
     }
