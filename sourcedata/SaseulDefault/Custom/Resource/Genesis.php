@@ -14,11 +14,6 @@ use Saseul\Core\Env;
  */
 class Genesis extends AbstractResource
 {
-    public function initialize(array $request, string $thash, string $publicKey, string $signature): void
-    {
-        parent::initialize($request, $thash, $publicKey, $signature);
-    }
-
     public function getValidity(): bool
     {
         return parent::getValidity()
@@ -36,6 +31,9 @@ class Genesis extends AbstractResource
         Chunk::saveApiChunk($genesisTransactionContent, $this->timestamp);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getResponse(): array
     {
         return ['status' => 'success'];

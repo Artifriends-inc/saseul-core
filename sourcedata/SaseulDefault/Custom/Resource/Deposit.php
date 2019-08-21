@@ -13,11 +13,6 @@ use Saseul\Core\Env;
  */
 class Deposit extends AbstractResource
 {
-    public function initialize(array $request, string $thash, string $publicKey, string $signature): void
-    {
-        parent::initialize($request, $thash, $publicKey, $signature);
-    }
-
     public function getValidity(): bool
     {
         return parent::getValidity()
@@ -35,6 +30,9 @@ class Deposit extends AbstractResource
         Chunk::saveApiChunk($depositTransactionContent, $this->timestamp);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getResponse(): array
     {
         return ['status' => 'success'];
