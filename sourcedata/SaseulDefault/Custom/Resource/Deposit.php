@@ -13,12 +13,6 @@ use Saseul\Core\Env;
  */
 class Deposit extends AbstractResource
 {
-    public function getValidity(): bool
-    {
-        return parent::getValidity()
-            && $this->depositValidity();
-    }
-
     public function process(): void
     {
         $depositTransactionContent = [
@@ -36,10 +30,5 @@ class Deposit extends AbstractResource
     public function getResponse(): array
     {
         return ['status' => 'success'];
-    }
-
-    private function depositValidity(): bool
-    {
-        return $this->from !== Env::$nodeInfo['address'];
     }
 }

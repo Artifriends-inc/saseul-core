@@ -36,15 +36,26 @@ abstract class AbstractResource implements ResourceInterface
 
     public function getValidity(): bool
     {
-        $calledRequest = new ReflectionClass(get_class($this));
-
-        return $this->type === $calledRequest->getShortName()
-            && Env::$nodeInfo['public_key'] === $this->publicKey
-            && Key::isValidAddress($this->from, $this->publicKey)
-            && Key::isValidSignature($this->thash, $this->publicKey, $this->signature);
+        return $this->isValidityParam()
+            && $this->isValidityKey();
     }
 
     abstract public function process(): void;
 
     abstract public function getResponse(): array;
+
+    private function isValidityParam(): bool
+    {
+        $calledRequest = new ReflectionClass(get_class($this));
+
+        return $this->type === $calledRequest->getShortName()
+            && $this->from === Env::$nodeInfo['address']
+            && $this->publicKey === Env::$nodeInfo['public_key'];
+    }
+
+    private function isValidityKey(): bool
+    {
+        return Key::isValidAddress($this->from, $this->publicKey)
+            && Key::isValidSignature($this->thash, $this->publicKey, $this->signature);
+    }
 }

@@ -41,7 +41,7 @@ class Genesis extends AbstractResource
 
     private function genesisValidity(): bool
     {
-        return $this->from !== Env::$genesis['address']
+        return $this->from === Env::$genesis['address']
             && Block::getCount() > 0;
     }
 }

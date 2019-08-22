@@ -19,12 +19,6 @@ class InitDatabase extends AbstractResource
         $this->db = Database::getInstance();
     }
 
-    public function getValidity(): bool
-    {
-        return parent::getValidity()
-            && $this->initNodeValidity();
-    }
-
     /**
      * @codeCoverageIgnore
      */
@@ -42,10 +36,5 @@ class InitDatabase extends AbstractResource
     public function getResponse(): array
     {
         return ['status' => 'success'];
-    }
-
-    private function initNodeValidity(): bool
-    {
-        return $this->from !== Env::$nodeInfo['address'];
     }
 }
