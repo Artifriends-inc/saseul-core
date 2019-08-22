@@ -1,11 +1,11 @@
 <?php
 
 
+use PHPUnit\Framework\TestCase;
 use Saseul\Constant\MongoDbConfig;
 use Saseul\Constant\Rank;
 use Saseul\Core\Env;
 use Saseul\Core\Tracker;
-use PHPUnit\Framework\TestCase;
 use Saseul\System\Database;
 
 class TrackerTest extends TestCase

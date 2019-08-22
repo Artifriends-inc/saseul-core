@@ -310,6 +310,7 @@ class Tracker
         ]);
 
         $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+
         return $role;
     }
 

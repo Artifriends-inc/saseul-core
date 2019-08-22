@@ -3,7 +3,6 @@
 namespace Saseul\Custom\Resource;
 
 use Saseul\Common\AbstractResource;
-use Saseul\Core\Env;
 use Saseul\Core\Schema;
 use Saseul\System\Database;
 

@@ -4,7 +4,6 @@ namespace Saseul\Custom\Resource;
 
 use Saseul\Common\AbstractResource;
 use Saseul\Core\Chunk;
-use Saseul\Core\Env;
 
 /**
  * Class Deposit.
