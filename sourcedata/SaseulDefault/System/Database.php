@@ -2,7 +2,6 @@
 
 namespace Saseul\System;
 
-use Saseul\Core\Env;
 use Saseul\Util\MongoDb;
 
 /**
@@ -14,20 +13,11 @@ class Database extends MongoDb
     protected static $instance = null;
 
     /**
-     * Initialize the DB.
-     */
-    public function Init()
-    {
-        $this->db_host = Env::$mongoDb['host'];
-        $this->db_port = Env::$mongoDb['port'];
-    }
-
-    /**
      * Return the singleton Database Instance.
      *
      * @return Database The singleton Databse instance.
      */
-    public static function GetInstance()
+    public static function GetInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
