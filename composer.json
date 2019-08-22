@@ -95,7 +95,7 @@
             "./vendor/bin/php-cs-fixer fix --using-cache=no --dry-run --diff"
         ],
         "ci-test": [
-            "./vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml"
+            "./vendor/bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover build/logs/clover.xml"
         ]
     },
     "scripts-descriptions": {
