@@ -78,19 +78,15 @@ class MongoDb
         return $this->manager->executeCommand($this->m_db, $this->m_command);
     }
 
-    public function executeBulkCommand(string $db, array $commands): bool
+    public function executeBulkCommand(string $db, array $commands): void
     {
         foreach ($commands as $command) {
             try {
                 $this->manager->executeCommand($db, $command);
             } catch (Driver\Exception\Exception $exception) {
                 $this->logger->err($exception->getMessage());
-
-                return false;
             }
         }
-
-        return true;
     }
 
     public function BulkWrite($namespace, $bulk = null): void
