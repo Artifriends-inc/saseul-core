@@ -47,4 +47,12 @@ abstract class AbstractTransaction
                 $this->signature
             );
     }
+
+    abstract public function loadStatus();
+
+    abstract public function getStatus();
+
+    abstract public function makeDecision();
+
+    abstract public function setStatus();
 }
