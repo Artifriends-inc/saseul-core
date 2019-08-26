@@ -16,5 +16,4 @@ make install
 cp ./modules/ed25519.so  ~/.phpenv/versions/$(phpenv version-name)/lib/php/extensions/no-debug-zts-20180731/
 echo "
 extension = ed25519.so
-extension = mongodb.so
-extension = memecached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini

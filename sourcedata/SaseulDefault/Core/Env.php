@@ -79,7 +79,7 @@ class Env
 
         if (empty($value)) {
             // Todo: Add logging message
-            echo "Environment variables failed assertions: {$key} is messing.\n";
+            echo "Environment variables failed assertions: {$key} is missing.\n";
 
             return false;
         }

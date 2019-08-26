@@ -280,49 +280,27 @@ class Tracker
     }
 
     /**
-     * Genesis 노드를 DB 에 추가한다.
+     * Tracker 등록시 Genesis 노드인지를 확인하여 아니라면 Genesis Address 를 명시해준다.
      *
-     * @return bool
+     * @return string
      */
-    public static function addGenesisTracker(): bool
+    public static function addTrackerOnDb(): string
     {
         $db = Database::GetInstance();
+        $role = Rank::LIGHT;
 
-        if (NodeInfo::getAddress() !== Env::$genesis['address']) {
-            return false;
+        if (Env::$nodeInfo['address'] === Env::$genesis['address']) {
+            $role = Rank::VALIDATOR;
         }
 
-        $db->bulk->insert([
-            'host' => Env::$nodeInfo['host'],
-            'address' => Env::$genesis['address'],
-            'rank' => Rank::VALIDATOR,
-            'status' => 'admitted',
-        ]);
-
-        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
-
-        return true;
-    }
-
-    /**
-     * Light 노드를 DB에 추가한다.
-     *
-     * @return bool
-     */
-    public static function addLigthTracker(): bool
-    {
-        $db = Database::GetInstance();
-
-        if (NodeInfo::getAddress() === Env::$genesis['address']) {
-            return false;
+        if (Env::$nodeInfo['address'] !== Env::$genesis['address']) {
+            $db->bulk->insert([
+                'host' => '',
+                'address' => Env::$genesis['address'],
+                'rank' => Rank::VALIDATOR,
+                'status' => 'admitted',
+            ]);
         }
-
-        $db->bulk->insert([
-            'host' => '',
-            'address' => Env::$genesis['address'],
-            'rank' => Rank::VALIDATOR,
-            'status' => 'admitted',
-        ]);
 
         $db->bulk->insert([
             'host' => Env::$nodeInfo['host'],
@@ -333,7 +311,7 @@ class Tracker
 
         $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
 
-        return true;
+        return $role;
     }
 
     public static function updateData($filter, $item)
