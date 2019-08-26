@@ -37,7 +37,7 @@ class InitNodeTest extends TestCase
         $this->assertSame(Rank::VALIDATOR, $actual['role']);
     }
 
-    public function testGivenLightNodeAddressThenProcessChekc(): void
+    public function testGivenLightNodeAddressThenProcessCheck(): void
     {
         // Arrange
         Env::$nodeInfo['address'] = '0x6f258c97ad7848aef661465018dc48e55131eff91c4e20';

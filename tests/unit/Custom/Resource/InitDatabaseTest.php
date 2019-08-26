@@ -23,7 +23,7 @@ class InitDatabaseTest extends TestCase
         $this->assertInstanceOf(AbstractResource::class, $this->sut);
     }
 
-    public function testGivenInvalidFromAddressThenValidityMethodReturnsFalse(): void
+    public function testGivenInvalidFromAddressThenGetValidityMethodReturnsFalse(): void
     {
         // Arrange
         $request = [
