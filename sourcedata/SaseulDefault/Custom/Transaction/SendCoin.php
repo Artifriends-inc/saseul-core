@@ -2,102 +2,129 @@
 
 namespace Saseul\Custom\Transaction;
 
-use Saseul\Common\Transaction;
+use Saseul\Common\AbstractTransaction;
 use Saseul\Constant\Account;
 use Saseul\Constant\Decision;
 use Saseul\Core\Env;
 use Saseul\Custom\Status\Coin;
 use Saseul\Custom\Status\Fee;
-use Saseul\System\Key;
-use Saseul\Version;
 
-class SendCoin extends Transaction
+class SendCoin extends AbstractTransaction
 {
-    public const TYPE = 'SendCoin';
-
-    protected $transaction;
-    protected $thash;
-    protected $public_key;
-    protected $signature;
-
-    protected $status_key;
-
-    private $type;
-    private $version;
-    private $from;
     private $to;
     private $amount;
     private $fee;
-    private $transactional_data;
-    private $timestamp;
 
     private $from_balance;
     private $to_balance;
     private $coin_fee;
 
+    /**
+     * @deprecated
+     * 기존의 _Init 메서드의 기능은 initialize 메서드가 담당하며
+     * 다른 모든 Transaction Api 가 AbstractTransaction 을 구현을 완료하면
+     * getValidity 로 대체 되고 제거되어야 한다.
+     *
+     * @param mixed $transaction
+     * @param mixed $thash
+     * @param mixed $public_key
+     * @param mixed $signature
+     */
     public function _Init($transaction, $thash, $public_key, $signature)
     {
-        $this->transaction = $transaction;
-        $this->thash = $thash;
-        $this->public_key = $public_key;
-        $this->signature = $signature;
-
-        if (isset($this->transaction['type'])) {
-            $this->type = $this->transaction['type'];
-        }
-        if (isset($this->transaction['version'])) {
-            $this->version = $this->transaction['version'];
-        }
-        if (isset($this->transaction['from'])) {
-            $this->from = $this->transaction['from'];
-        }
-        if (isset($this->transaction['to'])) {
-            $this->to = $this->transaction['to'];
-        }
-        if (isset($this->transaction['amount'])) {
-            $this->amount = $this->transaction['amount'];
-        }
-        if (isset($this->transaction['fee'])) {
-            $this->fee = $this->transaction['fee'];
-        }
-        if (isset($this->transaction['transactional_data'])) {
-            $this->transactional_data = $this->transaction['transactional_data'];
-        }
-        if (isset($this->transaction['timestamp'])) {
-            $this->timestamp = $this->transaction['timestamp'];
-        }
+        $this->initialize($transaction, $thash, $public_key, $signature);
     }
 
+    public function initialize(
+        $transaction,
+        $thash,
+        $public_key,
+        $signature
+    ): void {
+        parent::initialize($transaction, $thash, $public_key, $signature);
+
+        $this->to = $transaction['to'] ?? null;
+        $this->amount = $transaction['amount'] ?? null;
+        $this->fee = $transaction['fee'] ?? null;
+    }
+
+    /**
+     * @deprecated
+     * 기존의 _GetValidity 메서드의 기능은 getValidity 메서드가 담당하며
+     * 다른 모든 Transaction Api 가 AbstractTransaction 을 구현을 완료하면
+     * getValidity 로 대체 되고 제거되어야 한다.
+     */
     public function _GetValidity(): bool
     {
-        return Version::isValid($this->version)
-            && is_string($this->to)
-            && is_numeric($this->amount)
-            && is_numeric($this->fee)
-            && is_numeric($this->timestamp)
-            && $this->type === self::TYPE
-            && (mb_strlen($this->to) === Account::ADDRESS_SIZE)
-            && ((int) $this->amount <= Env::$genesis['coin_amount'])
-            && ((int) $this->amount > 0)
-            && ((int) $this->fee >= 0)
-            && Key::isValidAddress($this->from, $this->public_key)
-            && Key::isValidSignature($this->thash, $this->public_key, $this->signature);
+        return $this->getValidity();
     }
 
+    public function getValidity(): bool
+    {
+        return parent::getValidity()
+            && $this->isValidTo()
+            && $this->isValidFee()
+            && $this->isValidAmount();
+    }
+
+    /**
+     * @deprecated
+     * 기존의 _LoadStatus 메서드의 기능은 loadStatus 메서드가 담당하며
+     * 다른 모든 Transaction Api 가 AbstractTransaction 을 구현을 완료하면
+     * loadStatus 로 대체 되고 제거되어야 한다.
+     */
     public function _LoadStatus()
+    {
+        $this->loadStatus();
+    }
+
+    /**
+     * @deprecated
+     * 기존의 _GetStatus 메서드의 기능은 getStatus 메서드가 담당하며
+     * 다른 모든 Transaction Api 가 AbstractTransaction 을 구현을 완료하면
+     * getStatus 로 대체 되고 제거되어야 한다.
+     */
+    public function _GetStatus()
+    {
+        $this->getStatus();
+    }
+
+    /**
+     * @deprecated
+     * 기존의 _MakeDecision 메서드의 기능은 makeDecision 메서드가 담당하며
+     * 다른 모든 Transaction Api 가 AbstractTransaction 을 구현을 완료하면
+     * makeDecision 로 대체 되고 제거되어야 한다.
+     */
+    public function _MakeDecision()
+    {
+        return $this->makeDecision();
+    }
+
+    /**
+     * @deprecated
+     * 기존의 _SetStatus 메서드의 기능은 setStatus 메서드가 담당하며
+     * 다른 모든 Transaction Api 가 AbstractTransaction 을 구현을 완료하면
+     * setStatus 로 대체 되고 제거되어야 한다.
+     */
+    public function _SetStatus()
+    {
+        $this->setStatus();
+    }
+
+    public function loadStatus(): void
     {
         Coin::LoadBalance($this->from);
         Coin::LoadBalance($this->to);
     }
 
-    public function _GetStatus()
+    public function getStatus(): void
     {
         $this->from_balance = Coin::GetBalance($this->from);
         $this->to_balance = Coin::GetBalance($this->to);
         $this->coin_fee = Fee::GetFee();
     }
 
-    public function _MakeDecision()
+    public function makeDecision()
     {
         if ((int) $this->amount + (int) $this->fee > (int) $this->from_balance) {
             return Decision::REJECT;
@@ -106,7 +133,7 @@ class SendCoin extends Transaction
         return Decision::ACCEPT;
     }
 
-    public function _SetStatus()
+    public function setStatus(): void
     {
         $this->from_balance = (int) $this->from_balance - (int) $this->amount;
         $this->from_balance = (int) $this->from_balance - (int) $this->fee;
@@ -116,5 +143,24 @@ class SendCoin extends Transaction
         Coin::SetBalance($this->from, $this->from_balance);
         Coin::SetBalance($this->to, $this->to_balance);
         Fee::SetFee($this->coin_fee);
+    }
+
+    private function isValidTo(): bool
+    {
+        return is_string($this->to)
+            && (mb_strlen($this->to) === Account::ADDRESS_SIZE);
+    }
+
+    private function isValidFee(): bool
+    {
+        return is_numeric($this->fee)
+            && ($this->fee >= 0);
+    }
+
+    private function isValidAmount(): bool
+    {
+        return is_numeric($this->amount)
+            && ($this->amount > 0)
+            && ((int) $this->amount <= Env::$genesis['coin_amount']);
     }
 }
