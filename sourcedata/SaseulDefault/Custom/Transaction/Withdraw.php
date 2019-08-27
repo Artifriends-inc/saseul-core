@@ -99,6 +99,7 @@ class Withdraw extends AbstractTransaction
         Fee::SetFee($this->coin_fee);
     }
 
+    // TODO: Genesis의 Coin Amount와 비교하는게 맞는지 확인 필요
     private function isValidWithdrawalAmount(): bool
     {
         return is_numeric($this->withdrawal_amount)
