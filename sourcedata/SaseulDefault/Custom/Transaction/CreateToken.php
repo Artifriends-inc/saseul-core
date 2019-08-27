@@ -2,90 +2,60 @@
 
 namespace Saseul\Custom\Transaction;
 
-use Saseul\Common\Transaction;
+use Saseul\Common\AbstractTransaction;
 use Saseul\Constant\Account;
 use Saseul\Constant\Decision;
 use Saseul\Core\Env;
 use Saseul\Custom\Status\Attributes;
 use Saseul\Custom\Status\Token;
 use Saseul\Custom\Status\TokenList;
-use Saseul\System\Key;
-use Saseul\Version;
 
-class CreateToken extends Transaction
+class CreateToken extends AbstractTransaction
 {
-    public const TYPE = 'CreateToken';
-
-    protected $transaction;
-    protected $thash;
-    protected $public_key;
-    protected $signature;
-
-    protected $status_key;
-
-    private $type;
-    private $version;
-    private $from;
     private $amount;
     private $token_name;
     private $token_publisher;
-    private $transactional_data;
-    private $timestamp;
-
     private $from_role;
     private $publish_token_info;
     private $from_token_balance;
 
     public function _Init($transaction, $thash, $public_key, $signature)
     {
-        $this->transaction = $transaction;
-        $this->thash = $thash;
-        $this->public_key = $public_key;
-        $this->signature = $signature;
+        $this->initialize($transaction, $thash, $public_key, $signature);
+    }
 
-        if (isset($this->transaction['type'])) {
-            $this->type = $this->transaction['type'];
-        }
-        if (isset($this->transaction['version'])) {
-            $this->version = $this->transaction['version'];
-        }
-        if (isset($this->transaction['from'])) {
-            $this->from = $this->transaction['from'];
-        }
-        if (isset($this->transaction['amount'])) {
-            $this->amount = $this->transaction['amount'];
-        }
-        if (isset($this->transaction['token_name'])) {
-            $this->token_name = $this->transaction['token_name'];
-        }
-        if (isset($this->transaction['token_publisher'])) {
-            $this->token_publisher = $this->transaction['token_publisher'];
-        }
-        if (isset($this->transaction['transactional_data'])) {
-            $this->transactional_data = $this->transaction['transactional_data'];
-        }
-        if (isset($this->transaction['timestamp'])) {
-            $this->timestamp = $this->transaction['timestamp'];
-        }
+    public function initialize(
+        $transaction,
+        $thash,
+        $public_key,
+        $signature
+    ): void {
+        parent::initialize($transaction, $thash, $public_key, $signature);
+
+        $this->amount = $transaction['amount'] ?? null;
+        $this->token_name = $transaction['token_name'] ?? null;
+        $this->token_publisher = $transaction['token_publisher'] ?? null;
     }
 
     public function _GetValidity(): bool
     {
-        return Version::isValid($this->version)
-            && is_string($this->token_name)
-            && is_string($this->token_publisher)
-            && is_numeric($this->amount)
-            && is_numeric($this->timestamp)
-            && $this->type === self::TYPE
-            && (mb_strlen($this->token_name) < 64)
-            && (mb_strlen($this->token_publisher) === Account::ADDRESS_SIZE)
-            && ((int) $this->amount > 0)
-            && ((int) $this->amount <= Env::$genesis['coin_amount'])
-            && Key::isValidAddress($this->from, $this->public_key)
-            && Key::isValidSignature($this->thash, $this->public_key, $this->signature);
+        return $this->getValidity();
+    }
+
+    public function getValidity(): bool
+    {
+        return parent::getValidity()
+            && $this->isValidAmount()
+            && $this->isvalidTokenName()
+            && $this->isValidTokenPublisher();
     }
 
     public function _LoadStatus()
+    {
+        $this->loadStatus();
+    }
+
+    public function loadStatus()
     {
         Token::LoadToken($this->from, $this->token_name);
         TokenList::LoadTokenList($this->token_name);
@@ -94,6 +64,11 @@ class CreateToken extends Transaction
 
     public function _GetStatus()
     {
+        $this->getStatus();
+    }
+
+    public function getStatus()
+    {
         $this->from_token_balance = Token::GetBalance($this->from, $this->token_name);
         $this->publish_token_info = TokenList::GetInfo($this->token_name);
         $this->from_role = Attributes::GetRole($this->from);
@@ -101,13 +76,19 @@ class CreateToken extends Transaction
 
     public function _MakeDecision()
     {
+        $this->makeDecision();
+    }
+
+    public function makeDecision()
+    {
         if ($this->publish_token_info == []) {
 //            if ($this->from_role === Role::VALIDATOR) {
 //                return Decision::ACCEPT;
 //            }
             return Decision::ACCEPT;
         }
-        if (isset($this->publish_token_info['publisher']) && $this->publish_token_info['publisher'] === $this->from) {
+        if (isset($this->publish_token_info['publisher'])
+            && $this->publish_token_info['publisher'] === $this->from) {
             return Decision::ACCEPT;
         }
 
@@ -115,6 +96,11 @@ class CreateToken extends Transaction
     }
 
     public function _SetStatus()
+    {
+        $this->setStatus();
+    }
+
+    public function setStatus()
     {
         $total_amount = 0;
 
@@ -131,5 +117,24 @@ class CreateToken extends Transaction
 
         Token::SetBalance($this->from, $this->token_name, $this->from_token_balance);
         TokenList::SetInfo($this->token_name, $this->publish_token_info);
+    }
+
+    private function isValidAmount(): bool
+    {
+        return is_numeric($this->amount)
+            && ((int) $this->amount > 0)
+            && ((int) $this->amount <= Env::$genesis['coin_amount']);
+    }
+
+    private function isValidTokenName(): bool
+    {
+        return is_string($this->token_name)
+            && (mb_strlen($this->token_name) < 64);
+    }
+
+    private function isValidTokenPublisher(): bool
+    {
+        return is_string($this->token_publisher)
+            && (mb_strlen($this->token_publisher) === Account::ADDRESS_SIZE);
     }
 }
