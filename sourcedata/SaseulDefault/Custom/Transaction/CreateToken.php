@@ -12,7 +12,7 @@ use Saseul\Custom\Status\TokenList;
 
 class CreateToken extends AbstractTransaction
 {
-    private $amount;
+    private $token_amount;
     private $token_name;
     private $token_publisher;
     private $from_role;
@@ -32,7 +32,7 @@ class CreateToken extends AbstractTransaction
     ): void {
         parent::initialize($transaction, $thash, $public_key, $signature);
 
-        $this->amount = $transaction['amount'] ?? null;
+        $this->token_amount = $transaction['amount'] ?? null;
         $this->token_name = $transaction['token_name'] ?? null;
         $this->token_publisher = $transaction['token_publisher'] ?? null;
     }
@@ -45,7 +45,7 @@ class CreateToken extends AbstractTransaction
     public function getValidity(): bool
     {
         return parent::getValidity()
-            && $this->isValidAmount()
+            && $this->isValidTokenAmount()
             && $this->isvalidTokenName()
             && $this->isValidTokenPublisher();
     }
@@ -81,10 +81,8 @@ class CreateToken extends AbstractTransaction
 
     public function makeDecision()
     {
+        // TODO: 필요한 조건문인지 확인 필요함
         if ($this->publish_token_info == []) {
-//            if ($this->from_role === Role::VALIDATOR) {
-//                return Decision::ACCEPT;
-//            }
             return Decision::ACCEPT;
         }
         if (isset($this->publish_token_info['publisher'])
@@ -108,8 +106,8 @@ class CreateToken extends AbstractTransaction
             $total_amount = $this->publish_token_info['total_amount'];
         }
 
-        $total_amount = $total_amount + (int) $this->amount;
-        $this->from_token_balance = (int) $this->from_token_balance + (int) $this->amount;
+        $total_amount = $total_amount + (int) $this->token_amount;
+        $this->from_token_balance = (int) $this->from_token_balance + (int) $this->token_amount;
         $this->publish_token_info = [
             'publisher' => $this->from,
             'total_amount' => $total_amount,
@@ -119,11 +117,11 @@ class CreateToken extends AbstractTransaction
         TokenList::SetInfo($this->token_name, $this->publish_token_info);
     }
 
-    private function isValidAmount(): bool
+    private function isValidTokenAmount(): bool
     {
-        return is_numeric($this->amount)
-            && ((int) $this->amount > 0)
-            && ((int) $this->amount <= Env::$genesis['coin_amount']);
+        return is_numeric($this->token_amount)
+            && ((int) $this->token_amount > 0)
+            && ((int) $this->token_amount <= Env::$genesis['coin_amount']);
     }
 
     private function isValidTokenName(): bool
@@ -132,6 +130,7 @@ class CreateToken extends AbstractTransaction
             && (mb_strlen($this->token_name) < 64);
     }
 
+    // TODO: 실제로 존재하는 token_publisher인지 검사해야한다.
     private function isValidTokenPublisher(): bool
     {
         return is_string($this->token_publisher)

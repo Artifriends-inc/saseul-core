@@ -18,7 +18,7 @@ class CreateTokenTest extends TestCase
     private $privateKey;
     private $version;
     private $timeStamp;
-    private $amount;
+    private $token_amount;
     private $token_name;
     private $token_publisher;
 
@@ -31,8 +31,8 @@ class CreateTokenTest extends TestCase
         $this->privateKey = 'a609aca90f9338da02e640c7df8ae760211bef48031973ee00000169dca49c4d';
         $this->version = '1.0';
         $this->timeStamp = DateTime::Microtime();
-        $this->amount = 1000;
-        Env::$genesis['coin_amount'] = $this->amount + 100;
+        $this->token_amount = 1000;
+        Env::$genesis['coin_amount'] = $this->token_amount + 100;
         $this->token_name = 'token name';
         $this->token_publisher = str_repeat(
             '*', Account::ADDRESS_SIZE);
@@ -44,7 +44,7 @@ class CreateTokenTest extends TestCase
         $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
-    public function testGivenNullAmountThenGetValidityReturnsFalse(): void
+    public function testGivenNullTokenAmountThenGetValidityReturnsFalse(): void
     {
         // Arrange
         $transaction = [
@@ -67,7 +67,7 @@ class CreateTokenTest extends TestCase
         $this->assertFalse($actual);
     }
 
-    public function testGivenZeroAmountThenGetValidityReturnsFalse(): void
+    public function testGivenZeroTokenAmountThenGetValidityReturnsFalse(): void
     {
         // Arrange
         $transaction = [
@@ -91,16 +91,16 @@ class CreateTokenTest extends TestCase
         $this->assertFalse($actual);
     }
 
-    public function testGivenAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
+    public function testGivenTokenAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
     {
         // Arrange
-        $invalidAmount = Env::$genesis['coin_amount'] + 1000;
+        $invalidTokenAmount = Env::$genesis['coin_amount'] + 1000;
         $transaction = [
             'type' => $this->sutName,
             'from' => $this->from,
             'version' => $this->version,
             'timestamp' => $this->timeStamp,
-            'amount' => $invalidAmount,
+            'amount' => $invalidTokenAmount,
             'token_name' => $this->token_name,
             'token_publisher' => $this->token_publisher
         ];
@@ -125,7 +125,7 @@ class CreateTokenTest extends TestCase
             'from' => $this->from,
             'version' => $this->version,
             'timestamp' => $this->timeStamp,
-            'amount' => $this->amount,
+            'amount' => $this->token_amount,
             'token_name' => $invalidTokenName,
             'token_publisher' => $this->token_publisher
         ];
@@ -150,7 +150,7 @@ class CreateTokenTest extends TestCase
             'from' => $this->from,
             'version' => $this->version,
             'timestamp' => $this->timeStamp,
-            'amount' => $this->amount,
+            'amount' => $this->token_amount,
             'token_name' => $invalidTokenName,
             'token_publisher' => $this->token_publisher
         ];
@@ -175,7 +175,7 @@ class CreateTokenTest extends TestCase
             'from' => $this->from,
             'version' => $this->version,
             'timestamp' => $this->timeStamp,
-            'amount' => $this->amount,
+            'amount' => $this->token_amount,
             'token_name' => $this->token_name,
             'token_publisher' => $invalidTokenPublisher
         ];
@@ -200,7 +200,7 @@ class CreateTokenTest extends TestCase
             'from' => $this->from,
             'version' => $this->version,
             'timestamp' => $this->timeStamp,
-            'amount' => $this->amount,
+            'amount' => $this->token_amount,
             'token_name' => $this->token_name,
             'token_publisher' => $invalidTokenPublisher
         ];
@@ -230,7 +230,7 @@ class CreateTokenTest extends TestCase
             'from' => $this->from,
             'version' => $this->version,
             'timestamp' => $this->timeStamp,
-            'amount' => $this->amount,
+            'amount' => $this->token_amount,
             'token_name' => $this->token_name,
             'token_publisher' => $this->token_publisher
         ];
