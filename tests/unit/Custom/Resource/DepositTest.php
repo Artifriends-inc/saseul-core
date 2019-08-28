@@ -1,6 +1,8 @@
 <?php
 
+namespace Saseul\tests\Custom\Resource;
 
+use ReflectionClass;
 use Saseul\Constant\Directory;
 use Saseul\Core\Chunk;
 use Saseul\Custom\Resource\Deposit;

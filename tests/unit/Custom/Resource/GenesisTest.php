@@ -1,8 +1,11 @@
 <?php
 
+namespace Saseul\tests\Custom\Resource;
+
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Manager;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use Saseul\Common\AbstractResource;
 use Saseul\Constant\Directory;
 use Saseul\Constant\MongoDbConfig;
