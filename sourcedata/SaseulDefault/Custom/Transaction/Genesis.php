@@ -65,7 +65,7 @@ class Genesis extends AbstractTransaction
 
     public function _MakeDecision()
     {
-        $this->makeDecision();
+        return $this->makeDecision();
     }
 
     public function makeDecision()
