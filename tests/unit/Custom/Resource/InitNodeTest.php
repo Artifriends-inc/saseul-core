@@ -1,5 +1,6 @@
 <?php
 
+namespace Saseul\tests\Custom\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\MongoDbConfig;
