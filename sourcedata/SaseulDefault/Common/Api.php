@@ -64,23 +64,25 @@ class Api
 
     protected function success()
     {
-        $this->result['status'] = 'success';
+        $status = 'success';
+        $this->result['status'] = $status;
         $this->result['data'] = $this->data;
 
         if ($this->display_params === true) {
             $this->result['params'] = $_REQUEST;
         }
 
-        $this->view();
+        $this->view($status);
     }
 
     protected function fail($code, $msg = '')
     {
-        $this->result['status'] = 'fail';
+        $status = 'fail';
+        $this->result['status'] = $status;
         $this->result['code'] = $code;
         $this->result['msg'] = $msg;
 
-        $this->view();
+        $this->view($status);
     }
 
     protected function error(string $msg = 'Error', $code = 999)
@@ -88,7 +90,7 @@ class Api
         $this->fail($code, $msg);
     }
 
-    protected function view()
+    protected function view($status)
     {
         try {
             header('Content-Type: application/json; charset=utf-8;');
@@ -96,7 +98,8 @@ class Api
             echo $e . PHP_EOL . PHP_EOL;
         }
         echo json_encode($this->result);
-        Terminator::exit();
+
+        Terminator::exit($status);
     }
 
     /**

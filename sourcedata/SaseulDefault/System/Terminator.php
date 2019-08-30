@@ -16,11 +16,13 @@ class Terminator
         self::$testMode = false;
     }
 
-    public static function exit($status = null)
+    public static function exit($status)
     {
         if (self::$testMode) {
-            throw new \Exception('exit');
+            self::setLiveMode();
+
+            throw new \Exception($status);
         }
-        exit($status);
+        exit();
     }
 }
