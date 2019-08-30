@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# TODO: Delete this FILE.
 # reset variables
 MONGOPATH="/etc/yum.repos.d/mongodb-org-4.0.repo"
 HOMEPATH="/home/ec2-user"

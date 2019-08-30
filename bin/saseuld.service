@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# Todo: Delete this FILE.
 . /etc/init.d/functions
 
 if [ -f /etc/sysconfig/saseuld ];then

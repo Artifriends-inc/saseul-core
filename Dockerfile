@@ -58,14 +58,15 @@ RUN docker-php-source extract \
     && docker-php-source delete
 
 # User settings
-WORKDIR /var/saseul-origin
+WORKDIR /var/saseul
 
 COPY . .
 COPY ./conf/php.ini $PHP_INI_DIR/php.ini
 
+# Todo: change group names from saseul-node to saseul.
 RUN groupadd saseul-node \
     && useradd -m -s /bin/bash -G saseul-node,www-data saseul \
-    && chown -Rf saseul.saseul-node /var/saseul-origin
+    && chown -Rf saseul.saseul-node /var/saseul
 
 USER saseul:saseul-node
 

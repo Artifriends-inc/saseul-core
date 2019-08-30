@@ -2,6 +2,7 @@
 
 namespace Saseul\Constant;
 
+// Todo: Change name.
 class Directory
 {
     public const BLOCKDATA = SASEUL_DIR . '/blockdata';
@@ -9,7 +10,8 @@ class Directory
     public const RELATIVE_SOURCE = '/sourcedata';
     public const TEMP = SASEUL_DIR . '/tmp';
 
-    // Reset Script 에서만 사용한다.
+    // Todo: delete.
+    //  Reset Script 에서만 사용한다.
     public const RELATIVE_ORIGINAL_SOURCE = '..' . self::RELATIVE_SOURCE . '/SaseulDefault';
     public const SASEUL_SOURCE = SASEUL_DIR . '/src/Saseul';
 
@@ -25,4 +27,6 @@ class Directory
     public const TMP_SOURCE = self::TEMP . '/source.tar.gz';
 
     public const SOURCE_PREFIX = 'Saseul';
+
+    public const PID_FILE = SASEUL_DIR . 'saseuld.pid';
 }

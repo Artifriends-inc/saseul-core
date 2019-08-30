@@ -2,6 +2,7 @@
 
 namespace Saseul\Core;
 
+use Saseul\Constant\Directory;
 use Saseul\Constant\Role;
 use Saseul\Daemon\Arbiter;
 use Saseul\Daemon\Light;
@@ -36,7 +37,7 @@ class Service
 
     public static function isDaemonRunning()
     {
-        if (!is_file('/var/saseul-origin/saseuld.pid') || !Property::isReady()) {
+        if (!is_file(Directory::PID_FILE) || !Property::isReady()) {
             return false;
         }
 
