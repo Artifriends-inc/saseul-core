@@ -4,8 +4,6 @@ namespace Saseul\Api;
 
 use Saseul\Common\Api;
 
-// TODO: 단위 테스트 코드 필요 (2019. 08. 21 수동 검사 완료)
-
 class Request extends Api
 {
     private $request;
