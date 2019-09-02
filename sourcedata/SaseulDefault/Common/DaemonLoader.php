@@ -2,6 +2,7 @@
 
 namespace Saseul\Common;
 
+use Saseul\Constant\Directory;
 use Saseul\Core\Property;
 use Saseul\Core\Service;
 use Saseul\Core\Tracker;
@@ -10,7 +11,7 @@ class DaemonLoader
 {
     public function __construct()
     {
-        $pidPath = '/var/saseul-origin/saseuld.pid';
+        $pidPath = Directory::PID_FILE;
 
         posix_setgid(getmygid());
         posix_setuid(getmyuid());
