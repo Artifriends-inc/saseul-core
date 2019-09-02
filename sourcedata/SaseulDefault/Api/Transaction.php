@@ -2,8 +2,8 @@
 
 namespace Saseul\Api;
 
+use ReflectionClass;
 use Saseul\Common\Api;
-use Saseul\Consensus\TransactionManager;
 use Saseul\Core\Chunk;
 use Saseul\Core\NodeInfo;
 use Saseul\Core\Tracker;
@@ -12,18 +12,16 @@ use Saseul\Util\RestCall;
 class Transaction extends Api
 {
     protected $rest;
+    private $transaction;
+    private $public_key;
+    private $signature;
+    private $apiName;
+    private $api;
 
-    protected $transaction_manager;
-
-    protected $transaction;
-    protected $public_key;
-    protected $signature;
-
+    // TODO: RestCall을 바로 사용하지 않으므로 사용될 때 Instance를 가져오도록 변경
     public function __construct()
     {
         $this->rest = RestCall::GetInstance();
-
-        $this->transaction_manager = new TransactionManager();
     }
 
     public function _init()
@@ -35,19 +33,10 @@ class Transaction extends Api
 
     public function _process()
     {
-        $type = $this->getParam($this->transaction, 'type');
-
-        $transaction = $this->transaction;
-        $thash = hash('sha256', json_encode($transaction));
-        $public_key = $this->public_key;
-        $signature = $this->signature;
-
-        $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
-        $validity = $this->transaction_manager->GetTransactionValidity();
-
-        if ($validity == false) {
-            $this->Error('Invalid transaction');
-        }
+        $this->existApi();
+        $this->createApiInstance();
+        $this->initialize();
+        $this->validate();
     }
 
     public function _end()
@@ -88,6 +77,40 @@ class Transaction extends Api
             ];
 
             $this->rest->POST($url, $data);
+        }
+    }
+
+    private function existApi(): void
+    {
+        $type = $this->getParam($this->transaction, 'type');
+        $this->apiName = 'Saseul\\Custom\\Transaction\\' . $type;
+        if (class_exists($this->apiName) === false) {
+            $this->error('Invalid Transaction');
+        }
+    }
+
+    private function createApiInstance(): void
+    {
+        $this->api = (
+            new ReflectionClass($this->apiName)
+        )->newInstance();
+    }
+
+    private function initialize(): void
+    {
+        $thash = hash('sha256', json_encode($this->transaction));
+        $this->api->initialize(
+            $this->transaction,
+            $thash,
+            $this->public_key,
+            $this->signature
+        );
+    }
+
+    private function validate(): void
+    {
+        if ($this->api->getValidity() === false) {
+            $this->error('Invalid Transaction');
         }
     }
 }
