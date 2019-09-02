@@ -40,7 +40,7 @@
         <env name="NODE_ADDRESS" value="0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85"/>
         <env name="GENESIS_HOST" value="web"/>
         <env name="NODE_HOST" value="web"/>
-        <env name="LOG_PATH" value="/var/log/saseul-core"/>
+        <env name="LOG_PATH" value="/var/log/saseul"/>
         <env name="LOG_LEVEL" value="DEBUG"/>
     </php>
 </phpunit>
