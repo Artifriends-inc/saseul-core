@@ -9,7 +9,8 @@ class Request extends Api
     private $request;
     private $public_key;
     private $signature;
-    private $requestedApi;
+    private $apiName;
+    private $api;
 
     public function _init()
     {
@@ -20,41 +21,37 @@ class Request extends Api
 
     public function _process()
     {
-        $className = $this->assembleRequestClassName();
-        $this->existRequestedApi($className);
-        $this->createRequestedApi($className);
-        $this->initializeRequestedApi();
-        $this->checkRequestValidation();
+        $this->existApi();
+        $this->createApiInstance();
+        $this->initialize();
+        $this->validate();
     }
 
     public function _end(): void
     {
-        $this->data = $this->requestedApi->getResponse();
+        $this->data = $this->api->getResponse();
     }
 
-    private function assembleRequestClassName(): string
+    private function existApi(): void
     {
         $type = $this->getParam($this->request, 'type');
-
-        return 'Saseul\\Custom\\Request\\' . $type;
-    }
-
-    private function existRequestedApi($className): void
-    {
-        if (class_exists($className) === false) {
+        $this->apiName = 'Saseul\\Custom\\Request\\' . $type;
+        if (class_exists($this->apiName) === false) {
             $this->error('Invalid Request');
         }
     }
 
-    private function createRequestedApi($className): void
+    private function createApiInstance(): void
     {
-        $this->requestedApi = (new \ReflectionClass($className))->newInstance();
+        $this->api = (
+            new \ReflectionClass($this->apiName)
+        )->newInstance();
     }
 
-    private function initializeRequestedApi(): void
+    private function initialize(): void
     {
         $thash = hash('sha256', json_encode($this->request));
-        $this->requestedApi->initialize(
+        $this->api->initialize(
             $this->request,
             $thash,
             $this->public_key,
@@ -62,9 +59,9 @@ class Request extends Api
         );
     }
 
-    private function checkRequestValidation(): void
+    private function validate(): void
     {
-        if ($this->requestedApi->getValidity() === false) {
+        if ($this->api->getValidity() === false) {
             $this->error('Invalid Request');
         }
     }
