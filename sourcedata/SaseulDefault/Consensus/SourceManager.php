@@ -27,7 +27,15 @@ class SourceManager
         return self::$instance;
     }
 
-    public function getSource($host, $blockNumber)
+    /**
+     * @todo 빈 string 보다는 다른 값을 넣어 반환하는 것이 좋지 않을까?
+     *
+     * @param $host
+     * @param $blockNumber
+     *
+     * @return string
+     */
+    public function getSource($host, $blockNumber): string
     {
         $urlGz = "http://{$host}/source?block_number={$blockNumber}";
         $tmpGz = Directory::TMP_SOURCE;

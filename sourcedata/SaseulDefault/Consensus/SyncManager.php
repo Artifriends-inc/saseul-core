@@ -27,7 +27,15 @@ class SyncManager
         return self::$instance;
     }
 
-    public function getBunchFile($host, $blockNumber)
+    /**
+     * @todo 파일에 대한값을 가져오지 못했다면 리턴 값을 변경하는것이 맞지 않을련지
+     *
+     * @param $host
+     * @param $blockNumber
+     *
+     * @return string
+     */
+    public function getBunchFile($host, $blockNumber): string
     {
         $urlGz = "http://{$host}/bunchfile?block_number={$blockNumber}";
         $tmpGz = Directory::TMP_BUNCH;
