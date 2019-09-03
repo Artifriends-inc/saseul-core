@@ -26,7 +26,7 @@ class Light extends Node
 
     public function round()
     {
-        // start;
+        // start
         Property::excludedHost($this->excludedHosts);
 
         $generation = Generation::current();
@@ -35,27 +35,33 @@ class Light extends Node
         $lastBlock = Block::GetLastBlock();
 
         $myRound = $this->round_manager->myRound($lastBlock);
-        $registOption = false;
+        $this->logger->debug('round data', ['my' => $myRound, 'this net' => $this->netLastRoundNumber]);
 
+        $registOption = false;
         if ($this->netLastRoundNumber - $lastBlock['block_number'] < Rule::BUNCH) {
             $registOption = true;
         }
+
         $netRound = $this->round_manager->netRound($nodes, $registOption);
+        $this->logger->debug('round data', ['my' => $myRound, 'net' => $netRound]);
 
         $this->tracker_manager->register($nodes, array_keys($netRound));
         $nodes = Tracker::getAccessibleNodes();
         $aliveNodes = $this->aliveNodes($nodes, array_keys($netRound));
         $aliveArbiter = $this->aliveArbiters($aliveNodes);
+        $this->logger->debug('node list', ['node' => $aliveNodes, 'arbiter' => $aliveArbiter]);
         $this->tracker_manager->collect($aliveNodes, array_keys($netRound));
 
         Property::aliveNode($aliveNodes);
 
         $roundInfo = $this->round_manager->roundInfo($myRound, $netRound);
+        $this->logger->debug('round info', ['round info' => $roundInfo]);
 
         $myRoundNumber = $roundInfo['my_round_number'];
         $netRoundNumber = $roundInfo['net_round_number'];
         $this->netLastRoundNumber = $netRoundNumber;
 
+        $this->logger->debug('update check', [$this->updateCheck]);
         if ($this->updateCheck === true) {
             $this->update($aliveArbiter, $generation, $myRoundNumber);
             $this->updateCheck = false;

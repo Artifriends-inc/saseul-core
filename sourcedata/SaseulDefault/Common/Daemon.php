@@ -46,6 +46,12 @@ class Daemon
         exit();
     }
 
+    /**
+     * 코드를 수정하고 나면 해당 매소드를 이용하여 service를 재시작한다.
+     *
+     * @todo service를 재시작하는 것이 아닌, 다른 서비스를 재시작하거나 하는 명령을 다시 구성해야한다.
+     *    service를 직접 재시작하는 명령이 들어가서는 안된다.
+     */
     public static function restart(): void
     {
         if (self::$isDying === true) {

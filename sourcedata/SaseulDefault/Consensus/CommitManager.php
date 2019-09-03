@@ -345,7 +345,7 @@ class CommitManager
 
     public function completeTransactions($transactions)
     {
-        // load status;
+        // load status
         $this->status_manager->Load();
 
         foreach ($transactions as $key => $item) {

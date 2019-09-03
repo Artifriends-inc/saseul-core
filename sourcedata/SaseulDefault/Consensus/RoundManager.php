@@ -9,6 +9,7 @@ use Saseul\Core\Property;
 use Saseul\Core\Tracker;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
+use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
@@ -16,10 +17,12 @@ class RoundManager
 {
     protected static $instance = null;
     protected $rest;
+    private $logger;
 
     public function __construct()
     {
         $this->rest = RestCall::GetInstance();
+        $this->logger = Logger::getLogger('Daemon');
     }
 
     public static function GetInstance()

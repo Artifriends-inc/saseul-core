@@ -6,6 +6,7 @@ use Saseul\Constant\MongoDbConfig;
 use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
+use Saseul\Util\Logger;
 use Saseul\Util\Parser;
 
 class Tracker
@@ -321,5 +322,10 @@ class Tracker
         $db->bulk->update($filter, ['$set' => $item], ['multi' => true]);
 
         $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+    }
+
+    private static function logger()
+    {
+        return Logger::getLogger('Daemon');
     }
 }

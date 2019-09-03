@@ -179,6 +179,7 @@ class Block
         $opt = ['sort' => ['timestamp' => -1]];
         $rs = $db->Query(MongoDbConfig::NAMESPACE_BLOCK, $query, $opt);
 
+        // Todo: 코드 정리하자.
         foreach ($rs as $item) {
             $item = Parser::objectToArray($item);
 

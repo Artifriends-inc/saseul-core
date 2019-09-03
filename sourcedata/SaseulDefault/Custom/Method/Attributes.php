@@ -5,8 +5,12 @@ namespace Saseul\Custom\Method;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
 
+/**
+ * Class Attributes.
+ */
 class Attributes
 {
+    // Todo: 해당부분을 Const 측으로 옮겨야된다.
     private static $namespace_attributes = 'saseul_committed.attributes';
     private static $collection_attributes = 'attributes';
     private static $db_attributes = 'saseul_committed';

@@ -17,12 +17,14 @@ use Saseul\Core\Chunk;
 use Saseul\Core\IMLog;
 use Saseul\Core\Property;
 use Saseul\Core\Tracker;
+use Saseul\Util\Logger;
 use Saseul\Util\Merkle;
 use Saseul\Util\TypeChecker;
 
 class Node
 {
     protected static $instance;
+    protected $logger;
     protected $fail_count = 0;
 
     protected $round_manager;
@@ -49,6 +51,7 @@ class Node
         $this->tracker_manager = TrackerManager::GetInstance();
 
         $this->tracker_manager->GenerateTracker();
+        $this->logger = Logger::getLogger('Daemon');
         Tracker::setMyHost();
     }
 
@@ -64,6 +67,7 @@ class Node
     public function round()
     {
         IMLog::add('[Log] Nothing; ');
+        $this->logger->debug('Nothiong');
         sleep(1);
     }
 
@@ -240,6 +244,7 @@ class Node
         $nextBlockNumber = $myRoundNumber;
 
         $netGenerationInfo = $this->source_manager->netGenerationInfo($aliveArbiters, $nextBlockNumber, $originBlockhash);
+        $this->logger->debug('network generation info', [$netGenerationInfo]);
 
         if (count($netGenerationInfo) === 0) {
             return;
@@ -247,6 +252,7 @@ class Node
 
         $target = $this->source_manager->selectGenerationInfo($netGenerationInfo);
         $targetInfo = $target['item'];
+        // Todo: 해당 주석부분을 확인해서 변경해야한다.
 //        $unique = $target['unique'];
 //
 //        if ($unique === false) {
@@ -261,8 +267,16 @@ class Node
         $mySourceHash = Property::sourceHash();
         $mySourceVersion = Property::sourceVersion();
 
-        // collect source hashs;
+        // collect source hashs
         $sourcehashs = $this->source_manager->collectSourcehashs($netGenerationInfo, $targetInfo);
+
+        $this->logger->debug(
+            'source hash',
+            [
+                'target source hash' => ['target info' => $target, 'source hash' => $sourcehashs],
+                'my source hash' => ['source hash' => $mySourceHash, 'source version' => $mySourceVersion]
+            ]
+        );
 
         if (in_array($mySourceHash, $sourcehashs) || $mySourceVersion === $targetSourceVersion) {
             return;
@@ -270,8 +284,9 @@ class Node
 
         Property::subjectNode($this->subjectNodeByHost($aliveArbiters, $host));
 
-        // source change;
+        // source change
         $sourceArchive = $this->source_manager->getSource($host, $myRoundNumber);
+        $this->logger->debug('Source archive', ['host' => $host, 'my round number' => $myRoundNumber, 'archive' => $sourceArchive]);
 
         if ($sourceArchive === '') {
             // TODO: source 다른 놈한테 받아야 함.
@@ -297,6 +312,7 @@ class Node
             IMLog::add('[Sync] syncBlock');
             $syncResult = $this->syncBlock($aliveNodes, $lastBlock, $myRoundNumber);
         }
+        $this->logger->debug('sync', ['result' => $syncResult]);
 
         return $syncResult;
     }
@@ -343,6 +359,7 @@ class Node
         }
 
         $target = $this->sync_manager->selectBunchInfo($netBunchInfo);
+        $this->logger->debug('bunch target', [$target]);
         $bunchInfo = $target['item'];
 //        $unique = $target['unique'];
 //
@@ -356,8 +373,10 @@ class Node
 
         $nextBlockhash = $bunchInfo['blockhash'];
         $bunch = $this->sync_manager->getBunchFile($host, $myRoundNumber);
+        $this->logger->debug('bunch', [$bunch]);
 
         if ($bunch === '') {
+            // Todo: 해당 부분에서는 따로 값을 가져오지 않아도 되는가?
             IMLog::add('[Sync] getBunchFile false ');
 
             return Event::NO_RESULT;
@@ -376,14 +395,14 @@ class Node
             $fileBlockhash = mb_substr($chunk, 0, 64);
             $fileStandardTimestamp = mb_substr($chunk, 64, mb_strpos($chunk, '.') - 64);
 
-            // find first;
+            // find first
             if ($first === true && $nextBlockhash !== $fileBlockhash) {
                 continue;
             }
 
             $first = false;
 
-            // commit-manager init;
+            // commit-manager init
             $syncResult = $this->syncCommit($transactions, $lastBlock, $fileBlockhash, $fileStandardTimestamp);
 
             if ($syncResult === Event::DIFFERENT) {
@@ -399,12 +418,12 @@ class Node
         $lastStandardTimestamp = $lastBlock['s_timestamp'];
         $lastBlockhash = $lastBlock['blockhash'];
 
-        // commit-manager init;
-        // merge & sort;
+        // commit-manager init
+        // merge & sort
         $completedTransactions = $this->commit_manager->orderedTransactions($transactions, $lastStandardTimestamp, $expectStandardTimestamp);
         $completedTransactions = $this->commit_manager->completeTransactions($completedTransactions);
 
-        // make expect block info;
+        // make expect block info
         $txCount = count($completedTransactions);
         $myBlockhash = Merkle::MakeBlockHash($lastBlockhash, Merkle::MakeMerkleHash($completedTransactions), $expectStandardTimestamp);
         $expectBlock = $this->commit_manager->nextBlock($lastBlock, $expectBlockhash, $txCount, $expectStandardTimestamp);
@@ -416,11 +435,11 @@ class Node
             // tracker
             $this->tracker_manager->GenerateTracker();
 
-            // ok;
+            // ok
             return Event::SUCCESS;
         }
 
-        // banish;
+        // banish
         IMLog::add('[Sync] myBlockhash : ' . $myBlockhash);
         IMLog::add('[Sync] expectBlockhash : ' . $expectBlockhash);
         IMLog::add('[Sync] syncCommit false ');
