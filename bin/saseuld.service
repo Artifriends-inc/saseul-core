@@ -8,20 +8,20 @@ fi
 
 RETVAL=0
 prog="saseuld"
-pidfile=${PIDFILE-/var/saseul-origin/saseuld.pid}
-lockfile=${LOCKFILE-/var/saseul-origin/saseuld.lock}
+pidfile=${PIDFILE-/var/saseul/saseuld.pid}
+lockfile=${LOCKFILE-/var/saseul/saseuld.lock}
 
 start () {
 	echo -n $"Starting $prog: "
 
-	daemon --pidfile ${pidfile} /var/saseul-origin/src/saseuld
+	daemon --pidfile ${pidfile} /var/saseul/src/saseuld
 	RETVAL=$?
 	echo
 	[ $RETVAL -eq 0 ] && touch ${lockfile}
 }
 stop () {
 	echo -n $"Stopping $prog: "
-	killproc -p ${pidfile} /var/saseul-origin/src/saseuld
+	killproc -p ${pidfile} /var/saseul/src/saseuld
 	RETVAL=$?
 	echo
 	if [ $RETVAL -eq 0 ] ; then
