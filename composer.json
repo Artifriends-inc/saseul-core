@@ -72,11 +72,7 @@
         ],
         "node-clean": [
             "@docker-down",
-            "sh ./cmd/rm_block_data.sh",
-            "@docker-up mongo",
-            "sleep 10",
-            "docker-compose run --rm node bash -c './src/saseul_script MakeMongoDB'",
-            "@docker-down"
+            "sh ./cmd/rm_block_data.sh"
         ],
         "phan": [
             "PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan"
