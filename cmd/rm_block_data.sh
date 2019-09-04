@@ -9,3 +9,8 @@ for dir in "${block_dir[@]}"; do
   mkdir -p ./blockdata/"${dir}"
   touch ./blockdata/"${dir}"/.keep
 done
+
+PID_FILE=./saseuld.pid
+if [[ -f "$PID_FILE" ]]; then
+  rm $PID_FILE
+fi
