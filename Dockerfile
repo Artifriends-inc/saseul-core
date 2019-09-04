@@ -63,11 +63,10 @@ WORKDIR /app/saseul
 COPY . .
 COPY ./conf/php.ini $PHP_INI_DIR/php.ini
 
-# Todo (SC-98): change group names from saseul-node to saseul.
-RUN groupadd saseul-node \
-    && useradd -m -s /bin/bash -G saseul-node,www-data saseul \
-    && chown -Rf saseul.saseul-node /app/saseul
+RUN groupadd saseul \
+    && useradd -m -s /bin/bash -G saseul,www-data saseul \
+    && chown -Rf saseul.saseul /app/saseul
 
-USER saseul:saseul-node
+USER saseul:saseul
 
 COPY --from=vendor /app/vendor .

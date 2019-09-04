@@ -128,12 +128,12 @@ fi
 # Add saseul user.
 if [[ -z $(cat /etc/passwd | grep "saseul" ) ]]
 then
-    groupadd saseul-node
+    groupadd saseul
 
     useradd -s /sbin/nologin saseul
 
-    usermod -a -G saseul-node apache
-    usermod -a -G saseul-node saseul
+    usermod -a -G saseul apache
+    usermod -a -G saseul saseul
 fi
 
 # Install composer.
@@ -240,8 +240,8 @@ chkconfig mongod on
 echo ""
 
 ln -s "$SASEUL_SOURCE_DEFAULT" "$SASEUL_SOURCE"
-chown -Rf saseul:saseul-node "$SASEUL_PATH"
-chown -Rf saseul:saseul-node "$SASEUL_SOURCE"
+chown -Rf saseul:saseul "$SASEUL_PATH"
+chown -Rf saseul:saseul "$SASEUL_SOURCE"
 
 service saseuld restart
 sleep 3
