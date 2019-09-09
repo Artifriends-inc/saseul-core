@@ -33,7 +33,7 @@ class ApiLoader
         $this->response($resp);
     }
 
-    // TODO: route 기능 분리, 너무 많은 기능을 담당(api 호출 및 응답 생성 등..)
+    // TODO: request와 transaction에 external api 적용 시 정리
     private function route(HttpRequest $req): HttpResponse
     {
         $uri = $req->getUri();
@@ -58,10 +58,8 @@ class ApiLoader
         }
 
         $api = new $apiClassName();
-        $api->main($req);
 
-        // TODO: 실제 동작하지 않는 부분, 추가 작업 필요
-        return new HttpResponse($api->getResult()['code'], $api->getResult(), $api->getHtml());
+        return $api->main($req);
     }
 
     private function response(HttpResponse $resp): void
@@ -80,7 +78,7 @@ class ApiLoader
             echo json_encode($resp->getData());
         }
 
-        Terminator::exit();
+        Terminator::exit(0);
     }
 
     private function getApiClassName(string $apiName): string
