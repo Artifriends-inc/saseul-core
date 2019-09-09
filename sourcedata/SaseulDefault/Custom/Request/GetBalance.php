@@ -9,7 +9,7 @@ class GetBalance extends AbstractRequest
 {
     public function getResponse(): array
     {
-        $from = $this->request['from'];
+        $from = $this->from;
         $all = Coin::GetAll([$from]);
         $balance = $all[$from]['balance'];
         $deposit = $all[$from]['deposit'];

@@ -15,11 +15,11 @@ class ExternalApiTest extends TestCase
         $sut = new ExternalApi();
 
         // Act
-        $actual = $sut->run();
+        $actual = $sut->main();
 
         // Assert
         $this->assertInstanceOf(HttpResponse::class, $actual);
-        $this->assertEquals(HttpStatus::OK, $actual->getCode());
+        $this->assertEquals(HttpStatus::BAD_REQUEST, $actual->getCode());
         $this->assertEmpty($actual->getData());
     }
 }
