@@ -7,15 +7,24 @@
 .gitignore
 .dockerignore
 .env
+env.example
 docker-compose.yml
 Dockerfile
 Readme.md
 vendor
+.phan/
+.php_cs.dist
+.travis/
+.travis.yml
+build
+phpunit.xml*
 
 # saseul
 *.tar.gz
 *.pid
 *.log
+
+install_package.sh
 
 blockdata/apichunks/*
 blockdata/broadcastchunks/*
