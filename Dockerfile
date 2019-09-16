@@ -62,11 +62,10 @@ WORKDIR /app/saseul
 
 COPY . .
 COPY ./conf/php.ini $PHP_INI_DIR/php.ini
+COPY --from=vendor /app/vendor ./vendor
 
 RUN groupadd saseul \
-    && useradd -m -s /bin/bash -G saseul,www-data saseul \
+    && useradd -m -s /bin/bash saseul -g saseul -G www-data \
     && chown -Rf saseul.saseul /app/saseul
 
 USER saseul:saseul
-
-COPY --from=vendor /app/vendor .
