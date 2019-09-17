@@ -3,22 +3,25 @@
 namespace Saseul\Common;
 
 use ReflectionClass;
+use Saseul\System\HttpRequest;
 use Saseul\System\HttpResponse;
 use Saseul\System\HttpStatus;
 
 class ExternalApi
 {
-    protected $request;
+    protected $handlerData;
     protected $public_key;
     protected $signature;
     protected $apiName;
     protected $api;
     protected $result;
+    private $handler;
     private $type;
 
     // TODO: external api가 모두 적용되면 이름을 run 으로 변경
-    public function main(): HttpResponse
+    public function main(HttpRequest $httpRequest): HttpResponse
     {
+        $this->handler = $httpRequest->getHandler();
         if ($this->configure()) {
             $this->handle();
         }
@@ -33,7 +36,7 @@ class ExternalApi
     {
     }
 
-    protected function assembleResult($status, $data = ''): void
+    protected function assembleResult($status, $data = []): void
     {
         $this->result['code'] = $status;
         $this->result['data'] = $data;
@@ -58,16 +61,17 @@ class ExternalApi
 
     private function configureParameters(): bool
     {
-        $requestJson = $this->getParam($_REQUEST, 'request', ['default' => '{}']);
+        // TODO: 아래의 변수 이름을 조금 더 명확하게 할 것
+        $handlerJsonData = $this->getParam($_REQUEST, $this->handler, ['default' => '{}']);
         $this->public_key = $this->getParam($_REQUEST, 'public_key', ['default' => '']);
         $this->signature = $this->getParam($_REQUEST, 'signature', ['default' => '']);
-        $this->request = json_decode($requestJson, true);
+        $this->handlerData = json_decode($handlerJsonData, true);
 
-        if ($this->request === null) {
+        if ($this->handlerData === null) {
             return false;
         }
 
-        $this->type = $this->getParam($this->request, 'type');
+        $this->type = $this->getParam($this->handlerData, 'type');
 
         return
             $this->public_key !== null &&
@@ -84,11 +88,24 @@ class ExternalApi
 
         $param = $request[$key] ?? $options['default'];
 
-        if (isset($options['type']) && !static::checkType($param, $options['type'])) {
+        if (isset($options['type']) && !$this->checkType($param, $options['type'])) {
             return null;
         }
 
         return $param;
+    }
+
+    private function checkType($param, string $type): bool
+    {
+        if (($type === 'string') && !is_string($param)) {
+            return false;
+        }
+
+        if (($type === 'numeric') && !is_numeric($param)) {
+            return false;
+        }
+
+        return true;
     }
 
     private function configureApi(): bool
@@ -104,7 +121,8 @@ class ExternalApi
 
     private function existApi(): bool
     {
-        $this->apiName = 'Saseul\\Custom\\Request\\' . $this->type;
+        $handler = ucfirst($this->handler);
+        $this->apiName = "Saseul\\Custom\\{$handler}\\{$this->type}";
 
         return class_exists($this->apiName);
     }

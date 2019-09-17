@@ -5,6 +5,7 @@ namespace Saseul\tests\Api;
 use PHPUnit\Framework\TestCase;
 use Saseul\Api\Request;
 use Saseul\Common\ExternalApi;
+use Saseul\System\HttpRequest;
 use Saseul\System\HttpResponse;
 use Saseul\System\HttpStatus;
 use Saseul\System\Key;
@@ -26,9 +27,10 @@ class RequestTest extends TestCase
         // Arrange
         $this->prepareRequest('GetBalance');
         $sut = new Request();
+        $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main();
+        $actual = $sut->main($request);
 
         // Assert
         $this->assertNotNull($actual);
@@ -44,9 +46,10 @@ class RequestTest extends TestCase
         // Arrange
         $this->prepareRequest('ArtiFriends');
         $sut = new Request();
+        $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main();
+        $actual = $sut->main($request);
 
         // Assert
         $this->assertNotNull($actual);
@@ -61,9 +64,10 @@ class RequestTest extends TestCase
         $invalidPublicKey = '0x0009999';
         $_REQUEST['public_key'] = $invalidPublicKey;
         $sut = new Request();
+        $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main();
+        $actual = $sut->main($request);
 
         // Assert
         $this->assertNotNull($actual);
@@ -80,9 +84,10 @@ class RequestTest extends TestCase
             .'0b9838a698b37107195f2337f9d46ff5827adfb2de81a2b83e6d6c89f93305';
         $_REQUEST['signature'] = $invalidSignature;
         $sut = new Request();
+        $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main();
+        $actual = $sut->main($request);
 
         // Assert
         $this->assertNotNull($actual);
@@ -109,5 +114,12 @@ class RequestTest extends TestCase
             'public_key' => $public_key,
             'signature' => $signature
         ];
+
+        $this->prepareHandler();
+    }
+
+    private function prepareHandler(): void
+    {
+        $_SERVER['REQUEST_URI'] = '/request';
     }
 }

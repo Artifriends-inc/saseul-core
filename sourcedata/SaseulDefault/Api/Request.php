@@ -24,9 +24,9 @@ class Request extends ExternalApi
 
     private function initialize(): void
     {
-        $thash = hash('sha256', json_encode($this->request));
+        $thash = hash('sha256', json_encode($this->handlerData));
         $this->api->initialize(
-            $this->request,
+            $this->handlerData,
             $thash,
             $this->public_key,
             $this->signature
