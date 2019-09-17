@@ -2,70 +2,81 @@
 
 namespace Saseul\tests\Api;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
-use ReflectionMethod;
 use Saseul\Api\Transaction;
+use Saseul\Common\ExternalApi;
 use Saseul\Constant\Account;
 use Saseul\Core\Env;
+use Saseul\System\HttpRequest;
+use Saseul\System\HttpResponse;
+use Saseul\System\HttpStatus;
 use Saseul\System\Key;
-use Saseul\System\Terminator;
 use Saseul\Util\DateTime;
 
 class TransactionTest extends TestCase
 {
-    public function setUp(): void
+    public function testSutInheritsExternalApi(): void
     {
-        Terminator::setTestMode();
-        $_REQUEST = [];
+        // Arrange
+        $sut = new Transaction();
+
+        // Assert
+        $this->assertInstanceOf(ExternalApi::class, $sut);
     }
 
-    public function testGivenValidTransactionThen_ProcessDoesNotRaiseException(): void
+    public function testValidTransactionReturnsOK(): void
     {
         // Arrange
         $this->prepareTransaction('SendCoin');
         $sut = new Transaction();
-        $sut->_init();
+        $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $this->methodInvoker($sut, '_process');
-
-        // Assert
-        $this->assertNull($actual);
-    }
-
-    public function testGivenInvalidTypeThenRaisesException(): void
-    {
-        // Arrange
-        $this->prepareTransaction('SendKakaoMoney');
-        $sut = new Transaction();
-        $sut->_init();
-
-        // Act
-        $actual = $this->methodInvoker($sut, '_process');
+        $actual = $sut->main($request);
 
         // Assert
         $this->assertNotNull($actual);
-        $this->assertInstanceOf(Exception::class, $actual);
-        $this->assertEquals('fail', $actual->getMessage());
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertEquals(HttpStatus::OK, $actual->getCode());
+        $this->assertIsArray($actual->getData());
+        $this->assertTrue(array_key_exists('message', $actual->getData()));
+        $this->assertTrue(array_key_exists('transaction', $actual->getData()));
+        $this->assertTrue(array_key_exists('public_key', $actual->getData()));
+        $this->assertTrue(array_key_exists('signature', $actual->getData()));
     }
 
-    public function testGivenPublicKeyThenRaisesException(): void
+    public function testGivenNonExistentTypeThenReturnsNotFound(): void
+    {
+        // Arrange
+        $this->prepareTransaction('ArtiCoin');
+        $sut = new Transaction();
+        $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
+
+        // Act
+        $actual = $sut->main($request);
+
+        // Assert
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertEquals(HttpStatus::NOT_FOUND, $actual->getCode());
+    }
+
+    public function testGivenInvalidPublicKeyThenReturnsBadRequest(): void
     {
         // Arrange
         $this->prepareTransaction('SendCoin');
-        $invalidPublicKey = '0x0009999';
+        $invalidPublicKey = '0x000101010';
         $_REQUEST['public_key'] = $invalidPublicKey;
         $sut = new Transaction();
-        $sut->_init();
+        $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $this->methodInvoker($sut, '_process');
+        $actual = $sut->main($request);
 
         // Assert
         $this->assertNotNull($actual);
-        $this->assertInstanceOf(Exception::class, $actual);
-        $this->assertEquals('fail', $actual->getMessage());
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertEquals(HttpStatus::BAD_REQUEST, $actual->getCode());
     }
 
     public function testGivenInvalidSignatureThenRaisesException(): void
@@ -77,15 +88,15 @@ class TransactionTest extends TestCase
             .'0b9838a698b37107195f2337f9d46ff5827adfb2de81a2b83e6d6c89f93305';
         $_REQUEST['signature'] = $invalidSignature;
         $sut = new Transaction();
-        $sut->_init();
+        $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $this->methodInvoker($sut, '_process');
+        $actual = $sut->main($request);
 
         // Assert
         $this->assertNotNull($actual);
-        $this->assertInstanceOf(Exception::class, $actual);
-        $this->assertEquals('fail', $actual->getMessage());
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertEquals(HttpStatus::BAD_REQUEST, $actual->getCode());
     }
 
     private function prepareTransaction($type): void
@@ -112,19 +123,17 @@ class TransactionTest extends TestCase
             'public_key' => $public_key,
             'signature' => $signature
         ];
+
+        $_SERVER['REQUEST_URI'] = '/transaction';
+
+        $this->prepareNodeInfo();
     }
 
-    private function methodInvoker($object, $method)
+    private function prepareNodeInfo(): void
     {
-        try
-        {
-            $invoker = new ReflectionMethod($object, $method);
-            $invoker->invoke($object);
-            return null;
-        }
-        catch (Exception $exception)
-        {
-            return $exception;
-        }
+        Env::$nodeInfo['host'] = 'host';
+        Env::$nodeInfo['public_key'] = 'public_key';
+        Env::$nodeInfo['private_key'] = 'private_key';
+        Env::$nodeInfo['address'] = 'address';
     }
 }
