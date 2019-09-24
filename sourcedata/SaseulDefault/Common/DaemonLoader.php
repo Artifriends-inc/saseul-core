@@ -19,7 +19,9 @@ class DaemonLoader
         Daemon::setOption($pidPath, posix_getgid(), posix_getuid());
         Daemon::start();
 
-        Service::initDaemon();
+        if (!Service::initDaemon()) {
+            Daemon::stop();
+        }
     }
 
     public function main(): void
