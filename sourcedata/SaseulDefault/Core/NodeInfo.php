@@ -4,10 +4,6 @@ namespace Saseul\Core;
 
 use Saseul\Constant\Directory;
 use Saseul\Constant\Structure;
-use Saseul\System\IPChecker;
-use Saseul\System\Key;
-use Saseul\Util\Logger;
-use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
 class NodeInfo
@@ -81,25 +77,6 @@ class NodeInfo
         return self::$nodeInfo['address'];
     }
 
-    public static function resetNodeInfo()
-    {
-        if (is_file(Directory::NODE_INFO)) {
-            unlink(Directory::NODE_INFO);
-        }
-
-        self::makeNodeInfoBase(Directory::NODE_INFO);
-        $host = self::myIp();
-
-        if ($host === '') {
-            unlink(Directory::NODE_INFO);
-            Logger::Error('sign error; ');
-
-            return;
-        }
-
-        self::addHostInfo(Directory::NODE_INFO, $host);
-    }
-
     /**
      * node.info 파일에서 node 정보를 읽어온다.
      *
@@ -123,60 +100,5 @@ class NodeInfo
         }
 
         return true;
-    }
-
-    protected static function makeNodeInfoBase($fileName)
-    {
-        $nodeHost = '';
-        $nodePrivateKey = Key::makePrivateKey();
-        $nodePublicKey = Key::makePublicKey($nodePrivateKey);
-        $nodeAddress = Key::makeAddress($nodePublicKey);
-
-        $nodeInfo = [
-            'host' => $nodeHost,
-            'private_key' => $nodePrivateKey,
-            'public_key' => $nodePublicKey,
-            'address' => $nodeAddress,
-        ];
-
-        file_put_contents($fileName, json_encode($nodeInfo));
-    }
-
-    private static function addHostInfo($fileName, $host): void
-    {
-        $nodeInfo = [
-            'host' => $host,
-            'private_key' => self::getPrivateKey(),
-            'public_key' => self::getPublicKey(),
-            'address' => self::getAddress(),
-        ];
-
-        file_put_contents($fileName, json_encode($nodeInfo));
-    }
-
-    private static function myIp(): string
-    {
-        $ip = IPChecker::getPublicIP();
-        $string = bin2hex(random_bytes(16));
-
-        $url = "http://{$ip}/sign?string={$string}";
-
-        $rest = RestCall::GetInstance();
-        $rs = $rest->GET($url);
-        $rs = json_decode($rs, true);
-
-        if (!isset($rs['data']['public_key']) || !isset($rs['data']['address']) || !isset($rs['data']['signature'])) {
-            return '';
-        }
-
-        $publicKey = $rs['data']['public_key'];
-        $address = $rs['data']['address'];
-        $signature = $rs['data']['signature'];
-
-        if (!Key::isValidAddress($address, $publicKey) || !Key::isValidSignature($string, $publicKey, $signature)) {
-            return '';
-        }
-
-        return $ip;
     }
 }
