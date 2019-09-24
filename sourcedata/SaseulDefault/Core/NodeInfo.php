@@ -2,14 +2,8 @@
 
 namespace Saseul\Core;
 
-use Saseul\Constant\Directory;
-use Saseul\Constant\Structure;
-use Saseul\Util\TypeChecker;
-
 class NodeInfo
 {
-    protected static $nodeInfo = [];
-
     /**
      * Node 정보가 있는지 파악한다.
      *
@@ -23,26 +17,24 @@ class NodeInfo
             && !empty(Env::$nodeInfo['private_key']);
     }
 
-    public static function getPrivateKey()
+    /**
+     * 노드 Private key 값을 읽어온다.
+     *
+     * @return string
+     */
+    public static function getPrivateKey(): string
     {
-        if (Env::$nodeInfo['private_key'] !== '') {
-            return Env::$nodeInfo['private_key'];
-        }
-
-        self::readNodeInfo();
-
-        return self::$nodeInfo['private_key'];
+        return Env::$nodeInfo['private_key'];
     }
 
-    public static function getPublicKey()
+    /**
+     * 노드 public key 값을 읽어온다.
+     *
+     * @return string
+     */
+    public static function getPublicKey(): string
     {
-        if (Env::$nodeInfo['public_key'] !== '') {
-            return Env::$nodeInfo['public_key'];
-        }
-
-        self::readNodeInfo();
-
-        return self::$nodeInfo['public_key'];
+        return Env::$nodeInfo['public_key'];
     }
 
     /**
@@ -52,13 +44,7 @@ class NodeInfo
      */
     public static function getHost(): string
     {
-        if (Env::$nodeInfo['host'] !== '') {
-            return Env::$nodeInfo['host'];
-        }
-
-        self::readNodeInfo();
-
-        return self::$nodeInfo['host'];
+        return Env::$nodeInfo['host'];
     }
 
     /**
@@ -68,37 +54,6 @@ class NodeInfo
      */
     public static function getAddress(): string
     {
-        if (Env::$nodeInfo['address'] !== '') {
-            return Env::$nodeInfo['address'];
-        }
-
-        self::readNodeInfo();
-
-        return self::$nodeInfo['address'];
-    }
-
-    /**
-     * node.info 파일에서 node 정보를 읽어온다.
-     *
-     * @return bool
-     */
-    protected static function readNodeInfo(): bool
-    {
-        if (self::$nodeInfo === []) {
-            if (!is_file(Directory::NODE_INFO)) {
-                return false;
-            }
-
-            $nodeInfo = file_get_contents(Directory::NODE_INFO);
-            $nodeInfo = json_decode($nodeInfo, true);
-
-            if (!TypeChecker::StructureCheck(Structure::NODE_INFO, $nodeInfo)) {
-                return false;
-            }
-
-            self::$nodeInfo = $nodeInfo;
-        }
-
-        return true;
+        return Env::$nodeInfo['address'];
     }
 }

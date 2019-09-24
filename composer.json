@@ -27,7 +27,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Sasuel\\Tests\\": "./tests"
+            "Saseul\\Tests\\": "./tests"
         }
     },
     "require": {
