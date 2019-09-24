@@ -4,6 +4,7 @@ namespace Saseul\Common;
 
 use Saseul\Core\ScriptFinder;
 use Saseul\Core\Service;
+use Saseul\System\Terminator;
 
 class ScriptLoader
 {
@@ -19,7 +20,9 @@ class ScriptLoader
             $this->argv[1] = '';
         }
 
-        Service::initScript();
+        if (Service::initScript()) {
+            Terminator::exit(1);
+        }
     }
 
     public function main(): void

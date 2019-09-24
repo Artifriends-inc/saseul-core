@@ -14,16 +14,17 @@ class NodeInfo
 {
     protected static $nodeInfo = [];
 
-    public static function isExist()
+    /**
+     * Node 정보가 있는지 파악한다.
+     *
+     * @return bool
+     */
+    public static function isExist(): bool
     {
-        if (Env::$nodeInfo['host'] !== '' &&
-            Env::$nodeInfo['address'] !== '' &&
-            Env::$nodeInfo['public_key'] !== '' &&
-            Env::$nodeInfo['private_key'] !== '') {
-            return true;
-        }
-
-        return self::readNodeInfo();
+        return !empty(Env::$nodeInfo['host'])
+            && !empty(Env::$nodeInfo['address'])
+            && !empty(Env::$nodeInfo['public_key'])
+            && !empty(Env::$nodeInfo['private_key']);
     }
 
     public static function getPrivateKey()

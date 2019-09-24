@@ -20,7 +20,9 @@ class ApiLoader
             $_REQUEST = empty($_POST) ? $_REQUEST : array_merge($_REQUEST, $_POST);
         }
 
-        Service::initApi();
+        if (!Service::initApi()) {
+            Terminator::exit(1);
+        }
     }
 
     // TODO: 실제 기능과 메서드의 이름이 일치하지 않아 명확하지 않음, 메서드 이름 변경 필요

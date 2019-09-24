@@ -1,12 +1,10 @@
 <?php
 
-
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Manager;
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\MongoDbConfig;
 use Saseul\Core\Block;
-
 
 class GetBlockCountTest extends TestCase
 {

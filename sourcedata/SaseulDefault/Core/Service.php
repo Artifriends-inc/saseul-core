@@ -44,50 +44,66 @@ class Service
         return true;
     }
 
-    public static function checkNodeInfo($opt = false): void
+    /**
+     * API 클래스 생성시 초기값을 설정한다.
+     *
+     * @todo SC-143
+     *
+     * @return bool
+     */
+    public static function initApi(): bool
     {
-        if (!NodeInfo::isExist()) {
-            if ($opt === false) {
-                self::end('There is no node.info ');
-            }
-
-            sleep(1);
-            NodeInfo::resetNodeInfo();
+        if (!self::isEnv()) {
+            return false;
         }
-    }
-
-    public static function initApi()
-    {
-        Env::load();
 
         self::checkDatabase();
         self::checkCache();
         self::checkSaseulDaemon();
-        self::checkNodeInfo();
+
+        return true;
     }
 
-    public static function initDaemon()
+    /**
+     * Daemon 클래스 생성시 초기값을 설정한다.
+     *
+     * @todo SC-144
+     *
+     * @return bool
+     */
+    public static function initDaemon(): bool
     {
-        Env::load();
+        if (!self::isEnv()) {
+            return false;
+        }
 
         self::checkDatabase();
         self::checkCache();
 
         Property::init();
-
-        self::checkNodeInfo(true);
-
         Tracker::init();
         Generation::makeSourceArchive();
+
+        return true;
     }
 
-    public static function initScript()
+    /**
+     * Script 클래스 생성시 초기값을 설정한다.
+     *
+     * @todo SC-145
+     *
+     * @return bool
+     */
+    public static function initScript(): bool
     {
-        Env::load();
+        if (!self::isEnv()) {
+            return false;
+        }
 
         self::checkDatabase();
         self::checkCache();
-        self::checkNodeInfo();
+
+        return true;
     }
 
     public static function selectRole(): Node
@@ -120,5 +136,17 @@ class Service
     {
         echo PHP_EOL . $msg . PHP_EOL;
         exit();
+    }
+
+    /**
+     * Env 환경을 불러오고 node 정보가 없으면 false.
+     *
+     * @return bool
+     */
+    private static function isEnv(): bool
+    {
+        Env::load();
+
+        return NodeInfo::isExist();
     }
 }
