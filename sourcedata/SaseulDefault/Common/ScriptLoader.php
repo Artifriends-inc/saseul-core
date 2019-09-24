@@ -20,7 +20,7 @@ class ScriptLoader
             $this->argv[1] = '';
         }
 
-        if (Service::initScript()) {
+        if (!Service::initScript()) {
             Terminator::exit(1);
         }
     }
