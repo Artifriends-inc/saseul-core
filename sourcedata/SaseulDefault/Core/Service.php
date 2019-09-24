@@ -147,10 +147,6 @@ class Service
     {
         Env::load();
 
-        if (!NodeInfo::isExist()) {
-            return false;
-        }
-
-        return true;
+        return NodeInfo::isExist();
     }
 }

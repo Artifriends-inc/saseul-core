@@ -44,7 +44,7 @@ class ServiceTest extends TestCase
         $this->assertFalse($act);
     }
 
-    public function testGivenemptyEnvThenInitDaemonRaisesException(): void
+    public function testGivenEmptyEnvThenInitDaemonRaisesException(): void
     {
         // Arrange
         $this->prepareEnv();
