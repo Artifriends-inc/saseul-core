@@ -2,6 +2,7 @@
 
 namespace Saseul\Util;
 
+use Exception;
 use Monolog;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
@@ -68,7 +69,7 @@ class Logger
      *
      * @param string $appName
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @return Monolog\Logger
      *

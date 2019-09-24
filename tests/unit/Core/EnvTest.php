@@ -1,6 +1,5 @@
 <?php
 
-
 use PHPUnit\Framework\TestCase;
 use Saseul\Core\Env;
 
@@ -38,10 +37,10 @@ class EnvTest extends TestCase
         putenv("NODE_PRIVATE_KEY={$assertEnv['private_key']}");
 
         // Act
-        ENV::load();
+        Env::load();
 
         // Assert
         $this->assertSame($assertEnv['host'], Env::$nodeInfo['host']);
-        $this->assertSame($assertEnv['public_key'], ENV::$nodeInfo['public_key']);
+        $this->assertSame($assertEnv['public_key'], Env::$nodeInfo['public_key']);
     }
 }
