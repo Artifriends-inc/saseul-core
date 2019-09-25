@@ -19,7 +19,6 @@ class Reset extends Script
     private $db;
     private $cache;
     private $patch_contract;
-    private $patch_exchange;
     private $patch_token;
 
     private $noAsk;
@@ -29,7 +28,6 @@ class Reset extends Script
         $this->db = Database::GetInstance();
         $this->cache = Cache::GetInstance();
         $this->patch_contract = new Patch\Contract();
-        $this->patch_exchange = new Patch\Exchange();
         $this->patch_token = new Patch\Token();
 
         $this->noAsk = $noAsk;
@@ -71,7 +69,6 @@ class Reset extends Script
         // Patch DB 정보를 넣는다.
         // Todo: 해당 부분은 그냥 묶어서 넣어도 된다.
         $this->patch_contract->Exec();
-        $this->patch_exchange->Exec();
         $this->patch_token->Exec();
 
         // Source 를 업데이트 한다.
