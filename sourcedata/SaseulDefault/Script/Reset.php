@@ -21,7 +21,6 @@ class Reset extends Script
     private $patch_contract;
     private $patch_exchange;
     private $patch_token;
-    private $patch_auth_token;
 
     private $noAsk;
 
@@ -32,7 +31,6 @@ class Reset extends Script
         $this->patch_contract = new Patch\Contract();
         $this->patch_exchange = new Patch\Exchange();
         $this->patch_token = new Patch\Token();
-        $this->patch_auth_token = new Patch\AuthToken();
 
         $this->noAsk = $noAsk;
     }
@@ -75,8 +73,6 @@ class Reset extends Script
         $this->patch_contract->Exec();
         $this->patch_exchange->Exec();
         $this->patch_token->Exec();
-        // Todo: AuthToken 부분은 삭제한다.
-        $this->patch_auth_token->Exec();
 
         // Source 를 업데이트 한다.
         $this->RestoreOriginalSource();
