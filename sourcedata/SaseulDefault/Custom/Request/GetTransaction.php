@@ -23,7 +23,7 @@ class GetTransaction extends AbstractRequest
 
     public function getResponse(): array
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $namespace = MongoDb::NAMESPACE_TRANSACTION;
         $filter = ['thash' => $this->find_thash];

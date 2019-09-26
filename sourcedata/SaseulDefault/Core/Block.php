@@ -80,7 +80,7 @@ class Block
 
     public static function datas(string $namespace, int $max_count, array $query = [], array $opt = []): array
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $rs = $db->Query($namespace, $query, $opt);
         $datas = [];
 
@@ -122,7 +122,7 @@ class Block
 
     public static function GetDatas(string $namespace, int $max_count, array $query = [], array $opt = []): array
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $rs = $db->Query($namespace, $query, $opt);
         $datas = [];
 
@@ -164,7 +164,7 @@ class Block
 
     public static function GetLastBlock()
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $ret = [
             'block_number' => 0,
@@ -215,7 +215,7 @@ class Block
      */
     public static function getCount(): int
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $command = [
             'count' => MongoDb::COLLECTION_BLOCKS,

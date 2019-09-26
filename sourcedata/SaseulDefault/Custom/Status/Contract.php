@@ -60,7 +60,7 @@ class Contract extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['cid' => ['$in' => self::$cids]];
         $rs = $db->Query(MongoDb::NAMESPACE_CONTRACT, $filter);
 
@@ -73,7 +73,7 @@ class Contract extends Status
 
     public static function _Save()
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach (self::$contracts as $k => $v) {
             $filter = ['cid' => $k];

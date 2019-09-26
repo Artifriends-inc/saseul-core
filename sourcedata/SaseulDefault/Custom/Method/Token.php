@@ -9,7 +9,7 @@ class Token
 {
     public static function GetAll($addresses, $token_names = null)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $all = [];
 
@@ -40,7 +40,7 @@ class Token
 
     public static function SetAll($all)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach ($all as $address => $item) {
             foreach ($item as $token_name => $balance) {

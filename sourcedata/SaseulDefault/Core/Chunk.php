@@ -446,7 +446,7 @@ class Chunk
 
     public static function removeOldBlock(int $lastBlockNumber)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $lastGenerationNumber = Block::generationOriginNumber($lastBlockNumber);
         $lastBunchNumber = Block::generationOriginNumber($lastGenerationNumber) + Rule::BUNCH;
 

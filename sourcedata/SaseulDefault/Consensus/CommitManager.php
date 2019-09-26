@@ -27,7 +27,7 @@ class CommitManager
 
     public function __construct()
     {
-        $this->db = Database::GetInstance();
+        $this->db = Database::getInstance();
         $this->rest = RestCall::GetInstance();
         $this->transaction_manager = new TransactionManager();
         $this->status_manager = new StatusManager();

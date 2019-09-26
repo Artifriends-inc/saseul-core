@@ -162,7 +162,7 @@ class Fee extends Status
         }
 
         // Set Balance;
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach ($validators as $validator) {
             $filter = ['address' => $validator['address']];

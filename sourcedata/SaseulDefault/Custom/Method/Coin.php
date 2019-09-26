@@ -21,7 +21,7 @@ class Coin
      */
     public static function GetAll($addresses)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $all = [];
 
@@ -50,7 +50,7 @@ class Coin
 
     public static function SetAll($all)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach ($all as $address => $item) {
             $filter = ['address' => $address];

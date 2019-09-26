@@ -13,7 +13,7 @@ class Attributes
 {
     public static function GetRole($address)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $query = ['address' => $address, 'key' => 'role'];
         $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $query);
         $node = [
@@ -32,7 +32,7 @@ class Attributes
 
     public static function GetFullNode($query = ['key' => 'role', 'value' => ['$in' => Role::FULL_NODES]])
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $query);
         $nodes = [];
 
@@ -47,7 +47,7 @@ class Attributes
 
     public static function IsFullNode($address, $query = ['key' => 'role', 'value' => ['$in' => Role::FULL_NODES]])
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $query = array_merge(['address' => $address], $query);
         $command = [
             'count' => MongoDb::COLLECTION_ATTRIBUTES,
