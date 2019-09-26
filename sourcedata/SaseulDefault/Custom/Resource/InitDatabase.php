@@ -3,7 +3,7 @@
 namespace Saseul\Custom\Resource;
 
 use Saseul\Common\AbstractResource;
-use Saseul\Core\Schema;
+use Saseul\Common\Schema;
 use Saseul\System\Database;
 
 /**
@@ -15,7 +15,7 @@ class InitDatabase extends AbstractResource
 
     public function __construct()
     {
-        $this->db = Database::getInstance();
+        $this->db = Database::GetInstance();
     }
 
     /**
@@ -23,6 +23,7 @@ class InitDatabase extends AbstractResource
      */
     public function process(): void
     {
+        Schema::dropDatabaseOnMongoDB($this->db);
         Schema::createDatabaseOnMongoDB($this->db);
         Schema::createIndexOnMongoDB($this->db);
     }

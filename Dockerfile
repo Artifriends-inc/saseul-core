@@ -63,6 +63,7 @@ WORKDIR /app/saseul
 COPY . .
 COPY ./conf/php.ini $PHP_INI_DIR/php.ini
 COPY --from=vendor /app/vendor ./vendor
+COPY --from=vendor /usr/bin/composer /usr/bin/composer
 
 RUN groupadd saseul \
     && useradd -m -s /bin/bash saseul -g saseul -G www-data \

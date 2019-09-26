@@ -78,6 +78,14 @@ class MongoDb
         return $this->manager->executeCommand($this->m_db, $this->m_command);
     }
 
+    /**
+     * Mongodb 에서 사용할 Command를 bulk로 설정한다.
+     *
+     * @param string $db
+     * @param array  $commands
+     *
+     * @throws Exception
+     */
     public function executeBulkCommand(string $db, array $commands): void
     {
         foreach ($commands as $command) {

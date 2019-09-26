@@ -30,11 +30,17 @@
             "Saseul\\Tests\\": "./tests"
         }
     },
+    "config": {
+        "optimize-autoloader": true
+    },
     "require": {
+        "php": ">=7.3",
         "monolog/monolog": "^1.24",
         "ext-posix": "*",
         "ext-json": "*",
-        "ext-mongodb": "*"
+        "ext-mongodb": "*",
+        "ext-http": "*",
+        "guzzlehttp/guzzle": "^6"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
@@ -63,12 +69,10 @@
             "composer require --ignore-platform-reqs"
         ],
         "local-install": [
-            "composer install --ignore-platform-reqs",
-            "composer dump-autoload"
+            "composer install --ignore-platform-reqs"
         ],
         "local-update": [
-            "composer update --ignore-platform-reqs",
-            "composer dump-autoload"
+            "composer update --ignore-platform-reqs"
         ],
         "node-clean": [
             "@docker-down",
@@ -92,6 +96,15 @@
         ],
         "ci-test": [
             "./vendor/bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover build/logs/clover.xml"
+        ],
+        "init-db": [
+            "@docker-up",
+            "sleep 10",
+            "docker-compose exec api bash -c 'composer docker-init-db'",
+            "@docker-down"
+        ],
+        "docker-init-db": [
+            "Cmd\\SaseulCmd::initData"
         ]
     },
     "scripts-descriptions": {
