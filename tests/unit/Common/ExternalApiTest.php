@@ -22,7 +22,7 @@ class ExternalApiTest extends TestCase
         $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main($request);
+        $actual = $sut->invoke($request);
 
         // Assert
         $this->assertInstanceOf(HttpResponse::class, $actual);

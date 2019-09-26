@@ -10,7 +10,7 @@ require_once(SASEUL_DIR . '/vendor/autoload.php');
 session_start();
 header('Access-Control-Allow-Origin: *');
 
-use Saseul\Common\ApiLoader;
+use Saseul\Common\HandlerLoader;
 
-$apiLoader = new ApiLoader();
-$apiLoader->main();
+$handlerLoader = new HandlerLoader();
+$handlerLoader->run();
