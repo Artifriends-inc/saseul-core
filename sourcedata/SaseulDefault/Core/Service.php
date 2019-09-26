@@ -59,6 +59,7 @@ class Service
 
         self::checkDatabase();
         self::checkCache();
+        // Todo: API 분리시 해당 부분은 제외될 수 있다.
         self::checkSaseulDaemon();
 
         return true;
