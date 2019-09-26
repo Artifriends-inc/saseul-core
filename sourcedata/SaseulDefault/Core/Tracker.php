@@ -37,7 +37,7 @@ class Tracker
 
     public static function GetNode($query)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
         $nodes = [];
 
@@ -58,7 +58,7 @@ class Tracker
 
     public static function GetNodeAddress($query)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
         $nodes = [];
 
@@ -73,7 +73,7 @@ class Tracker
 
     public static function IsNode($address, $query)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $query = array_merge(['address' => $address], $query);
         $command = [
             'count' => MongoDb::COLLECTION_TRACKER,
@@ -158,7 +158,7 @@ class Tracker
 
     public static function GetRole($address): string
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $role = Role::LIGHT;
         $query = ['address' => $address];
 
@@ -188,7 +188,7 @@ class Tracker
 
     public static function setData($filter, $item)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $opt = ['upsert' => true];
         $db->bulk->update($filter, ['$set' => $item], $opt);
@@ -198,7 +198,7 @@ class Tracker
 
     public static function setHosts($infos): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach ($infos as $info) {
             $host = $info['host'];
@@ -220,7 +220,7 @@ class Tracker
 
     public static function setMyHost()
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $host = NodeInfo::getHost();
         $address = NodeInfo::getAddress();
 
@@ -251,7 +251,7 @@ class Tracker
      */
     public static function reset(): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         // Todo: 해당 부분을 basmith 에서 추가할 수 있도록 해야한다.
         if (NodeInfo::getAddress() === Env::$genesis['address']) {
@@ -289,7 +289,7 @@ class Tracker
      */
     public static function addTrackerOnDb(): string
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $role = Rank::LIGHT;
 
         if (Env::$nodeInfo['address'] === Env::$genesis['address']) {
@@ -319,7 +319,7 @@ class Tracker
 
     public static function updateData($filter, $item)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $db->bulk->update($filter, ['$set' => $item], ['multi' => true]);
 

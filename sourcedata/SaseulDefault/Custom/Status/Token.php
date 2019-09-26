@@ -48,7 +48,7 @@ class Token extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['address' => ['$in' => self::$addresses], 'token_name' => ['$in' => self::$token_names]];
         $rs = $db->Query(MongoDb::NAMESPACE_TOKEN, $filter);
 
@@ -61,7 +61,7 @@ class Token extends Status
 
     public static function _Save()
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach (self::$balances as $address => $item) {
             foreach ($item as $token_name => $balance) {

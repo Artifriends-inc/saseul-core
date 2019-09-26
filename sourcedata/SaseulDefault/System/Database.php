@@ -23,7 +23,7 @@ final class Database extends MongoDb
      *
      * @return Database
      */
-    public static function GetInstance(): self
+    public static function getInstance(): self
     {
         if (null === static::$instance) {
             static::$instance = new static();

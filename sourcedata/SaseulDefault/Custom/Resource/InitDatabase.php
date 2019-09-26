@@ -15,7 +15,7 @@ class InitDatabase extends AbstractResource
 
     public function __construct()
     {
-        $this->db = Database::GetInstance();
+        $this->db = Database::getInstance();
     }
 
     /**

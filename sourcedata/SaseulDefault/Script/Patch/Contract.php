@@ -13,7 +13,7 @@ class Contract extends Script
 
     public function __construct()
     {
-        $this->db = Database::GetInstance();
+        $this->db = Database::getInstance();
     }
 
     public function _process()

@@ -26,7 +26,7 @@ class Genesis extends Script
 
     public function __construct($noAsk = false)
     {
-        $this->db = Database::GetInstance();
+        $this->db = Database::getInstance();
         $this->cache = Cache::GetInstance();
 
         $this->noAsk = $noAsk;

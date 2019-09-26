@@ -45,7 +45,7 @@ class TokenList extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['token_name' => ['$in' => self::$token_names]];
         $rs = $db->Query(MongoDb::NAMESPACE_TOKEN_LIST, $filter);
 
@@ -58,7 +58,7 @@ class TokenList extends Status
 
     public static function _Save()
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach (self::$token_info as $token_name => $info) {
             $filter = ['token_name' => $token_name];

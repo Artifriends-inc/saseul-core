@@ -45,7 +45,7 @@ class Attributes extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['address' => ['$in' => self::$addresses_role], 'key' => 'role'];
         $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $filter);
 
@@ -58,7 +58,7 @@ class Attributes extends Status
 
     public static function _Save()
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach (self::$roles as $k => $v) {
             $filter = ['address' => $k, 'key' => 'role'];

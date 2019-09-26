@@ -65,7 +65,7 @@ class Coin extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['address' => ['$in' => self::$addresses]];
         $rs = $db->Query(MongoDb::NAMESPACE_COIN, $filter);
 
@@ -82,7 +82,7 @@ class Coin extends Status
 
     public static function _Save()
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         foreach (self::$balances as $k => $v) {
             $filter = ['address' => $k];

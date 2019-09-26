@@ -51,7 +51,7 @@ class Generation
 
     public static function update(array $generation): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         if (!TypeChecker::StructureCheck(Structure::GENERATION, $generation)) {
             IMLog::add('Error : invalid generation structure. finalization failed. ');
@@ -70,7 +70,7 @@ class Generation
 
     public static function getItem($query = [])
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $opt = ['sort' => ['origin_block_number' => -1]];
         $rs = $db->Query(MongoDb::NAMESPACE_GENERATION, $query, $opt);

@@ -23,7 +23,7 @@ class InitNodeTest extends TestCase
     protected function tearDown(): void
     {
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $db->bulk->delete([]);
         $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
     }

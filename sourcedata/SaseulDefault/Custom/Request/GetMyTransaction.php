@@ -11,7 +11,7 @@ class GetMyTransaction extends AbstractRequest
 {
     public function getResponse(): array
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $namespace = MongoDb::NAMESPACE_TRANSACTION;
 //        $filter = ['public_key' => Config::$node_public_key];

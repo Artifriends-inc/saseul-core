@@ -16,7 +16,7 @@ class Service
 {
     public static function checkDatabase(): void
     {
-        if (!Database::GetInstance()->IsConnect()) {
+        if (!Database::getInstance()->IsConnect()) {
             self::end('db is not running; ');
         }
     }
