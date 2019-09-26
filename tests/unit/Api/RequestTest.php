@@ -30,7 +30,7 @@ class RequestTest extends TestCase
         $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main($request);
+        $actual = $sut->invoke($request);
 
         // Assert
         $this->assertNotNull($actual);
@@ -49,7 +49,7 @@ class RequestTest extends TestCase
         $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main($request);
+        $actual = $sut->invoke($request);
 
         // Assert
         $this->assertNotNull($actual);
@@ -67,7 +67,7 @@ class RequestTest extends TestCase
         $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main($request);
+        $actual = $sut->invoke($request);
 
         // Assert
         $this->assertNotNull($actual);
@@ -87,7 +87,7 @@ class RequestTest extends TestCase
         $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
         // Act
-        $actual = $sut->main($request);
+        $actual = $sut->invoke($request);
 
         // Assert
         $this->assertNotNull($actual);

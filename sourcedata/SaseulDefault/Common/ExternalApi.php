@@ -18,8 +18,7 @@ class ExternalApi
     private $handler;
     private $type;
 
-    // TODO: external api가 모두 적용되면 이름을 run 으로 변경
-    public function main(HttpRequest $httpRequest): HttpResponse
+    public function invoke(HttpRequest $httpRequest): HttpResponse
     {
         $this->handler = $httpRequest->getHandler();
         if ($this->configure()) {

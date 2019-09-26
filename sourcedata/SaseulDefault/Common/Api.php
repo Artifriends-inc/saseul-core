@@ -12,7 +12,7 @@ class Api
     protected $result = [];
     protected $httpRequest;
 
-    public function main(HttpRequest $request = null): void
+    public function invoke(HttpRequest $request = null): void
     {
         if ($request == null) {
             $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
