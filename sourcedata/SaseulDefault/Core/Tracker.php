@@ -11,15 +11,12 @@ use Saseul\Util\Parser;
 
 class Tracker
 {
-    public static function init()
+    /**
+     * Tracker 를 초기화한다.
+     * Daemon 을 실행할때만 사용한다.
+     */
+    public static function init(): void
     {
-        $infos = [];
-        $infos[] = [
-            'host' => NodeInfo::getHost(),
-            'address' => NodeInfo::getAddress(),
-        ];
-
-        self::setHosts($infos);
         self::resetBanList();
     }
 
@@ -237,9 +234,14 @@ class Tracker
 
     public static function registerRequest($infos): void
     {
+        // Todo: 변수명에 대해서 리팩토링이 필요하다.
         $newRequest = array_merge(Property::registerRequest(), $infos);
-        $newRequest = array_unique(array_map(function ($obj) { return json_encode($obj); }, $newRequest));
-        $newRequest = array_map(function ($obj) { return json_decode($obj, true); }, $newRequest);
+        $newRequest = array_unique(array_map(function ($obj) {
+            return json_encode($obj);
+        }, $newRequest));
+        $newRequest = array_map(function ($obj) {
+            return json_decode($obj, true);
+        }, $newRequest);
 
         Property::registerRequest($newRequest);
     }
