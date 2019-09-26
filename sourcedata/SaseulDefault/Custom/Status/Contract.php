@@ -3,13 +3,12 @@
 namespace Saseul\Custom\Status;
 
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
 class Contract extends Status
 {
-    protected static $namespace = 'saseul_committed.contract';
-
     protected static $cids = [];
     protected static $contracts = [];
     protected static $burn_cids = [];
@@ -63,7 +62,7 @@ class Contract extends Status
 
         $db = Database::GetInstance();
         $filter = ['cid' => ['$in' => self::$cids]];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_CONTRACT, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->contract)) {
@@ -100,7 +99,7 @@ class Contract extends Status
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+            $db->BulkWrite(MongoDb::NAMESPACE_CONTRACT);
         }
 
         self::_Reset();

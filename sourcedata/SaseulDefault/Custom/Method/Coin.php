@@ -2,6 +2,7 @@
 
 namespace Saseul\Custom\Method;
 
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
 /**
@@ -32,7 +33,7 @@ class Coin
         }
 
         $filter = ['address' => ['$in' => $addresses]];
-        $rs = $db->Query('saseul_committed.coin', $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_COIN, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->address, $item->balance)) {
@@ -64,7 +65,7 @@ class Coin
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite('saseul_committed.coin');
+            $db->BulkWrite(MongoDb::NAMESPACE_COIN);
         }
     }
 }

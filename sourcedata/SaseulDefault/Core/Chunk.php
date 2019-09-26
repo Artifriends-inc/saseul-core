@@ -3,7 +3,7 @@
 namespace Saseul\Core;
 
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\System\Cache;
 use Saseul\System\Database;
@@ -463,7 +463,7 @@ class Chunk
             // 바로 이전 세대를 남기기 위해 한번 더 라스트로 이동;
             $lastGenerationNumber = Block::generationOriginNumber($lastGenerationNumber);
             $query = ['block_number' => ['$lt' => $lastGenerationNumber]];
-            $blocks = Block::datas(MongoDbConfig::NAMESPACE_BLOCK, Rule::GENERATION, $query);
+            $blocks = Block::datas(MongoDb::NAMESPACE_BLOCK, Rule::GENERATION, $query);
 
             $blockhashs = [];
 
@@ -473,10 +473,10 @@ class Chunk
 
             if (count($blockhashs) > 0) {
                 $db->bulk->delete(['block' => ['$in' => $blockhashs]]);
-                $db->BulkWrite(MongoDbConfig::NAMESPACE_TRANSACTION);
+                $db->BulkWrite(MongoDb::NAMESPACE_TRANSACTION);
 
                 $db->bulk->delete(['blockhash' => ['$in' => $blockhashs]]);
-                $db->BulkWrite(MongoDbConfig::NAMESPACE_BLOCK);
+                $db->BulkWrite(MongoDb::NAMESPACE_BLOCK);
             }
         } while ($lastGenerationNumber > Rule::GENERATION);
     }

@@ -3,7 +3,7 @@
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Manager;
 use PHPUnit\Framework\TestCase;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Core\Block;
 
 class GetBlockCountTest extends TestCase
@@ -40,7 +40,7 @@ class GetBlockCountTest extends TestCase
         $bluk = new BulkWrite();
         $bluk->delete([]);
 
-        $this->manager->executeBulkWrite(MongoDbConfig::NAMESPACE_BLOCK, $bluk);
+        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bluk);
     }
 
     public function testGivenEmptyDataThenCountBlockReturnZero(): void
@@ -61,7 +61,7 @@ class GetBlockCountTest extends TestCase
         $bulk->insert($this->blockList[0]);
         $bulk->insert($this->blockList[1]);
 
-        $this->manager->executeBulkWrite(MongoDbConfig::NAMESPACE_BLOCK, $bulk);
+        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bulk);
 
         // Act
         $blockCount = Block::getCount();

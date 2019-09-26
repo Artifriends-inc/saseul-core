@@ -2,6 +2,7 @@
 
 namespace Saseul\Custom\Method;
 
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
 
@@ -10,16 +11,11 @@ use Saseul\System\Database;
  */
 class Attributes
 {
-    // Todo: 해당부분을 Const 측으로 옮겨야된다.
-    private static $namespace_attributes = 'saseul_committed.attributes';
-    private static $collection_attributes = 'attributes';
-    private static $db_attributes = 'saseul_committed';
-
     public static function GetRole($address)
     {
         $db = Database::GetInstance();
         $query = ['address' => $address, 'key' => 'role'];
-        $rs = $db->Query(self::$namespace_attributes, $query);
+        $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $query);
         $node = [
             'address' => $address,
             'role' => Role::LIGHT,
@@ -37,7 +33,7 @@ class Attributes
     public static function GetFullNode($query = ['key' => 'role', 'value' => ['$in' => Role::FULL_NODES]])
     {
         $db = Database::GetInstance();
-        $rs = $db->Query(self::$namespace_attributes, $query);
+        $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $query);
         $nodes = [];
 
         foreach ($rs as $item) {
@@ -54,11 +50,11 @@ class Attributes
         $db = Database::GetInstance();
         $query = array_merge(['address' => $address], $query);
         $command = [
-            'count' => self::$collection_attributes,
+            'count' => MongoDb::COLLECTION_ATTRIBUTES,
             'query' => $query,
         ];
 
-        $rs = $db->Command(self::$db_attributes, $command);
+        $rs = $db->Command(MongoDb::DB_COMMITTED, $command);
         $count = 0;
 
         foreach ($rs as $item) {

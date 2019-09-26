@@ -2,6 +2,7 @@
 
 namespace Saseul\Custom\Method;
 
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
 class Token
@@ -25,7 +26,7 @@ class Token
             ];
         }
 
-        $rs = $db->Query('saseul_committed.token', $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_TOKEN, $filter);
 
         foreach ($rs as $item) {
             $all[$item->address][] = [
@@ -55,7 +56,7 @@ class Token
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite('saseul_committed.token');
+            $db->BulkWrite(MongoDb::NAMESPACE_TOKEN);
         }
     }
 }

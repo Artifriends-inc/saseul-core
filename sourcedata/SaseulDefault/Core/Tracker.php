@@ -2,7 +2,7 @@
 
 namespace Saseul\Core;
 
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
@@ -38,7 +38,7 @@ class Tracker
     public static function GetNode($query)
     {
         $db = Database::GetInstance();
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_TRACKER, $query);
+        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
         $nodes = [];
 
         foreach ($rs as $item) {
@@ -59,7 +59,7 @@ class Tracker
     public static function GetNodeAddress($query)
     {
         $db = Database::GetInstance();
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_TRACKER, $query);
+        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
         $nodes = [];
 
         foreach ($rs as $item) {
@@ -76,11 +76,11 @@ class Tracker
         $db = Database::GetInstance();
         $query = array_merge(['address' => $address], $query);
         $command = [
-            'count' => MongoDbConfig::COLLECTION_TRACKER,
+            'count' => MongoDb::COLLECTION_TRACKER,
             'query' => $query,
         ];
 
-        $rs = $db->Command(MongoDbConfig::DB_TRACKER, $command);
+        $rs = $db->Command(MongoDb::DB_TRACKER, $command);
         $count = 0;
 
         foreach ($rs as $item) {
@@ -162,7 +162,7 @@ class Tracker
         $role = Role::LIGHT;
         $query = ['address' => $address];
 
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_TRACKER, $query);
+        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
 
         foreach ($rs as $item) {
             $role = $item->rank ?? Role::LIGHT;
@@ -193,7 +193,7 @@ class Tracker
         $opt = ['upsert' => true];
         $db->bulk->update($filter, ['$set' => $item], $opt);
 
-        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
     }
 
     public static function setHosts($infos): void
@@ -214,7 +214,7 @@ class Tracker
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+            $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
         }
     }
 
@@ -228,7 +228,7 @@ class Tracker
         $db->bulk->update(['address' => $address], ['$set' => ['host' => $host]], ['upsert' => true]);
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+            $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
         }
     }
 
@@ -278,7 +278,7 @@ class Tracker
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+            $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
         }
     }
 
@@ -312,7 +312,7 @@ class Tracker
             'status' => 'admitted',
         ]);
 
-        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
 
         return $role;
     }
@@ -323,7 +323,7 @@ class Tracker
 
         $db->bulk->update($filter, ['$set' => $item], ['multi' => true]);
 
-        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
     }
 
     private static function logger()

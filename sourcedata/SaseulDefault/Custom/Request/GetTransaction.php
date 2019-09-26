@@ -3,7 +3,7 @@
 namespace Saseul\Custom\Request;
 
 use Saseul\Common\AbstractRequest;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
@@ -25,7 +25,7 @@ class GetTransaction extends AbstractRequest
     {
         $db = Database::GetInstance();
 
-        $namespace = MongoDbConfig::NAMESPACE_TRANSACTION;
+        $namespace = MongoDb::NAMESPACE_TRANSACTION;
         $filter = ['thash' => $this->find_thash];
         $opt = ['sort' => ['timestamp' => -1]];
         $rs = $db->Query($namespace, $filter, $opt);

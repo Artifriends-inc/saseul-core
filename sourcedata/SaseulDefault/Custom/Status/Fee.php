@@ -3,12 +3,11 @@
 namespace Saseul\Custom\Status;
 
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
 class Fee extends Status
 {
-    protected static $namespace = 'saseul_committed.contract';
-
     protected static $validators = [];
     protected static $fee = 0;
     protected static $blockhash = '';
@@ -175,7 +174,7 @@ class Fee extends Status
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite('saseul_committed.coin');
+            $db->BulkWrite(MongoDb::NAMESPACE_COIN);
         }
 
         self::_Reset();

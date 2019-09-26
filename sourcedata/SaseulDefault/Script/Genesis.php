@@ -4,7 +4,7 @@ namespace Saseul\Script;
 
 use Saseul\Common\Script;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\Core\Env;
 use Saseul\Core\NodeInfo;
@@ -59,7 +59,7 @@ class Genesis extends Script
             $this->Error('There is genesis block already ');
         }
 
-        $rs = $this->db->Command(MongoDbConfig::DB_COMMITTED, ['count' => 'blocks']);
+        $rs = $this->db->Command(MongoDb::DB_COMMITTED, ['count' => MongoDb::COLLECTION_BLOCKS]);
 
         $count = 0;
 

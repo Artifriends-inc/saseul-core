@@ -3,7 +3,7 @@
 namespace Saseul\Custom\Request;
 
 use Saseul\Common\AbstractRequest;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
@@ -13,7 +13,7 @@ class GetMyTransaction extends AbstractRequest
     {
         $db = Database::GetInstance();
 
-        $namespace = MongoDbConfig::NAMESPACE_TRANSACTION;
+        $namespace = MongoDb::NAMESPACE_TRANSACTION;
 //        $filter = ['public_key' => Config::$node_public_key];
         $filter = ['public_key' => $this->public_key];
         $opt = ['sort' => ['timestamp' => -1]];

@@ -3,7 +3,7 @@
 namespace Saseul\tests\Custom\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rank;
 use Saseul\Core\Env;
 use Saseul\Custom\Resource\InitNode;
@@ -25,7 +25,7 @@ class InitNodeTest extends TestCase
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
         $db = Database::GetInstance();
         $db->bulk->delete([]);
-        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
     }
 
     public function testGivenGenesisNodeAddressThenProcessCheck(): void

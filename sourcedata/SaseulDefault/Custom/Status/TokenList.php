@@ -3,13 +3,12 @@
 namespace Saseul\Custom\Status;
 
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
 class TokenList extends Status
 {
-    protected static $namespace = 'saseul_committed.token_list';
-
     protected static $token_names = [];
     protected static $token_info = [];
 
@@ -48,7 +47,7 @@ class TokenList extends Status
 
         $db = Database::GetInstance();
         $filter = ['token_name' => ['$in' => self::$token_names]];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_TOKEN_LIST, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->info)) {
@@ -73,7 +72,7 @@ class TokenList extends Status
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+            $db->BulkWrite(MongoDb::NAMESPACE_TOKEN_LIST);
         }
 
         self::_Reset();

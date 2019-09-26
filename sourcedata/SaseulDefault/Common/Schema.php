@@ -3,7 +3,7 @@
 namespace Saseul\Common;
 
 use MongoDB\Driver\Command;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
 /**
@@ -40,23 +40,23 @@ class Schema
     public static function createDatabaseOnMongoDB(Database $db): void
     {
         $committedCollections = [
-            ['create' => MongoDbConfig::COLLECTION_GENERATION],
-            ['create' => MongoDbConfig::COLLECTION_BLOCK],
-            ['create' => MongoDbConfig::COLLECTION_TRANSACTION],
-            ['create' => MongoDbConfig::COLLECTION_COIN],
-            ['create' => MongoDbConfig::COLLECTION_ATTRIBUTE],
-            ['create' => MongoDbConfig::COLLECTION_CONTRACT],
-            ['create' => MongoDbConfig::COLLECTION_TOKEN],
-            ['create' => MongoDbConfig::COLLECTION_TOKEN_LIST],
+            ['create' => MongoDb::COLLECTION_GENERATIONS],
+            ['create' => MongoDb::COLLECTION_BLOCKS],
+            ['create' => MongoDb::COLLECTION_TRANSACTIONS],
+            ['create' => MongoDb::COLLECTION_COIN],
+            ['create' => MongoDb::COLLECTION_ATTRIBUTES],
+            ['create' => MongoDb::COLLECTION_CONTRACT],
+            ['create' => MongoDb::COLLECTION_TOKEN],
+            ['create' => MongoDb::COLLECTION_TOKEN_LIST],
         ];
         $committed = self::makeCommand($committedCollections);
 
         $tracker = [
-            new Command(['create' => MongoDbConfig::COLLECTION_TRACKER]),
+            new Command(['create' => MongoDb::COLLECTION_TRACKER]),
         ];
 
-        $db->executeBulkCommand(MongoDbConfig::DB_COMMITTED, $committed);
-        $db->executeBulkCommand(MongoDbConfig::DB_TRACKER, $tracker);
+        $db->executeBulkCommand(MongoDb::DB_COMMITTED, $committed);
+        $db->executeBulkCommand(MongoDb::DB_TRACKER, $tracker);
     }
 
     /**
@@ -72,62 +72,62 @@ class Schema
     {
         $committedIndex = [
             [
-                'createIndexes' => 'transactions',
+                'createIndexes' => MongoDb::COLLECTION_TRANSACTIONS,
                 'indexes' => [
-                    ['key' => ['timestamp' => MongoDbConfig::ASC], 'name' => 'timestamp_asc'],
-                    ['key' => ['timestamp' => MongoDbConfig::DESC], 'name' => 'timestamp_desc'],
-                    ['key' => ['timestamp' => MongoDbConfig::ASC, 'thash' => MongoDbConfig::ASC], 'name' => 'timestamp_thash_asc'],
-                    ['key' => ['thash' => MongoDbConfig::ASC, 'timestamp' => MongoDbConfig::ASC], 'name' => 'thash_timestamp_unique', 'unique' => true],
+                    ['key' => ['timestamp' => MongoDb::ASC], 'name' => 'timestamp_asc'],
+                    ['key' => ['timestamp' => MongoDb::DESC], 'name' => 'timestamp_desc'],
+                    ['key' => ['timestamp' => MongoDb::ASC, 'thash' => MongoDb::ASC], 'name' => 'timestamp_thash_asc'],
+                    ['key' => ['thash' => MongoDb::ASC, 'timestamp' => MongoDb::ASC], 'name' => 'thash_timestamp_unique', 'unique' => true],
                 ]
             ],
             [
-                'createIndexes' => 'generations',
+                'createIndexes' => MongoDb::COLLECTION_GENERATIONS,
                 'indexes' => [
-                    ['key' => ['origin_block_number' => MongoDbConfig::ASC], 'name' => 'origin_block_number_unique', 'unique' => true],
+                    ['key' => ['origin_block_number' => MongoDb::ASC], 'name' => 'origin_block_number_unique', 'unique' => true],
                 ]
             ],
             [
-                'createIndexes' => 'blocks',
+                'createIndexes' => MongoDb::COLLECTION_BLOCKS,
                 'indexes' => [
-                    ['key' => ['timestamp' => MongoDbConfig::ASC], 'name' => 'timestamp_asc'],
-                    ['key' => ['timestamp' => MongoDbConfig::DESC], 'name' => 'timestamp_desc'],
-                    ['key' => ['block_number' => MongoDbConfig::ASC], 'name' => 'block_number_asc'],
+                    ['key' => ['timestamp' => MongoDb::ASC], 'name' => 'timestamp_asc'],
+                    ['key' => ['timestamp' => MongoDb::DESC], 'name' => 'timestamp_desc'],
+                    ['key' => ['block_number' => MongoDb::ASC], 'name' => 'block_number_asc'],
                 ]
             ],
             [
-                'createIndexes' => 'coin',
+                'createIndexes' => MongoDb::COLLECTION_COIN,
                 'indexes' => [
-                    ['key' => ['address' => MongoDbConfig::ASC], 'name' => 'address_unique', 'unique' => true],
+                    ['key' => ['address' => MongoDb::ASC], 'name' => 'address_unique', 'unique' => true],
                 ]
             ],
             [
-                'createIndexes' => 'attributes',
+                'createIndexes' => MongoDb::COLLECTION_ATTRIBUTES,
                 'indexes' => [
-                    ['key' => ['address' => MongoDbConfig::ASC, 'key' => MongoDbConfig::ASC], 'name' => 'address_unique', 'unique' => true],
+                    ['key' => ['address' => MongoDb::ASC, 'key' => MongoDb::ASC], 'name' => 'address_unique', 'unique' => true],
                 ]
             ],
             [
-                'createIndexes' => 'contract',
+                'createIndexes' => MongoDb::COLLECTION_CONTRACT,
                 'indexes' => [
-                    ['key' => ['cid' => MongoDbConfig::ASC], 'name' => 'cid_asc'],
-                    ['key' => ['chash' => MongoDbConfig::ASC], 'name' => 'chash_asc'],
-                    ['key' => ['timestamp' => MongoDbConfig::ASC], 'name' => 'timestamp_asc'],
-                    ['key' => ['timestamp' => MongoDbConfig::DESC], 'name' => 'timestamp_desc'],
-                    ['key' => ['timestamp' => MongoDbConfig::ASC, 'chash' => MongoDbConfig::ASC], 'name' => 'timestamp_chash_asc'],
+                    ['key' => ['cid' => MongoDb::ASC], 'name' => 'cid_asc'],
+                    ['key' => ['chash' => MongoDb::ASC], 'name' => 'chash_asc'],
+                    ['key' => ['timestamp' => MongoDb::ASC], 'name' => 'timestamp_asc'],
+                    ['key' => ['timestamp' => MongoDb::DESC], 'name' => 'timestamp_desc'],
+                    ['key' => ['timestamp' => MongoDb::ASC, 'chash' => MongoDb::ASC], 'name' => 'timestamp_chash_asc'],
                 ]
             ],
             [
-                'createIndexes' => 'token',
+                'createIndexes' => MongoDb::COLLECTION_TOKEN,
                 'indexes' => [
-                    ['key' => ['address' => MongoDbConfig::ASC], 'name' => 'address_asc'],
-                    ['key' => ['token_name' => MongoDbConfig::ASC], 'name' => 'token_name_asc'],
-                    ['key' => ['address' => MongoDbConfig::ASC, 'token_name' => MongoDbConfig::ASC], 'name' => 'address_token_name_asc', 'unique' => true],
+                    ['key' => ['address' => MongoDb::ASC], 'name' => 'address_asc'],
+                    ['key' => ['token_name' => MongoDb::ASC], 'name' => 'token_name_asc'],
+                    ['key' => ['address' => MongoDb::ASC, 'token_name' => MongoDb::ASC], 'name' => 'address_token_name_asc', 'unique' => true],
                 ]
             ],
             [
-                'createIndexes' => 'token_list',
+                'createIndexes' => MongoDb::COLLECTION_TOKEN_LIST,
                 'indexes' => [
-                    ['key' => ['token_name' => MongoDbConfig::ASC], 'name' => 'token_name_asc', 'unique' => true],
+                    ['key' => ['token_name' => MongoDb::ASC], 'name' => 'token_name_asc', 'unique' => true],
                 ]
             ]
         ];
@@ -135,16 +135,16 @@ class Schema
 
         $trackerIndex = [
             [
-                'createIndexes' => 'tracker',
+                'createIndexes' => MongoDb::COLLECTION_TRACKER,
                 'indexes' => [
-                    ['key' => ['address' => MongoDbConfig::ASC], 'name' => 'address_unique', 'unique' => true],
+                    ['key' => ['address' => MongoDb::ASC], 'name' => 'address_unique', 'unique' => true],
                 ]
             ]
         ];
         $tracker = self::makeCommand($trackerIndex);
 
-        $db->executeBulkCommand(MongoDbConfig::DB_COMMITTED, $committed);
-        $db->executeBulkCommand(MongoDbConfig::DB_TRACKER, $tracker);
+        $db->executeBulkCommand(MongoDb::DB_COMMITTED, $committed);
+        $db->executeBulkCommand(MongoDb::DB_TRACKER, $tracker);
     }
 
     private static function makeCommand(array $inCommand): array

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Saseul\Common\AbstractResource;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Core\Chunk;
 use Saseul\Custom\Resource\Genesis;
 use Saseul\System\Key;
@@ -45,7 +45,7 @@ class GenesisTest extends TestCase
         $bulk = new BulkWrite();
         $bulk->delete([]);
 
-        $this->manager->executeBulkWrite(MongoDbConfig::NAMESPACE_BLOCK, $bulk);
+        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bulk);
     }
 
     public function testSutInheritsAbstractRequest(): void
@@ -72,7 +72,7 @@ class GenesisTest extends TestCase
 
         $bulk = new BulkWrite();
         $bulk->insert($this->blockData);
-        $this->manager->executeBulkWrite(MongoDbConfig::NAMESPACE_BLOCK, $bulk);
+        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bulk);
 
         // Act
         $actual = $this->sut->getValidity();
