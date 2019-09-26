@@ -3,7 +3,7 @@
 namespace Saseul\Core;
 
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
 use Saseul\System\Database;
@@ -64,7 +64,7 @@ class Generation
         $db->bulk->update($filter, ['$set' => $generation], ['upsert' => true]);
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDbConfig::NAMESPACE_GENERATION);
+            $db->BulkWrite(MongoDb::NAMESPACE_GENERATION);
         }
     }
 
@@ -73,7 +73,7 @@ class Generation
         $db = Database::GetInstance();
 
         $opt = ['sort' => ['origin_block_number' => -1]];
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_GENERATION, $query, $opt);
+        $rs = $db->Query(MongoDb::NAMESPACE_GENERATION, $query, $opt);
 
         $generation = [];
 

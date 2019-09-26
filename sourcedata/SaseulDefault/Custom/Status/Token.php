@@ -3,12 +3,11 @@
 namespace Saseul\Custom\Status;
 
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
 class Token extends Status
 {
-    protected static $namespace = 'saseul_committed.token';
-
     protected static $addresses = [];
     protected static $token_names = [];
     protected static $balances = [];
@@ -51,7 +50,7 @@ class Token extends Status
 
         $db = Database::GetInstance();
         $filter = ['address' => ['$in' => self::$addresses], 'token_name' => ['$in' => self::$token_names]];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_TOKEN, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->balance)) {
@@ -78,7 +77,7 @@ class Token extends Status
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+            $db->BulkWrite(MongoDb::NAMESPACE_TOKEN);
         }
 
         self::_Reset();

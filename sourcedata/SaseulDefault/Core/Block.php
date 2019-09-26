@@ -2,7 +2,7 @@
 
 namespace Saseul\Core;
 
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
 use Saseul\System\Database;
@@ -36,7 +36,7 @@ class Block
     {
         $opt = ['sort' => ['timestamp' => -1]];
 
-        return self::data(MongoDbConfig::NAMESPACE_BLOCK, [], $opt);
+        return self::data(MongoDb::NAMESPACE_BLOCK, [], $opt);
     }
 
     public static function nextBlock(array $lastBlock, string $blockhash, int $txCount, int $standardTimestamp): array
@@ -55,14 +55,14 @@ class Block
     {
         $opt = ['sort' => ['timestamp' => -1]];
 
-        return self::datas(MongoDbConfig::NAMESPACE_BLOCK, $max_count, [], $opt);
+        return self::datas(MongoDb::NAMESPACE_BLOCK, $max_count, [], $opt);
     }
 
     public static function blockByNumber(int $block_number): array
     {
         $query = ['block_number' => $block_number];
 
-        return self::data(MongoDbConfig::NAMESPACE_BLOCK, $query);
+        return self::data(MongoDb::NAMESPACE_BLOCK, $query);
     }
 
     public static function data(string $namespace, array $query = [], array $opt = []): array
@@ -109,7 +109,7 @@ class Block
         $query = [];
         $opt = ['sort' => ['timestamp' => -1]];
 
-        return self::GetDatas(MongoDbConfig::NAMESPACE_BLOCK, $max_count, $query, $opt);
+        return self::GetDatas(MongoDb::NAMESPACE_BLOCK, $max_count, $query, $opt);
     }
 
     public static function GetLastTransactions(int $max_count = 100): array
@@ -117,7 +117,7 @@ class Block
         $query = [];
         $opt = ['sort' => ['timestamp' => -1]];
 
-        return self::GetDatas(MongoDbConfig::NAMESPACE_TRANSACTION, $max_count, $query, $opt);
+        return self::GetDatas(MongoDb::NAMESPACE_TRANSACTION, $max_count, $query, $opt);
     }
 
     public static function GetDatas(string $namespace, int $max_count, array $query = [], array $opt = []): array
@@ -153,7 +153,7 @@ class Block
     public static function GetBlockByNumber(int $block_number)
     {
         $query = ['block_number' => $block_number];
-        $blocks = self::GetDatas(MongoDbConfig::NAMESPACE_BLOCK, 1, $query);
+        $blocks = self::GetDatas(MongoDb::NAMESPACE_BLOCK, 1, $query);
 
         if (isset($blocks[0])) {
             return $blocks[0];
@@ -177,7 +177,7 @@ class Block
 
         $query = [];
         $opt = ['sort' => ['timestamp' => -1]];
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_BLOCK, $query, $opt);
+        $rs = $db->Query(MongoDb::NAMESPACE_BLOCK, $query, $opt);
 
         // Todo: 코드 정리하자.
         foreach ($rs as $item) {
@@ -218,11 +218,11 @@ class Block
         $db = Database::GetInstance();
 
         $command = [
-            'count' => 'blocks',
+            'count' => MongoDb::COLLECTION_BLOCKS,
             'query' => [],
         ];
 
-        $rs = $db->Command(MongoDbConfig::DB_COMMITTED, $command);
+        $rs = $db->Command(MongoDb::DB_COMMITTED, $command);
         $count = 0;
 
         foreach ($rs as $item) {

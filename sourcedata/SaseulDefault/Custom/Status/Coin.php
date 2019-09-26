@@ -3,12 +3,11 @@
 namespace Saseul\Custom\Status;
 
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
 class Coin extends Status
 {
-    protected static $namespace = 'saseul_committed.coin';
-
     protected static $addresses = [];
     protected static $balances = [];
     protected static $deposits = [];
@@ -68,7 +67,7 @@ class Coin extends Status
 
         $db = Database::GetInstance();
         $filter = ['address' => ['$in' => self::$addresses]];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_COIN, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->balance)) {
@@ -104,7 +103,7 @@ class Coin extends Status
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+            $db->BulkWrite(MongoDb::NAMESPACE_COIN);
         }
 
         self::_Reset();

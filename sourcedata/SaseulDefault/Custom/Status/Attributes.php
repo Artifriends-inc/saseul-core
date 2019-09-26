@@ -3,13 +3,12 @@
 namespace Saseul\Custom\Status;
 
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
 
 class Attributes extends Status
 {
-    protected static $namespace = 'saseul_committed.attributes';
-
     protected static $addresses_role = [];
     protected static $roles = [];
 
@@ -48,7 +47,7 @@ class Attributes extends Status
 
         $db = Database::GetInstance();
         $filter = ['address' => ['$in' => self::$addresses_role], 'key' => 'role'];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->value)) {
@@ -74,7 +73,7 @@ class Attributes extends Status
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+            $db->BulkWrite(MongoDb::NAMESPACE_ATTRIBUTE);
         }
 
         self::_Reset();
