@@ -7,6 +7,7 @@ use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
 use Saseul\Util\Logger;
+use Saseul\Util\Mongo;
 use Saseul\Util\Parser;
 
 class Tracker
@@ -76,11 +77,11 @@ class Tracker
         $db = Database::getInstance();
         $query = array_merge(['address' => $address], $query);
         $command = [
-            'count' => MongoDb::COLLECTION_TRACKER,
+            'count' => Mongo::COLLECTION_TRACKER,
             'query' => $query,
         ];
 
-        $rs = $db->Command(MongoDb::DB_TRACKER, $command);
+        $rs = $db->Command(Mongo::DB_TRACKER, $command);
         $count = 0;
 
         foreach ($rs as $item) {

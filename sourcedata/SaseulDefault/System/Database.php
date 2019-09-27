@@ -2,7 +2,7 @@
 
 namespace Saseul\System;
 
-use Saseul\Util\MongoDb;
+use Saseul\Util\Mongo;
 
 /**
  * Database provides DB initialization function and a getter function for the
@@ -12,7 +12,7 @@ use Saseul\Util\MongoDb;
  *       추가 작업이 필요함.
  *       https://designpatternsphp.readthedocs.io/en/latest/Creational/Singleton/README.html
  */
-final class Database extends MongoDb
+final class Database extends Mongo
 {
     protected static $instance;
 

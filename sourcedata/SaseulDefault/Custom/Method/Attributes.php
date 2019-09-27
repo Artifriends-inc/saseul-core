@@ -5,6 +5,7 @@ namespace Saseul\Custom\Method;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
+use Saseul\Util\Mongo;
 
 /**
  * Class Attributes.
@@ -50,11 +51,11 @@ class Attributes
         $db = Database::getInstance();
         $query = array_merge(['address' => $address], $query);
         $command = [
-            'count' => MongoDb::COLLECTION_ATTRIBUTES,
+            'count' => Mongo::COLLECTION_ATTRIBUTES,
             'query' => $query,
         ];
 
-        $rs = $db->Command(MongoDb::DB_COMMITTED, $command);
+        $rs = $db->Command(Mongo::DB_COMMITTED, $command);
         $count = 0;
 
         foreach ($rs as $item) {

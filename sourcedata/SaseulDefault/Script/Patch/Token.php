@@ -3,9 +3,9 @@
 namespace Saseul\Script\Patch;
 
 use Saseul\Common\Script;
-use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Logger;
+use Saseul\Util\Mongo;
 
 class Token extends Script
 {
@@ -26,16 +26,16 @@ class Token extends Script
     {
         Logger::EchoLog('Create Database');
 
-        $this->db->Command(MongoDb::DB_COMMITTED, ['create' => MongoDb::COLLECTION_TOKEN]);
-        $this->db->Command(MongoDb::DB_COMMITTED, ['create' => MongoDb::COLLECTION_TOKEN_LIST]);
+        $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_TOKEN]);
+        $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_TOKEN_LIST]);
     }
 
     public function CreateIndex()
     {
         Logger::EchoLog('Create Index');
 
-        $this->db->Command(MongoDb::DB_COMMITTED, [
-            'createIndexes' => MongoDb::COLLECTION_TOKEN,
+        $this->db->Command(Mongo::DB_COMMITTED, [
+            'createIndexes' => Mongo::COLLECTION_TOKEN,
             'indexes' => [
                 ['key' => ['address' => 1], 'name' => 'address_asc'],
                 ['key' => ['token_name' => 1], 'name' => 'token_name_asc'],
@@ -43,8 +43,8 @@ class Token extends Script
             ]
         ]);
 
-        $this->db->Command(MongoDb::DB_COMMITTED, [
-            'createIndexes' => MongoDb::COLLECTION_TOKEN_LIST,
+        $this->db->Command(Mongo::DB_COMMITTED, [
+            'createIndexes' => Mongo::COLLECTION_TOKEN_LIST,
             'indexes' => [
                 ['key' => ['token_name' => 1], 'name' => 'token_name_asc', 'unique' => 1],
             ]

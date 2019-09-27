@@ -4,7 +4,6 @@ namespace Saseul\Consensus;
 
 use Saseul\Constant\Decision;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDb;
 use Saseul\Constant\Structure;
 use Saseul\Core\Chunk;
 use Saseul\Core\IMLog;
@@ -13,6 +12,7 @@ use Saseul\Custom\Status\Fee;
 use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
+use Saseul\Util\Mongo;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
@@ -384,7 +384,7 @@ class CommitManager
         }
 
         if ($this->db->bulk->count() > 0) {
-            $this->db->BulkWrite(MongoDb::DB_COMMITTED . '.transactions');
+            $this->db->BulkWrite(Mongo::DB_COMMITTED . '.transactions');
         }
     }
 
@@ -393,7 +393,7 @@ class CommitManager
         $this->db->bulk->insert($expectBlock);
 
         if ($this->db->bulk->count() > 0) {
-            $this->db->BulkWrite(MongoDb::DB_COMMITTED . '.blocks');
+            $this->db->BulkWrite(Mongo::DB_COMMITTED . '.blocks');
         }
     }
 

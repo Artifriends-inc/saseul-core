@@ -12,10 +12,12 @@ use Saseul\System\Database;
 class InitDatabase extends AbstractResource
 {
     private $db;
+    private $status;
 
     public function __construct()
     {
         $this->db = Database::getInstance();
+        $this->status = 'success';
     }
 
     /**
@@ -23,8 +25,10 @@ class InitDatabase extends AbstractResource
      */
     public function process(): void
     {
-        Schema::dropDatabaseOnMongoDB($this->db);
-        Schema::createDatabaseOnMongoDB($this->db);
+        $isDropDatabase = Schema::dropDatabaseOnMongoDB($this->db);
+        if (!$isDropDatabase) {
+            $this->status = 'fail';
+        }
         Schema::createIndexOnMongoDB($this->db);
     }
 
@@ -35,6 +39,6 @@ class InitDatabase extends AbstractResource
      */
     public function getResponse(): array
     {
-        return ['status' => 'success'];
+        return ['status' => $this->status];
     }
 }

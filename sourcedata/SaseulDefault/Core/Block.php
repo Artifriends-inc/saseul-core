@@ -7,6 +7,7 @@ use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
 use Saseul\System\Database;
 use Saseul\Util\DateTime;
+use Saseul\Util\Mongo;
 use Saseul\Util\Parser;
 
 class Block
@@ -218,11 +219,11 @@ class Block
         $db = Database::getInstance();
 
         $command = [
-            'count' => MongoDb::COLLECTION_BLOCKS,
+            'count' => Mongo::COLLECTION_BLOCKS,
             'query' => [],
         ];
 
-        $rs = $db->Command(MongoDb::DB_COMMITTED, $command);
+        $rs = $db->Command(Mongo::DB_COMMITTED, $command);
         $count = 0;
 
         foreach ($rs as $item) {
