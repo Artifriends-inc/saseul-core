@@ -15,8 +15,6 @@ class Directory
     public const RELATIVE_ORIGINAL_SOURCE = '..' . self::RELATIVE_SOURCE . '/SaseulDefault';
     public const SASEUL_SOURCE = SASEUL_DIR . '/src/Saseul';
 
-    public const NODE_INFO = SASEUL_DIR . '/node.info';
-
     public const API_CHUNKS = self::BLOCKDATA . '/apichunks';
     public const BROADCAST_CHUNKS = self::BLOCKDATA . '/broadcastchunks';
     public const TRANSACTIONS = self::BLOCKDATA . '/transactions';
