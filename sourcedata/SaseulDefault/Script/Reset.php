@@ -4,7 +4,6 @@ namespace Saseul\Script;
 
 use Saseul\Common\Script;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDb;
 use Saseul\Core\Generation;
 use Saseul\Core\Property;
 use Saseul\Core\Service;
@@ -13,6 +12,7 @@ use Saseul\System\Cache;
 use Saseul\System\Database;
 use Saseul\Util\File;
 use Saseul\Util\Logger;
+use Saseul\Util\Mongo;
 
 class Reset extends Script
 {
@@ -156,8 +156,8 @@ class Reset extends Script
     {
         Logger::EchoLog('Drop Database');
 
-        $this->db->Command(MongoDb::DB_COMMITTED, ['dropDatabase' => 1]);
-        $this->db->Command(MongoDb::DB_TRACKER, ['dropDatabase' => 1]);
+        $this->db->Command(Mongo::DB_COMMITTED, ['dropDatabase' => 1]);
+        $this->db->Command(Mongo::DB_TRACKER, ['dropDatabase' => 1]);
     }
 
     /**
@@ -167,14 +167,14 @@ class Reset extends Script
     {
         Logger::EchoLog('Create Database');
 
-        $this->db->Command(MongoDb::DB_COMMITTED, ['create' => MongoDb::COLLECTION_GENERATIONS]);
-        $this->db->Command(MongoDb::DB_COMMITTED, ['create' => MongoDb::COLLECTION_BLOCKS]);
-        $this->db->Command(MongoDb::DB_COMMITTED, ['create' => MongoDb::COLLECTION_TRANSACTIONS]);
+        $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_GENERATIONS]);
+        $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_BLOCKS]);
+        $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_TRANSACTIONS]);
 
-        $this->db->Command(MongoDb::DB_COMMITTED, ['create' => MongoDb::COLLECTION_COIN]);
-        $this->db->Command(MongoDb::DB_COMMITTED, ['create' => MongoDb::COLLECTION_ATTRIBUTES]);
+        $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_COIN]);
+        $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_ATTRIBUTES]);
 
-        $this->db->Command(MongoDb::DB_TRACKER, ['create' => MongoDb::COLLECTION_TRACKER]);
+        $this->db->Command(Mongo::DB_TRACKER, ['create' => Mongo::COLLECTION_TRACKER]);
     }
 
     /**
@@ -184,8 +184,8 @@ class Reset extends Script
     {
         Logger::EchoLog('Create Index');
 
-        $this->db->Command(MongoDb::DB_COMMITTED, [
-            'createIndexes' => MongoDb::COLLECTION_TRANSACTIONS,
+        $this->db->Command(Mongo::DB_COMMITTED, [
+            'createIndexes' => Mongo::COLLECTION_TRANSACTIONS,
             'indexes' => [
                 ['key' => ['timestamp' => 1], 'name' => 'timestamp_asc'],
                 ['key' => ['timestamp' => -1], 'name' => 'timestamp_desc'],
@@ -194,15 +194,15 @@ class Reset extends Script
             ]
         ]);
 
-        $this->db->Command(MongoDb::DB_COMMITTED, [
-            'createIndexes' => MongoDb::COLLECTION_GENERATIONS,
+        $this->db->Command(Mongo::DB_COMMITTED, [
+            'createIndexes' => Mongo::COLLECTION_GENERATIONS,
             'indexes' => [
                 ['key' => ['origin_block_number' => 1], 'name' => 'origin_block_number_unique', 'unique' => 1],
             ]
         ]);
 
-        $this->db->Command(MongoDb::DB_COMMITTED, [
-            'createIndexes' => MongoDb::COLLECTION_BLOCKS,
+        $this->db->Command(Mongo::DB_COMMITTED, [
+            'createIndexes' => Mongo::COLLECTION_BLOCKS,
             'indexes' => [
                 ['key' => ['timestamp' => 1], 'name' => 'timestamp_asc'],
                 ['key' => ['timestamp' => -1], 'name' => 'timestamp_desc'],
@@ -210,22 +210,22 @@ class Reset extends Script
             ]
         ]);
 
-        $this->db->Command(MongoDb::DB_COMMITTED, [
-            'createIndexes' => MongoDb::COLLECTION_COIN,
+        $this->db->Command(Mongo::DB_COMMITTED, [
+            'createIndexes' => Mongo::COLLECTION_COIN,
             'indexes' => [
                 ['key' => ['address' => 1], 'name' => 'address_unique', 'unique' => 1],
             ]
         ]);
 
-        $this->db->Command(MongoDb::DB_COMMITTED, [
-            'createIndexes' => MongoDb::COLLECTION_ATTRIBUTES,
+        $this->db->Command(Mongo::DB_COMMITTED, [
+            'createIndexes' => Mongo::COLLECTION_ATTRIBUTES,
             'indexes' => [
                 ['key' => ['address' => 1, 'key' => 1], 'name' => 'address_unique', 'unique' => 1],
             ]
         ]);
 
-        $this->db->Command(MongoDb::DB_TRACKER, [
-            'createIndexes' => MongoDb::COLLECTION_TRACKER,
+        $this->db->Command(Mongo::DB_TRACKER, [
+            'createIndexes' => Mongo::COLLECTION_TRACKER,
             'indexes' => [
                 ['key' => ['address' => 1], 'name' => 'address_unique', 'unique' => 1],
             ]

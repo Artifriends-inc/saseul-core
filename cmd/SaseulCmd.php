@@ -17,7 +17,11 @@ class SaseulCmd
         echo 'hi\n';
     }
 
-    // Todo: Database 생성한다.
+    /**
+     * MongoDB 를 초기화한다.
+     *
+     * @param Event $event
+     */
     public static function initData(Event $event): void
     {
         $privateKey = getenv('NODE_PRIVATE_KEY');
