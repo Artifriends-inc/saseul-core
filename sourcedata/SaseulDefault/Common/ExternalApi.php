@@ -35,22 +35,22 @@ class ExternalApi
     {
     }
 
-    protected function assembleResult($status, $data = []): void
+    protected function makeResult($statusCode, $data = []): void
     {
-        $this->result['code'] = $status;
+        $this->result['code'] = $statusCode;
         $this->result['data'] = $data;
     }
 
     private function configure(): bool
     {
         if ($this->configureParameters() === false) {
-            $this->assembleResult(HttpStatus::BAD_REQUEST);
+            $this->makeResult(HttpStatus::BAD_REQUEST);
 
             return false;
         }
 
         if ($this->configureApi() === false) {
-            $this->assembleResult(HttpStatus::NOT_FOUND);
+            $this->makeResult(HttpStatus::NOT_FOUND);
 
             return false;
         }

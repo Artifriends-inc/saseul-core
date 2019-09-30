@@ -14,7 +14,7 @@ class Api
 
     public function invoke(HttpRequest $request = null): void
     {
-        if ($request == null) {
+        if ($request === null) {
             $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
         }
         $this->httpRequest = $request;

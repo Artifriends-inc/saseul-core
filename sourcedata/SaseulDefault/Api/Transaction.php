@@ -18,12 +18,12 @@ class Transaction extends ExternalApi
         $this->initialize();
         if ($this->api->getValidity()) {
             $this->handleTransaction();
-            $this->assembleResult(HttpStatus::OK, $this->transactionResult);
+            $this->makeResult(HttpStatus::OK, $this->transactionResult);
 
             return;
         }
 
-        $this->assembleResult(HttpStatus::BAD_REQUEST);
+        $this->makeResult(HttpStatus::BAD_REQUEST);
     }
 
     private function initialize(): void
