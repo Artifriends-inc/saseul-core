@@ -11,7 +11,7 @@ class Request extends ExternalApi
     {
         $this->initialize();
         if ($this->api->getValidity()) {
-            $this->assembleResult(
+            $this->makeResult(
                 HttpStatus::OK,
                 $this->api->getResponse()
             );
@@ -19,7 +19,7 @@ class Request extends ExternalApi
             return;
         }
 
-        $this->assembleResult(HttpStatus::BAD_REQUEST);
+        $this->makeResult(HttpStatus::BAD_REQUEST);
     }
 
     private function initialize(): void
