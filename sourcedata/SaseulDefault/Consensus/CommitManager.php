@@ -2,6 +2,7 @@
 
 namespace Saseul\Consensus;
 
+use ReflectionClass;
 use Saseul\Constant\Decision;
 use Saseul\Constant\Directory;
 use Saseul\Constant\Structure;
@@ -16,20 +17,19 @@ use Saseul\Util\Mongo;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
+// TODO: TEST 코드가 추가 되어야한다.
 class CommitManager
 {
     private static $instance = null;
 
     private $db;
     private $rest;
-    private $transaction_manager;
     private $status_manager;
 
     public function __construct()
     {
         $this->db = Database::getInstance();
         $this->rest = RestCall::GetInstance();
-        $this->transaction_manager = new TransactionManager();
         $this->status_manager = new StatusManager();
     }
 
@@ -106,11 +106,18 @@ class CommitManager
                 continue;
             }
 
-            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
-            $validity = $this->transaction_manager->GetTransactionValidity();
-            $this->transaction_manager->LoadStatus();
+            // TODO: 호출되는 Transaction의 type들이 최초 한 번 만 생성되어 계속 사용되는게 맞는지 계속 재생성인지 확인 필요
+            $transactionType = $this->createTransactionTypeInstance($type);
+            $transactionType->initialize(
+                $transaction,
+                $thash,
+                $public_key,
+                $signature
+            );
+            $validity = $transactionType->getValidity();
+            $transactionType->loadStatus();
 
-            if ($validity == false) {
+            if ($validity === false) {
                 continue;
             }
 
@@ -317,13 +324,21 @@ class CommitManager
                 continue;
             }
 
-            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
+            // TODO: 호출되는 Transaction의 type들이 최초 한 번 만 생성되어 계속 사용되는게 맞는지 계속 재생성인지 확인 필요
+            $transactionType = $this->createTransactionTypeInstance($type);
+            $transactionType->initialize(
+                $transaction,
+                $thash,
+                $public_key,
+                $signature
+            );
+            $validity = $transactionType->getValidity();
 
-            if ($this->transaction_manager->GetTransactionValidity() === false) {
+            if ($validity === false) {
                 continue;
             }
 
-            $this->transaction_manager->LoadStatus();
+            $transactionType->loadStatus();
 
             $keys[] = $key;
 
@@ -356,16 +371,24 @@ class CommitManager
 
             $type = $transaction['type'];
 
-            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
-            $this->transaction_manager->GetStatus();
-            $result = $this->transaction_manager->MakeDecision();
+            // TODO: 호출되는 Transaction의 type들이 최초 한 번 만 생성되어 계속 사용되는게 맞는지 계속 재생성인지 확인 필요
+            $transactionType = $this->createTransactionTypeInstance($type);
+            $transactionType->initialize(
+                $transaction,
+                $thash,
+                $public_key,
+                $signature
+            );
+            $transactionType->getStatus();
+            $result = $transactionType->makeDecision();
+
             $transactions[$key]['result'] = $result;
 
             if ($result === Decision::REJECT) {
                 continue;
             }
 
-            $this->transaction_manager->SetStatus();
+            $transactionType->setStatus();
         }
 
         return $transactions;
@@ -422,5 +445,12 @@ class CommitManager
         }
 
         fclose($file);
+    }
+
+    private function createTransactionTypeInstance(string $type)
+    {
+        $classNameWithPath = "Saseul\\Custom\\Transaction\\{$type}";
+
+        return (new ReflectionClass($classNameWithPath))->newInstance();
     }
 }
