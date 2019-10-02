@@ -17,21 +17,11 @@ class Genesis extends AbstractTransaction
     private $from_role;
     private $block_count;
 
-    public function _Init($transaction, $thash, $public_key, $signature)
-    {
-        $this->initialize($transaction, $thash, $public_key, $signature);
-    }
-
     public function initialize($transaction, $thash, $public_key, $signature): void
     {
         parent::initialize($transaction, $thash, $public_key, $signature);
 
         $this->coin_amount = $transaction['amount'] ?? null;
-    }
-
-    public function _GetValidity(): bool
-    {
-        return $this->getValidity();
     }
 
     public function getValidity(): bool
@@ -40,20 +30,10 @@ class Genesis extends AbstractTransaction
             && $this->isValidCoinAmount();
     }
 
-    public function _LoadStatus()
-    {
-        $this->loadStatus();
-    }
-
     public function loadStatus()
     {
         Coin::LoadBalance($this->from);
         Attributes::LoadRole($this->from);
-    }
-
-    public function _GetStatus()
-    {
-        $this->getStatus();
     }
 
     public function getStatus()
@@ -63,11 +43,6 @@ class Genesis extends AbstractTransaction
         $this->block_count = Block::getCount();
     }
 
-    public function _MakeDecision()
-    {
-        return $this->makeDecision();
-    }
-
     public function makeDecision()
     {
         if ($this->from !== Env::$genesis['address'] || (int) $this->block_count > 0) {
@@ -75,11 +50,6 @@ class Genesis extends AbstractTransaction
         }
 
         return Decision::ACCEPT;
-    }
-
-    public function _SetStatus()
-    {
-        $this->setStatus();
     }
 
     public function setStatus()
