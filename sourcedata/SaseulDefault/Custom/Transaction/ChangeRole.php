@@ -13,11 +13,6 @@ class ChangeRole extends AbstractTransaction
     private $role;
     private $from_deposit;
 
-    public function _Init($transaction, $thash, $public_key, $signature)
-    {
-        $this->initialize($transaction, $thash, $public_key, $signature);
-    }
-
     public function initialize(
         $transaction,
         $thash,
@@ -29,20 +24,10 @@ class ChangeRole extends AbstractTransaction
         $this->role = $transaction['role'] ?? null;
     }
 
-    public function _GetValidity(): bool
-    {
-        return $this->getValidity();
-    }
-
     public function getValidity(): bool
     {
         return parent::getValidity()
             && $this->isValidRole();
-    }
-
-    public function _LoadStatus()
-    {
-        $this->loadStatus();
     }
 
     public function loadStatus()
@@ -50,19 +35,9 @@ class ChangeRole extends AbstractTransaction
         Coin::LoadDeposit($this->from);
     }
 
-    public function _GetStatus()
-    {
-        $this->getStatus();
-    }
-
     public function getStatus()
     {
         $this->from_deposit = Coin::GetDeposit($this->from);
-    }
-
-    public function _MakeDecision()
-    {
-        return $this->makeDecision();
     }
 
     public function makeDecision()
@@ -84,11 +59,6 @@ class ChangeRole extends AbstractTransaction
         }
 
         return Decision::ACCEPT;
-    }
-
-    public function _SetStatus()
-    {
-        $this->setStatus();
     }
 
     public function setStatus()
