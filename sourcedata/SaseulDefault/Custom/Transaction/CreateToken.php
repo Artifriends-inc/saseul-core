@@ -19,11 +19,6 @@ class CreateToken extends AbstractTransaction
     private $publish_token_info;
     private $from_token_balance;
 
-    public function _Init($transaction, $thash, $public_key, $signature)
-    {
-        $this->initialize($transaction, $thash, $public_key, $signature);
-    }
-
     public function initialize(
         $transaction,
         $thash,
@@ -37,22 +32,12 @@ class CreateToken extends AbstractTransaction
         $this->token_publisher = $transaction['token_publisher'] ?? null;
     }
 
-    public function _GetValidity(): bool
-    {
-        return $this->getValidity();
-    }
-
     public function getValidity(): bool
     {
         return parent::getValidity()
             && $this->isValidTokenAmount()
             && $this->isvalidTokenName()
             && $this->isValidTokenPublisher();
-    }
-
-    public function _LoadStatus()
-    {
-        $this->loadStatus();
     }
 
     public function loadStatus()
@@ -62,21 +47,11 @@ class CreateToken extends AbstractTransaction
         Attributes::LoadRole($this->from);
     }
 
-    public function _GetStatus()
-    {
-        $this->getStatus();
-    }
-
     public function getStatus()
     {
         $this->from_token_balance = Token::GetBalance($this->from, $this->token_name);
         $this->publish_token_info = TokenList::GetInfo($this->token_name);
         $this->from_role = Attributes::GetRole($this->from);
-    }
-
-    public function _MakeDecision()
-    {
-        return $this->makeDecision();
     }
 
     public function makeDecision()
@@ -91,11 +66,6 @@ class CreateToken extends AbstractTransaction
         }
 
         return Decision::REJECT;
-    }
-
-    public function _SetStatus()
-    {
-        $this->setStatus();
     }
 
     public function setStatus()
