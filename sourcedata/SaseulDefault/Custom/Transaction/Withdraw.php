@@ -16,11 +16,6 @@ class Withdraw extends AbstractTransaction
     private $from_deposit;
     private $coin_fee;
 
-    public function _Init($transaction, $thash, $public_key, $signature)
-    {
-        $this->initialize($transaction, $thash, $public_key, $signature);
-    }
-
     public function initialize(
         $transaction,
         $thash,
@@ -33,11 +28,6 @@ class Withdraw extends AbstractTransaction
         $this->fee = $transaction['fee'] ?? null;
     }
 
-    public function _GetValidity(): bool
-    {
-        return $this->getValidity();
-    }
-
     public function getValidity(): bool
     {
         return parent::getValidity()
@@ -45,20 +35,10 @@ class Withdraw extends AbstractTransaction
             && $this->isValidFee();
     }
 
-    public function _LoadStatus()
-    {
-        $this->loadStatus();
-    }
-
     public function loadStatus()
     {
         Coin::LoadBalance($this->from);
         Coin::LoadDeposit($this->from);
-    }
-
-    public function _GetStatus()
-    {
-        $this->getStatus();
     }
 
     public function getStatus()
@@ -68,11 +48,6 @@ class Withdraw extends AbstractTransaction
         $this->coin_fee = Fee::GetFee();
     }
 
-    public function _MakeDecision()
-    {
-        return $this->makeDecision();
-    }
-
     public function makeDecision()
     {
         if ((int) $this->withdrawal_amount + (int) $this->fee > (int) $this->from_deposit) {
@@ -80,11 +55,6 @@ class Withdraw extends AbstractTransaction
         }
 
         return Decision::ACCEPT;
-    }
-
-    public function _SetStatus()
-    {
-        $this->setStatus();
     }
 
     public function setStatus()
