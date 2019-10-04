@@ -7,7 +7,6 @@ use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
 use Saseul\System\Database;
 use Saseul\Util\DateTime;
-use Saseul\Util\Mongo;
 use Saseul\Util\Parser;
 
 class Block
@@ -212,26 +211,14 @@ class Block
     /**
      * Block 총수를 가져온다.
      *
+     * @throws \Exception
+     *
      * @return int
      */
     public static function getCount(): int
     {
         $db = Database::getInstance();
 
-        $command = [
-            'count' => Mongo::COLLECTION_BLOCKS,
-            'query' => [],
-        ];
-
-        $rs = $db->Command(Mongo::DB_COMMITTED, $command);
-        $count = 0;
-
-        foreach ($rs as $item) {
-            $count = $item->n;
-
-            break;
-        }
-
-        return $count;
+        return $db->getBlockCollection()->count();
     }
 }

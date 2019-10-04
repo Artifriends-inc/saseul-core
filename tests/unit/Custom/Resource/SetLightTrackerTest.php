@@ -3,19 +3,18 @@
 namespace Saseul\tests\Custom\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rank;
 use Saseul\Core\Env;
-use Saseul\Custom\Resource\InitNode;
+use Saseul\Custom\Resource\SetLightTracker;
 use Saseul\System\Database;
 
-class InitNodeTest extends TestCase
+class SetLightTrackerTest extends TestCase
 {
     private $sut;
 
     protected function setUp(): void
     {
-        $this->sut = new InitNode();
+        $this->sut = new SetLightTracker();
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
         Env::$genesis['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
     }
@@ -24,8 +23,7 @@ class InitNodeTest extends TestCase
     {
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
         $db = Database::getInstance();
-        $db->bulk->delete([]);
-        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
+        $db->getTrackerCollection()->drop();
     }
 
     public function testGivenGenesisNodeAddressThenProcessCheck(): void

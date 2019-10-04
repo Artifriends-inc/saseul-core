@@ -286,34 +286,37 @@ class Tracker
     /**
      * Tracker 등록시 Genesis 노드인지를 확인하여 아니라면 Genesis Address 를 명시해준다.
      *
+     * @throws \Exception
+     *
      * @return string
      */
     public static function addTrackerOnDb(): string
     {
         $db = Database::getInstance();
         $role = Rank::LIGHT;
+        $dbData = [];
 
         if (Env::$nodeInfo['address'] === Env::$genesis['address']) {
             $role = Rank::VALIDATOR;
         }
 
         if (Env::$nodeInfo['address'] !== Env::$genesis['address']) {
-            $db->bulk->insert([
+            $dbData[] = [
                 'host' => '',
                 'address' => Env::$genesis['address'],
                 'rank' => Rank::VALIDATOR,
                 'status' => 'admitted',
-            ]);
+            ];
         }
 
-        $db->bulk->insert([
+        $dbData[] = [
             'host' => Env::$nodeInfo['host'],
             'address' => Env::$nodeInfo['address'],
-            'rank' => Rank::LIGHT,
+            'rank' => $role,
             'status' => 'admitted',
-        ]);
+        ];
 
-        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
+        $db->getTrackerCollection()->insertMany($dbData);
 
         return $role;
     }
