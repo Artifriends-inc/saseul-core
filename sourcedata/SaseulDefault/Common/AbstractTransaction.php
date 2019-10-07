@@ -48,11 +48,11 @@ abstract class AbstractTransaction
             );
     }
 
-    abstract public function loadStatus();
+    abstract public function loadStatus(): void;
 
-    abstract public function getStatus();
+    abstract public function getStatus(): void;
 
-    abstract public function makeDecision();
+    abstract public function makeDecision(): string;
 
-    abstract public function setStatus();
+    abstract public function setStatus(): void;
 }

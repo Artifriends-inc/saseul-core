@@ -35,20 +35,20 @@ class Withdraw extends AbstractTransaction
             && $this->isValidFee();
     }
 
-    public function loadStatus()
+    public function loadStatus(): void
     {
         Coin::LoadBalance($this->from);
         Coin::LoadDeposit($this->from);
     }
 
-    public function getStatus()
+    public function getStatus(): void
     {
         $this->from_balance = Coin::GetBalance($this->from);
         $this->from_deposit = Coin::GetDeposit($this->from);
         $this->coin_fee = Fee::GetFee();
     }
 
-    public function makeDecision()
+    public function makeDecision(): string
     {
         if ((int) $this->withdrawal_amount + (int) $this->fee > (int) $this->from_deposit) {
             return Decision::REJECT;
@@ -57,7 +57,7 @@ class Withdraw extends AbstractTransaction
         return Decision::ACCEPT;
     }
 
-    public function setStatus()
+    public function setStatus(): void
     {
         $this->from_deposit = (int) $this->from_deposit - (int) $this->withdrawal_amount;
         $this->from_deposit = (int) $this->from_deposit - (int) $this->fee;

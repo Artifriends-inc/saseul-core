@@ -53,7 +53,7 @@ class SendCoin extends AbstractTransaction
         $this->coin_fee = Fee::GetFee();
     }
 
-    public function makeDecision()
+    public function makeDecision(): string
     {
         if ((int) $this->amount + (int) $this->fee > (int) $this->from_balance) {
             return Decision::REJECT;
