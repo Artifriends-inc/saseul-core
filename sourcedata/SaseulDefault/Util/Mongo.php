@@ -4,6 +4,7 @@ namespace Saseul\Util;
 
 use Exception;
 use MongoDB\Client;
+use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver;
 use MongoDB\Driver\BulkWrite;
@@ -99,11 +100,14 @@ class Mongo
         ];
     }
 
-    public function getTrackerCollections(): array
+    public function getBlockCollection(): Collection
     {
-        return [
-            self::COLLECTION_TRACKER => $this->getTrackerDB()->selectCollection(self::COLLECTION_TRACKER),
-        ];
+        return $this->getCommittedDB()->selectCollection(self::COLLECTION_BLOCKS);
+    }
+
+    public function getTrackerCollection(): Collection
+    {
+        return $this->getTrackerDB()->selectCollection(self::COLLECTION_TRACKER);
     }
 
     public function IsConnect(): bool

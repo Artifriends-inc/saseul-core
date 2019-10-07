@@ -84,7 +84,7 @@ class Schema
             ['key' => ['token_name' => MongoDb::ASC], 'name' => 'token_name_asc', 'unique' => true],
         ]);
 
-        $db->getTrackerCollections()[Mongo::COLLECTION_TRACKER]->createIndexes([
+        $db->getTrackerCollection()->createIndexes([
             ['key' => ['address' => MongoDb::ASC], 'name' => 'address_unique', 'unique' => true],
         ]);
     }
