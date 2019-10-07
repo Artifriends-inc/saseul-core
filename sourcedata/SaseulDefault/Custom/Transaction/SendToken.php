@@ -31,19 +31,19 @@ class SendToken extends AbstractTransaction
             && $this->isValidAmount();
     }
 
-    public function loadStatus()
+    public function loadStatus(): void
     {
         Token::LoadToken($this->from, $this->token_name);
         Token::LoadToken($this->to, $this->token_name);
     }
 
-    public function getStatus()
+    public function getStatus(): void
     {
         $this->from_token_balance = Token::GetBalance($this->from, $this->token_name);
         $this->to_token_balance = Token::GetBalance($this->to, $this->token_name);
     }
 
-    public function makeDecision()
+    public function makeDecision(): string
     {
         if ((int) $this->amount > (int) $this->from_token_balance) {
             return Decision::REJECT;
@@ -52,7 +52,7 @@ class SendToken extends AbstractTransaction
         return Decision::ACCEPT;
     }
 
-    public function setStatus()
+    public function setStatus(): void
     {
         $this->from_token_balance = (int) $this->from_token_balance - (int) $this->amount;
         $this->to_token_balance = (int) $this->to_token_balance + (int) $this->amount;

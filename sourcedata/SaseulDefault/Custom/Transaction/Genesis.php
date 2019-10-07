@@ -30,20 +30,20 @@ class Genesis extends AbstractTransaction
             && $this->isValidCoinAmount();
     }
 
-    public function loadStatus()
+    public function loadStatus(): void
     {
         Coin::LoadBalance($this->from);
         Attributes::LoadRole($this->from);
     }
 
-    public function getStatus()
+    public function getStatus(): void
     {
         $this->from_balance = Coin::GetBalance($this->from);
         $this->from_role = Attributes::GetRole($this->from);
         $this->block_count = Block::getCount();
     }
 
-    public function makeDecision()
+    public function makeDecision(): string
     {
         if ($this->from !== Env::$genesis['address'] || (int) $this->block_count > 0) {
             return Decision::REJECT;
@@ -52,7 +52,7 @@ class Genesis extends AbstractTransaction
         return Decision::ACCEPT;
     }
 
-    public function setStatus()
+    public function setStatus(): void
     {
         $this->from_balance = (int) $this->from_balance + (int) $this->coin_amount;
         $this->from_role = Role::VALIDATOR;

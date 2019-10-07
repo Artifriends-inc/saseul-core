@@ -32,20 +32,20 @@ class Deposit extends AbstractTransaction
             && $this->isValidFee();
     }
 
-    public function loadStatus()
+    public function loadStatus(): void
     {
         Coin::LoadBalance($this->from);
         Coin::LoadDeposit($this->from);
     }
 
-    public function getStatus()
+    public function getStatus(): void
     {
         $this->from_balance = Coin::GetBalance($this->from);
         $this->from_deposit = Coin::GetDeposit($this->from);
         $this->coin_fee = Fee::GetFee();
     }
 
-    public function makeDecision()
+    public function makeDecision(): string
     {
         if ((int) $this->coin_amount + (int) $this->fee > (int) $this->from_balance) {
             return Decision::REJECT;
@@ -54,7 +54,7 @@ class Deposit extends AbstractTransaction
         return Decision::ACCEPT;
     }
 
-    public function setStatus()
+    public function setStatus(): void
     {
         $this->from_balance = (int) $this->from_balance - (int) $this->coin_amount;
         $this->from_balance = (int) $this->from_balance - (int) $this->fee;

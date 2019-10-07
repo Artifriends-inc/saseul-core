@@ -30,17 +30,17 @@ class ChangeRole extends AbstractTransaction
             && $this->isValidRole();
     }
 
-    public function loadStatus()
+    public function loadStatus(): void
     {
         Coin::LoadDeposit($this->from);
     }
 
-    public function getStatus()
+    public function getStatus(): void
     {
         $this->from_deposit = Coin::GetDeposit($this->from);
     }
 
-    public function makeDecision()
+    public function makeDecision(): string
     {
         if (!Role::isExist($this->role)) {
             return Decision::REJECT;
@@ -61,7 +61,7 @@ class ChangeRole extends AbstractTransaction
         return Decision::ACCEPT;
     }
 
-    public function setStatus()
+    public function setStatus(): void
     {
         Attributes::SetRole($this->from, $this->role);
     }

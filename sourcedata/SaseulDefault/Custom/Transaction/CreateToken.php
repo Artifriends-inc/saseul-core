@@ -40,21 +40,21 @@ class CreateToken extends AbstractTransaction
             && $this->isValidTokenPublisher();
     }
 
-    public function loadStatus()
+    public function loadStatus(): void
     {
         Token::LoadToken($this->from, $this->token_name);
         TokenList::LoadTokenList($this->token_name);
         Attributes::LoadRole($this->from);
     }
 
-    public function getStatus()
+    public function getStatus(): void
     {
         $this->from_token_balance = Token::GetBalance($this->from, $this->token_name);
         $this->publish_token_info = TokenList::GetInfo($this->token_name);
         $this->from_role = Attributes::GetRole($this->from);
     }
 
-    public function makeDecision()
+    public function makeDecision(): string
     {
         // TODO: 필요한 조건문인지 확인 필요함
         if ($this->publish_token_info == []) {
@@ -68,7 +68,7 @@ class CreateToken extends AbstractTransaction
         return Decision::REJECT;
     }
 
-    public function setStatus()
+    public function setStatus(): void
     {
         $total_amount = 0;
 
