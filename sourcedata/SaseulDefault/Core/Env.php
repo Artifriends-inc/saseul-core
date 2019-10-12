@@ -35,12 +35,11 @@ class Env
         'level' => ''
     ];
 
-    public static function loadGenesisKey(string $path): void
+    public static function loadGenesisKey(string $path): array
     {
         $get_key = file_get_contents($path);
-        $genesis_key = json_decode($get_key, true);
 
-        self::$genesis['key'] = $genesis_key;
+        return json_decode($get_key, true);
     }
 
     /**
@@ -59,7 +58,7 @@ class Env
         self::$genesis['address'] = self::getFromEnv('GENESIS_ADDRESS');
         self::$genesis['coin_amount'] = self::getFromEnv('GENESIS_COIN_VALUE');
         self::$genesis['deposit_amount'] = self::getFromEnv('GENESIS_DEPOSIT_VALUE');
-        self::loadGenesisKey(SASEUL_DIR . '/data/genesis_key.json');
+        self::$genesis['key'] = self::loadGenesisKey(SASEUL_DIR . '/data/genesis_key.json');
 
         // Log
         self::$log['path'] = self::getFromEnv('LOG_PATH');
