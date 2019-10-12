@@ -5,7 +5,7 @@ namespace Saseul\Custom\Resource;
 use Saseul\Common\AbstractResource;
 use Saseul\Core\Tracker;
 
-class SetLightTracker extends AbstractResource
+class SetTracker extends AbstractResource
 {
     private $nodeRole;
 

@@ -41,11 +41,32 @@ class SaseulCmd
         $env = self::setEnv();
 
         $lightTrackerData = [
-            'type' => 'SetLightTracker',
+            'type' => 'SetTracker',
             'from' => $env['address'],
             'timestamp' => DateTime::Microtime(),
         ];
         $res = self::sendRequest($env, $lightTrackerData)->getBody();
+        echo $res . PHP_EOL;
+    }
+
+    public static function setValidatorTracker(Event $event): void
+    {
+        $env = self::setEnv();
+
+        $initDbData = [
+            'type' => 'InitDatabase',
+            'from' => $env['address'],
+            'timestamp' => DateTime::Microtime(),
+        ];
+        $res = self::sendRequest($env, $initDbData)->getBody();
+        echo $res . PHP_EOL;
+
+        $validatorTrackerData = [
+            'type' => 'SetTracker',
+            'from' => $env['address'],
+            'timestamp' => DateTime::Microtime(),
+        ];
+        $res = self::sendRequest($env, $validatorTrackerData)->getBody();
         echo $res . PHP_EOL;
     }
 

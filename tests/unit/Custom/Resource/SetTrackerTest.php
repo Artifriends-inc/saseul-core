@@ -5,16 +5,16 @@ namespace Saseul\tests\Custom\Resource;
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\Rank;
 use Saseul\Core\Env;
-use Saseul\Custom\Resource\SetLightTracker;
+use Saseul\Custom\Resource\SetTracker;
 use Saseul\System\Database;
 
-class SetLightTrackerTest extends TestCase
+class SetTrackerTest extends TestCase
 {
     private $sut;
 
     protected function setUp(): void
     {
-        $this->sut = new SetLightTracker();
+        $this->sut = new SetTracker();
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
         Env::$genesis['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
     }
