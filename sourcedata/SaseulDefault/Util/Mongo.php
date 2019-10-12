@@ -73,38 +73,111 @@ class Mongo
         $this->bulk = new BulkWrite();
     }
 
+    /**
+     * Committed DB 연결하여 사용한다.
+     *
+     * @return Database
+     */
     public function getCommittedDB(): Database
     {
         return $this->client->selectDatabase(self::DB_COMMITTED);
     }
 
+    /**
+     * Tracker DB 연결하여 사용한다.
+     *
+     * @return Database
+     */
     public function getTrackerDB(): Database
     {
         return $this->client->selectDatabase(self::DB_TRACKER);
     }
 
     /**
-     * @return array
+     * Generations 컬렉션을 연결하여 사용한다.
+     *
+     * @return Collection
      */
-    public function getCommittedCollections(): array
+    public function getGenerationsCollection(): Collection
     {
-        return [
-            self::COLLECTION_GENERATIONS => $this->getCommittedDB()->selectCollection(self::COLLECTION_GENERATIONS),
-            self::COLLECTION_BLOCKS => $this->getCommittedDB()->selectCollection(self::COLLECTION_BLOCKS),
-            self::COLLECTION_TRANSACTIONS => $this->getCommittedDB()->selectCollection(self::COLLECTION_TRANSACTIONS),
-            self::COLLECTION_COIN => $this->getCommittedDB()->selectCollection(self::COLLECTION_COIN),
-            self::COLLECTION_ATTRIBUTES => $this->getCommittedDB()->selectCollection(self::COLLECTION_ATTRIBUTES),
-            self::COLLECTION_CONTRACT => $this->getCommittedDB()->selectCollection(self::COLLECTION_CONTRACT),
-            self::COLLECTION_TOKEN => $this->getCommittedDB()->selectCollection(self::COLLECTION_TOKEN),
-            self::COLLECTION_TOKEN_LIST => $this->getCommittedDB()->selectCollection(self::COLLECTION_TOKEN_LIST)
-        ];
+        return $this->getCommittedDB()->selectCollection(self::COLLECTION_GENERATIONS);
     }
 
-    public function getBlockCollection(): Collection
+    /**
+     * Blocks 컨렉션을 연결하여 사용한다.
+     *
+     * @return Collection
+     */
+    public function getBlocksCollection(): Collection
     {
         return $this->getCommittedDB()->selectCollection(self::COLLECTION_BLOCKS);
     }
 
+    /**
+     * Transactions 컨렉션을 연결하여 사용한다.
+     *
+     * @return Collection
+     */
+    public function getTransactionsCollection(): Collection
+    {
+        return $this->getCommittedDB()->selectCollection(self::COLLECTION_TRANSACTIONS);
+    }
+
+    /**
+     * Coin 컨렉션을 연결하여 사용한다.
+     *
+     * @return Collection
+     */
+    public function getCoinCollection(): Collection
+    {
+        return $this->getCommittedDB()->selectCollection(self::COLLECTION_COIN);
+    }
+
+    /**
+     * Attributes 컬렉션을 사용한다.
+     *
+     * @return Collection
+     */
+    public function getAttributesCollection(): Collection
+    {
+        return $this->getCommittedDB()->selectCollection(self::COLLECTION_ATTRIBUTES);
+    }
+
+    /**
+     * Contract 컬렉션을 사용한다.
+     *
+     * @return Collection
+     */
+    public function getContractCollection(): Collection
+    {
+        return $this->getCommittedDB()->selectCollection(self::COLLECTION_CONTRACT);
+    }
+
+    /**
+     * Token 컬렉션을 사용한다.
+     *
+     * @return Collection
+     */
+    public function getTokenCollection(): Collection
+    {
+        return $this->getCommittedDB()->selectCollection(self::COLLECTION_TOKEN);
+    }
+
+    /**
+     * Token list 컬렉션을 사용한다.
+     *
+     * @return Collection
+     */
+    public function getTokenListCollection(): Collection
+    {
+        return $this->getCommittedDB()->selectCollection(self::COLLECTION_TOKEN_LIST);
+    }
+
+    /**
+     * Tracker 컬렉션을 사용한다.
+     *
+     * @return Collection
+     */
     public function getTrackerCollection(): Collection
     {
         return $this->getTrackerDB()->selectCollection(self::COLLECTION_TRACKER);
