@@ -2,6 +2,7 @@
 
 namespace Saseul\Core;
 
+use Monolog;
 use Saseul\Constant\Directory;
 use Saseul\Constant\Role;
 use Saseul\Daemon\Arbiter;
@@ -11,33 +12,24 @@ use Saseul\Daemon\Supervisor;
 use Saseul\Daemon\Validator;
 use Saseul\System\Cache;
 use Saseul\System\Database;
+use Saseul\Util\Logger;
 
 class Service
 {
-    public static function checkDatabase(): void
+    /**
+     * Database 연결을 확인한다.
+     *
+     * @param Monolog\Logger $logger
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    public static function checkDatabase(Monolog\Logger $logger): bool
     {
         if (!Database::getInstance()->IsConnect()) {
-            self::end('db is not running; ');
-        }
-    }
+            $logger->err('DB is not running.');
 
-    public static function checkCache(): void
-    {
-        if (!Cache::GetInstance()->IsConnect()) {
-            self::end('cache is not running; ');
-        }
-    }
-
-    public static function checkSaseulDaemon(): void
-    {
-        if (self::isDaemonRunning() === false) {
-            self::end('saseul is not running; ');
-        }
-    }
-
-    public static function isDaemonRunning()
-    {
-        if (!is_file(Directory::PID_FILE) || !Property::isReady()) {
             return false;
         }
 
@@ -45,22 +37,86 @@ class Service
     }
 
     /**
-     * API 클래스 생성시 초기값을 설정한다.
+     * Cache 연결을 확인한다.
      *
-     * @todo SC-143
+     * @param Monolog\Logger $logger
+     *
+     * @throws \Exception
      *
      * @return bool
      */
-    public static function initApi(): bool
+    public static function checkCache(Monolog\Logger $logger): bool
     {
-        if (!self::isEnv()) {
+        if (!Cache::GetInstance()->IsConnect()) {
+            $logger->err('Cache is not running.');
+
             return false;
         }
 
-        self::checkDatabase();
-        self::checkCache();
+        return true;
+    }
+
+    /**
+     * Env 설정을 확인한다.
+     *
+     * @param Monolog\Logger $logger
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    public static function checkEnv(Monolog\Logger $logger): bool
+    {
+        if (!self::isEnv()) {
+            $logger->err('Env is not settings.');
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Daemon 이 실행중인지 확인한다.
+     *
+     * @return bool
+     */
+    public static function isDaemonRunning(): bool
+    {
+        return !(!is_file(Directory::PID_FILE) || !Property::isReady());
+    }
+
+    /**
+     * API 클래스 생성시 초기값을 설정한다.
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     *
+     * @todo SC-143
+     */
+    public static function initApi(): bool
+    {
+        $logger = Logger::getLogger(Logger::API);
+
+        if (!self::checkEnv($logger)) {
+            return false;
+        }
+
+        if (!self::checkDatabase($logger)) {
+            return false;
+        }
+
+        if (!self::checkCache($logger)) {
+            return false;
+        }
+
         // Todo: API 분리시 해당 부분은 제외될 수 있다.
-        self::checkSaseulDaemon();
+        if (!self::isDaemonRunning()) {
+            $logger->err('SASEUL is not running');
+
+            return false;
+        }
 
         return true;
     }
@@ -68,18 +124,27 @@ class Service
     /**
      * Daemon 클래스 생성시 초기값을 설정한다.
      *
-     * @todo SC-144
+     * @throws \Exception
      *
      * @return bool
+     *
+     * @todo SC-144
      */
     public static function initDaemon(): bool
     {
-        if (!self::isEnv()) {
+        $logger = Logger::getLogger(Logger::DAEMON);
+
+        if (!self::checkEnv($logger)) {
             return false;
         }
 
-        self::checkDatabase();
-        self::checkCache();
+        if (!self::checkDatabase($logger)) {
+            return false;
+        }
+
+        if (!self::checkCache($logger)) {
+            return false;
+        }
 
         Property::init();
         Tracker::init();
@@ -91,23 +156,32 @@ class Service
     /**
      * Script 클래스 생성시 초기값을 설정한다.
      *
-     * @todo SC-145
+     * @throws \Exception
      *
      * @return bool
+     *
+     * @todo SC-145
      */
     public static function initScript(): bool
     {
-        if (!self::isEnv()) {
+        $logger = Logger::getLogger(Logger::SCRIPT);
+
+        if (!self::checkEnv($logger)) {
             return false;
         }
 
-        self::checkDatabase();
-        self::checkCache();
+        if (!self::checkDatabase($logger)) {
+            return false;
+        }
+
+        if (!self::checkCache($logger)) {
+            return false;
+        }
 
         return true;
     }
 
-    public static function selectRole(): Node
+    public static function selectRole(): ?Node
     {
         switch (Tracker::GetRole(NodeInfo::getAddress())) {
             case Role::LIGHT:
@@ -126,17 +200,11 @@ class Service
                 return Arbiter::GetInstance();
 
                 break;
+            default:
+                return null;
+
+                break;
         }
-
-        self::end('invalid role; please check node info; ');
-
-        return Light::GetInstance();
-    }
-
-    public static function end($msg)
-    {
-        echo PHP_EOL . $msg . PHP_EOL;
-        exit();
     }
 
     /**

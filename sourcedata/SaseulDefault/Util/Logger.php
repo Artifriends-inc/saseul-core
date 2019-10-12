@@ -18,6 +18,9 @@ use Saseul\Core\Env;
 class Logger
 {
     public const MONGO = 'MongoDB';
+    public const SCRIPT = 'Script';
+    public const API = 'API';
+    public const DAEMON = 'Daemon';
 
     /**
      * Prints information of an object and calling location.
