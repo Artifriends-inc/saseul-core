@@ -11,9 +11,7 @@ class EnvTest extends TestCase
         $genesisKeyPath = './data/genesis_key.json';
 
         // Act
-        Env::loadGenesisKey($genesisKeyPath);
-
-        $genesisKey = Env::$genesis['key'];
+        $genesisKey = Env::loadGenesisKey($genesisKeyPath);
 
         // Assert
         $this->assertIsArray($genesisKey);

@@ -8,8 +8,10 @@ require_once 'vendor/autoload.php';
 use Composer\Script\Event;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
+use Saseul\Core\Env;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
+use Saseul\Version;
 
 class SaseulCmd
 {
@@ -41,11 +43,61 @@ class SaseulCmd
         $env = self::setEnv();
 
         $lightTrackerData = [
-            'type' => 'SetLightTracker',
+            'type' => 'SetTracker',
             'from' => $env['address'],
             'timestamp' => DateTime::Microtime(),
         ];
         $res = self::sendRequest($env, $lightTrackerData)->getBody();
+        echo $res . PHP_EOL;
+    }
+
+    public static function setValidatorTracker(Event $event): void
+    {
+        $env = self::setEnv();
+
+        $initDbData = [
+            'type' => 'InitDatabase',
+            'from' => $env['address'],
+            'timestamp' => DateTime::Microtime(),
+        ];
+        $res = self::sendRequest($env, $initDbData)->getBody();
+        echo $res . PHP_EOL;
+
+        $validatorTrackerData = [
+            'type' => 'SetTracker',
+            'from' => $env['address'],
+            'timestamp' => DateTime::Microtime(),
+        ];
+        $res = self::sendRequest($env, $validatorTrackerData)->getBody();
+        echo $res . PHP_EOL;
+    }
+
+    public static function makeGenesis(Event $event): void
+    {
+        $env = self::setEnv();
+        $genesisEnv = self::setGenesisEnv();
+
+        $genesisData = [
+            'type' => 'Genesis',
+            'version' => Version::CURRENT,
+            'from' => $env['address'],
+            'amount' => $genesisEnv['coin_amount'],
+            'transactional_data' => $genesisEnv['key'],
+            'timestamp' => DateTime::Microtime(),
+        ];
+        $res = self::sendRequest($env, $genesisData)->getBody();
+        echo $res . PHP_EOL;
+
+        $depositData = [
+            'type' => 'Deposit',
+            'version' => Version::CURRENT,
+            'from' => $env['address'],
+            'amount' => $genesisEnv['deposit_amount'],
+            'fee' => 0,
+            'transactional_data' => 'Genesis deposit',
+            'timestamp' => DateTime::Microtime(),
+        ];
+        $res = self::sendRequest($env, $depositData)->getBody();
         echo $res . PHP_EOL;
     }
 
@@ -61,6 +113,15 @@ class SaseulCmd
             'public_key' => getenv('NODE_PUBLIC_KEY'),
             'address' => getenv('NODE_ADDRESS'),
             'host' => getenv('NODE_HOST'),
+        ];
+    }
+
+    private static function setGenesisEnv(): array
+    {
+        return [
+            'coin_amount' => getenv('GENESIS_COIN_VALUE'),
+            'deposit_amount' => getenv('GENESIS_DEPOSIT_VALUE'),
+            'key' => Env::loadGenesisKey('data/genesis_key.json'),
         ];
     }
 
