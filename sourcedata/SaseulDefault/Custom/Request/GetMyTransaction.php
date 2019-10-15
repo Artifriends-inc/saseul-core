@@ -2,7 +2,6 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\AbstractRequest;
 use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
