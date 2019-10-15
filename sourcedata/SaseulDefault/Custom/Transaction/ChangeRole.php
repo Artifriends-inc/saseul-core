@@ -2,7 +2,6 @@
 
 namespace Saseul\Custom\Transaction;
 
-use Saseul\Common\AbstractTransaction;
 use Saseul\Constant\Decision;
 use Saseul\Constant\Role;
 use Saseul\Custom\Status\Attributes;
