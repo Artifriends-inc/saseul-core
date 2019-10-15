@@ -2,7 +2,6 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Common\AbstractRequest;
 use Saseul\Custom\Method\Attributes;
 use Saseul\Custom\Method\Coin;
 use Saseul\Custom\Method\Token;

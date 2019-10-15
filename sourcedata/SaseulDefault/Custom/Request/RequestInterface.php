@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\Common;
+namespace Saseul\Custom\Request;
 
 interface RequestInterface
 {
