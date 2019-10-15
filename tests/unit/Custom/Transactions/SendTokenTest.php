@@ -1,10 +1,11 @@
 <?php
 
-namespace Saseul\Custom\Transaction;
+namespace Saseul\Tests\Unit\Custom\Transactions;
 
 use PHPUnit\Framework\TestCase;
-use Saseul\Common\AbstractTransaction;
 use Saseul\Constant\Account;
+use Saseul\Custom\Transaction\AbstractTransaction;
+use Saseul\Custom\Transaction\SendToken;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
 

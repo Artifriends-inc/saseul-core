@@ -28,7 +28,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Saseul\\Tests\\": "./tests"
+            "Saseul\\Tests\\Unit\\": "./tests/unit"
         }
     },
     "config": {

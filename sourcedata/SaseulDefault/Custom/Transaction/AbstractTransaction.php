@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\Common;
+namespace Saseul\Custom\Transaction;
 
 use Saseul\System\Key;
 use Saseul\Version;

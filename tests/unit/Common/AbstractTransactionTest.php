@@ -4,6 +4,7 @@ namespace Saseul\Common;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use Saseul\Custom\Transaction\AbstractTransaction;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
 

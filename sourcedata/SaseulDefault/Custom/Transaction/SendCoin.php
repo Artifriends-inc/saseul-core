@@ -2,7 +2,6 @@
 
 namespace Saseul\Custom\Transaction;
 
-use Saseul\Common\AbstractTransaction;
 use Saseul\Constant\Account;
 use Saseul\Constant\Decision;
 use Saseul\Core\Env;
