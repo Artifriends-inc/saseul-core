@@ -6,7 +6,7 @@ services:
     networks:
       - back
   mongo:
-    image: mongo:4
+    image: mongo:4.2
     ports:
       - 27017:27017
     networks:
