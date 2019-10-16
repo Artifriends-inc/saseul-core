@@ -40,7 +40,7 @@
         "monolog/monolog": "^1.24",
         "ext-posix": "*",
         "ext-json": "*",
-        "ext-mongodb": "*",
+        "ext-mongodb": "^1.6",
         "ext-http": "*",
         "guzzlehttp/guzzle": "^6",
         "mongodb/mongodb": "^1.5"

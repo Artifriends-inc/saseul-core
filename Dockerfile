@@ -52,7 +52,7 @@ COPY --from=ed25519-ext /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
             /usr/local/lib/php/extensions/no-debug-non-zts-20180731/
 
 RUN docker-php-source extract \
-    && pecl install xdebug-2.7.2 memcached mongodb ast \
+    && pecl install xdebug-2.7.2 memcached mongodb-1.6.0 ast \
     && docker-php-ext-enable xdebug memcached mongodb ast \
     && docker-php-ext-install -j$(nproc) pcntl json \
     && docker-php-source delete
