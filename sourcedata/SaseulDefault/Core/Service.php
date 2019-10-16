@@ -59,16 +59,16 @@ class Service
     /**
      * Env 설정을 확인한다.
      *
-     * @param Monolog\Logger $logger
-     *
      * @throws \Exception
      *
      * @return bool
      */
-    public static function checkEnv(Monolog\Logger $logger): bool
+    public static function checkEnv(): bool
     {
+        Env::load();
+
         if (!self::isEnv()) {
-            $logger->err('Env is not settings.');
+            echo 'Env is not settings.';
 
             return false;
         }
@@ -97,11 +97,11 @@ class Service
      */
     public static function initApi(): bool
     {
-        $logger = Logger::getLogger(Logger::API);
-
-        if (!self::checkEnv($logger)) {
+        if (!self::checkEnv()) {
             return false;
         }
+
+        $logger = Logger::getLogger(Logger::API);
 
         if (!self::checkDatabase($logger)) {
             return false;
@@ -132,11 +132,11 @@ class Service
      */
     public static function initDaemon(): bool
     {
-        $logger = Logger::getLogger(Logger::DAEMON);
-
-        if (!self::checkEnv($logger)) {
+        if (!self::checkEnv()) {
             return false;
         }
+
+        $logger = Logger::getLogger(Logger::DAEMON);
 
         if (!self::checkDatabase($logger)) {
             return false;
@@ -164,11 +164,11 @@ class Service
      */
     public static function initScript(): bool
     {
-        $logger = Logger::getLogger(Logger::SCRIPT);
-
-        if (!self::checkEnv($logger)) {
+        if (!self::checkEnv()) {
             return false;
         }
+
+        $logger = Logger::getLogger(Logger::SCRIPT);
 
         if (!self::checkDatabase($logger)) {
             return false;
@@ -214,8 +214,6 @@ class Service
      */
     private static function isEnv(): bool
     {
-        Env::load();
-
         return NodeInfo::isExist();
     }
 }
