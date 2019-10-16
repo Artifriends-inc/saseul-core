@@ -32,3 +32,4 @@ blockdata/transactions/*
 
 data/db/*
 data/logs/*
+data/core/*

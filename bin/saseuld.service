@@ -8,8 +8,8 @@ fi
 
 RETVAL=0
 prog="saseuld"
-pidfile=${PIDFILE-/var/saseul/saseuld.pid}
-lockfile=${LOCKFILE-/var/saseul/saseuld.lock}
+pidfile=${PIDFILE-/var/saseul/data/core/saseuld.pid}
+lockfile=${LOCKFILE-/var/saseul/data/core/saseuld.lock}
 
 start () {
 	echo -n $"Starting $prog: "

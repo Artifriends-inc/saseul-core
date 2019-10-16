@@ -10,7 +10,7 @@ for dir in "${block_dir[@]}"; do
   touch ./blockdata/"${dir}"/.keep
 done
 
-PID_FILE=./saseuld.pid
+PID_FILE=./data/core/saseuld.pid
 if [[ -f "$PID_FILE" ]]; then
   rm $PID_FILE
 fi
