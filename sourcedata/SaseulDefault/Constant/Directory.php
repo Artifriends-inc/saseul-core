@@ -26,5 +26,5 @@ class Directory
 
     public const SOURCE_PREFIX = 'Saseul';
 
-    public const PID_FILE = SASEUL_DIR . '/saseuld.pid';
+    public const PID_FILE = SASEUL_DIR . '/data/core/saseuld.pid';
 }
