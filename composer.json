@@ -88,7 +88,7 @@
             "./vendor/bin/php-cs-fixer fix --using-cache=no"
         ],
         "test": [
-            "docker-compose run -T --rm node bash -c './vendor/bin/phpunit --coverage-text'",
+            "docker-compose run -T --rm node bash -c './vendor/bin/phpunit --coverage-text --coverage-html build/coverage-report'",
             "@docker-down"
         ],
         "ci-phan": [

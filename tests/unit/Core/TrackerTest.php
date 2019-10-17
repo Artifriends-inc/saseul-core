@@ -2,16 +2,21 @@
 
 
 use PHPUnit\Framework\TestCase;
-use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rank;
+use Saseul\Constant\Role;
 use Saseul\Core\Env;
+use Saseul\Core\NodeInfo;
 use Saseul\Core\Tracker;
 use Saseul\System\Database;
 
 class TrackerTest extends TestCase
 {
+    private $db;
+
     protected function setUp(): void
     {
+        $this->db = Database::getInstance();
+
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
         Env::$genesis['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
     }
@@ -19,9 +24,7 @@ class TrackerTest extends TestCase
     protected function tearDown(): void
     {
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
-        $db = Database::getInstance();
-        $db->bulk->delete([]);
-        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
+        $this->db->getTrackerCollection()->drop();
     }
 
     public function testGivenGenesisAddressThenAddTrackerOnDbReturnGenesisNode(): void
@@ -43,5 +46,36 @@ class TrackerTest extends TestCase
 
         // Assert
         $this->assertSame(Rank::LIGHT, $actual);
+    }
+
+    public function testGivenNotValidatorNodeAddressThenIsValidatorReturnFalse(): void
+    {
+        // Arrange
+        $address = NodeInfo::getAddress();
+
+        // Act
+        $actual = Tracker::isValidator($address);
+
+        // Assert
+        $this->assertFalse($actual);
+    }
+
+    public function testGivenValidatorNodeAddressThenIsValidatorReturnTrue(): void
+    {
+        // Arrange
+        $address = NodeInfo::getAddress();
+
+        $this->db->getTrackerCollection()->insertOne([
+            'host' => '',
+            'address' => $address,
+            'rank' => Role::VALIDATOR,
+            'status' => 'admitted',
+        ]);
+
+        // Act
+        $actual = Tracker::isValidator($address);
+
+        // Assert
+        $this->assertTrue($actual);
     }
 }
