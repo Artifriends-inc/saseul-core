@@ -9,6 +9,7 @@ use Saseul\Core\Tracker;
 use Saseul\System\HttpStatus;
 use Saseul\Util\RestCall;
 
+// TODO: Transaction API Unit Test 추가 필요
 class Transaction extends ExternalApi
 {
     private $transactionResult;
@@ -58,7 +59,7 @@ class Transaction extends ExternalApi
             'transaction' => $this->handlerData,
             'public_key' => $this->public_key,
             'signature' => $this->signature,
-        ], $this->transaction['timestamp']);
+        ], $this->handlerData['timestamp']);
     }
 
     private function BroadcastTransaction(): void
