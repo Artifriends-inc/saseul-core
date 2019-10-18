@@ -394,21 +394,37 @@ class CommitManager
         return $transactions;
     }
 
-    public function commitTransaction($transactions, $expectBlock)
+    /**
+     * 등록된 Transaction 에 Blockhash 값을 입력한다.
+     *
+     * @param array $transactions Transaction List
+     * @param array $expectBlock  이번 commit 되는 블록 정보
+     */
+    public function commitTransaction(array $transactions, array $expectBlock): void
     {
         $blockhash = $expectBlock['blockhash'];
 
+        $operationList = [];
         foreach ($transactions as $transaction) {
             $transaction['block'] = $blockhash;
-            $filter = ['thash' => $transaction['thash'], 'timestamp' => $transaction['timestamp']];
-            $row = ['$set' => $transaction];
-            $opt = ['upsert' => true];
-            $this->db->bulk->update($filter, $row, $opt);
+
+            $operationList[] = [
+                'updateOne' => [
+                    [
+                        'thash' => $transaction['thash'],
+                        'timestamp' => $transaction['timestamp'],
+                    ],
+                    [
+                        '$set' => $transaction,
+                    ],
+                    [
+                        'upsert' => true,
+                    ]
+                ]
+            ];
         }
 
-        if ($this->db->bulk->count() > 0) {
-            $this->db->BulkWrite(Mongo::DB_COMMITTED . '.transactions');
-        }
+        $this->db->getTransactionsCollection()->bulkWrite($operationList);
     }
 
     public function commitBlock($expectBlock)
