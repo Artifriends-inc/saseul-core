@@ -40,7 +40,7 @@ class Transaction extends ExternalApi
 
     private function handleTransaction(): void
     {
-        if (Tracker::IsValidator(NodeInfo::getAddress())) {
+        if (Tracker::isValidator(NodeInfo::getAddress())) {
             $this->AddTransaction();
             $this->transactionResult['message'] = 'Transaction is added';
         } else {

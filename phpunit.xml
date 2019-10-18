@@ -10,6 +10,7 @@
         convertWarningsToExceptions="true"
         processIsolation="false"
         stopOnFailure="false"
+        testdox="true"
         verbose="true">
     <testsuites>
         <testsuite name="unit">

@@ -7,7 +7,6 @@ use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
 use Saseul\Util\Logger;
-use Saseul\Util\Mongo;
 use Saseul\Util\Parser;
 
 class Tracker
@@ -72,31 +71,6 @@ class Tracker
         return $nodes;
     }
 
-    public static function IsNode($address, $query)
-    {
-        $db = Database::getInstance();
-        $query = array_merge(['address' => $address], $query);
-        $command = [
-            'count' => Mongo::COLLECTION_TRACKER,
-            'query' => $query,
-        ];
-
-        $rs = $db->Command(Mongo::DB_TRACKER, $command);
-        $count = 0;
-
-        foreach ($rs as $item) {
-            $count = $item->n;
-
-            break;
-        }
-
-        if ($count > 0) {
-            return true;
-        }
-
-        return false;
-    }
-
     public static function getAccessibleNodes()
     {
         return self::GetNode(['host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']]);
@@ -127,9 +101,26 @@ class Tracker
         return self::GetNodeAddress(['rank' => ['$in' => Rank::FULL_NODES]]);
     }
 
-    public static function IsValidator($address)
+    /**
+     * 입력한 address 를 가진 node가 validator 인지 확인한다.
+     *
+     * @param $address
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    public static function isValidator($address): bool
     {
-        return self::IsNode($address, ['rank' => Rank::VALIDATOR]);
+        $db = Database::getInstance();
+
+        $filter = [
+            'address' => $address,
+            'rank' => Role::VALIDATOR,
+        ];
+        $count = $db->getTrackerCollection()->countDocuments($filter);
+
+        return $count > 0;
     }
 
     public static function SetValidator($address)
