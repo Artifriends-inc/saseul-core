@@ -219,6 +219,6 @@ class Block
     {
         $db = Database::getInstance();
 
-        return $db->getBlocksCollection()->count();
+        return $db->getBlocksCollection()->countDocuments();
     }
 }
