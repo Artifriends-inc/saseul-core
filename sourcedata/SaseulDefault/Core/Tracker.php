@@ -276,6 +276,8 @@ class Tracker
 
     /**
      * Reset 스크립트에서 Genesis Tracker 정보를 저장한다.
+     *
+     * @deprecated Script에서만 사용하고 있기에 Script 항목 삭제시 같이 삭제될 예정.
      */
     public static function reset(): void
     {
