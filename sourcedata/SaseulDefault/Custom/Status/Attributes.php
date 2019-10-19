@@ -2,6 +2,7 @@
 
 namespace Saseul\Custom\Status;
 
+use Exception;
 use Saseul\Common\Status;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
@@ -56,25 +57,26 @@ class Attributes extends Status
         }
     }
 
+    /**
+     * Memory 에 저장해둔 정보를 DB에 저장한다.
+     *
+     * @throws Exception
+     */
     public static function _Save()
     {
         $db = Database::getInstance();
 
-        foreach (self::$roles as $k => $v) {
-            $filter = ['address' => $k, 'key' => 'role'];
-            $row = [
-                '$set' => [
-                    'key' => 'role',
-                    'value' => $v,
-                ],
+        $operations = [];
+        foreach (self::$roles as $key => $value) {
+            $operations[] = [
+                'updateOne' => [
+                    ['address' => $key, 'key' => 'role'],
+                    ['$set' => ['key' => 'role', 'value' => $value]],
+                    ['upsert' => true],
+                ]
             ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
         }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_ATTRIBUTE);
-        }
+        $db->getAttributesCollection()->bulkWrite($operations);
 
         self::_Reset();
     }
