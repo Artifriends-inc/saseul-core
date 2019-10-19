@@ -143,4 +143,47 @@ class TrackerTest extends TestCase
         $this->assertSame($address, $actual['address']);
         $this->assertSame(Role::VALIDATOR, $actual['rank']);
     }
+
+    public function testGivenNodeListThenSetHost(): void
+    {
+        // Arrange
+        $nodeListData = [
+            [
+                'host' => NodeInfo::getHost(),
+                'address' => NodeInfo::getAddress(),
+                'rank' => Role::LIGHT,
+                'status' => 'admitted',
+            ],
+            [
+                'host' => '192.168.13.30',
+                'address' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e49',
+                'rank' => Role::VALIDATOR,
+                'status' => 'admitted',
+            ]
+        ];
+        $this->db->getTrackerCollection()->insertMany($nodeListData);
+
+        $assertData = [
+            [
+                'host' => NodeInfo::getHost(),
+                'address' => NodeInfo::getAddress(),
+            ],
+            [
+                'host' => '192.168.14.30',
+                'address' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e49'
+            ],
+        ];
+
+        // Act
+        Tracker::setHosts($assertData);
+
+        // Assert
+        $noChangeActural = $this->db->getTrackerCollection()->findOne(['address' => NodeInfo::getAddress()]);
+        $this->assertSame($nodeListData[0]['host'], $noChangeActural['host']);
+        $this->assertSame($nodeListData[0]['address'], $noChangeActural['address']);
+
+        $changeActural = $this->db->getTrackerCollection()->findOne(['address' => $assertData[1]['address']]);
+        $this->assertSame($assertData[1]['host'], $changeActural['host']);
+        $this->assertSame($assertData[1]['address'], $changeActural['address']);
+    }
 }
