@@ -2,12 +2,14 @@
 
 namespace Saseul\Core;
 
+use Exception;
 use Saseul\Constant\Directory;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
 use Saseul\System\Database;
 use Saseul\Util\File;
+use Saseul\Util\Logger;
 use Saseul\Util\Merkle;
 use Saseul\Util\Parser;
 use Saseul\Util\TypeChecker;
@@ -15,6 +17,15 @@ use Saseul\Version;
 
 class Generation
 {
+    /**
+     * @param string $originBlockhash
+     * @param int    $originBlockNumber
+     * @param int    $finalBlockNumber
+     * @param string $sourceHash
+     * @param string $sourceVersion
+     *
+     * @throws Exception
+     */
     public static function add(string $originBlockhash, int $originBlockNumber, int $finalBlockNumber, string $sourceHash, string $sourceVersion): void
     {
         $generation = [
@@ -26,7 +37,7 @@ class Generation
             'source_version' => $sourceVersion,
         ];
 
-        self::update($generation);
+        static::update($generation);
     }
 
     /**
@@ -36,6 +47,8 @@ class Generation
      * @param string $finalBlockhash
      * @param string $sourceHash
      * @param string $sourceVersion
+     *
+     * @throws Exception
      */
     public static function finalize(string $originBlockhash, string $finalBlockhash, string $sourceHash, string $sourceVersion): void
     {
@@ -46,26 +59,32 @@ class Generation
             'source_version' => $sourceVersion,
         ];
 
-        self::update($generation);
+        static::update($generation);
     }
 
+    /**
+     * generation 정보를 업데이트하거나 추가한다.
+     *
+     * @param array $generation
+     *
+     * @throws Exception
+     */
     public static function update(array $generation): void
     {
         $db = Database::getInstance();
 
         if (!TypeChecker::StructureCheck(Structure::GENERATION, $generation)) {
-            IMLog::add('Error : invalid generation structure. finalization failed. ');
+            static::log()->err('invalid generation structure. finalization failed.');
 
             return;
         }
 
         $filter = ['origin_blockhash' => $generation['origin_blockhash']];
-
-        $db->bulk->update($filter, ['$set' => $generation], ['upsert' => true]);
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_GENERATION);
-        }
+        $db->getGenerationsCollection()->updateOne(
+            $filter,
+            ['$set' => $generation],
+            ['upsert' => true]
+        );
     }
 
     public static function getItem($query = [])
@@ -142,5 +161,15 @@ class Generation
 
         $cmd = "tar -cvzf {$sourceFile} -C {$target} . ";
         shell_exec($cmd);
+    }
+
+    /**
+     * @throws Exception
+     *
+     * @return \Monolog\Logger
+     */
+    private static function log(): \Monolog\Logger
+    {
+        return Logger::getLogger(Logger::DAEMON);
     }
 }

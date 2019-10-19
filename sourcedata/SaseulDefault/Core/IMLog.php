@@ -29,6 +29,13 @@ class IMLog
         Property::iMLog([]);
     }
 
+    /**
+     * @return string
+     *
+     * @deprecated 사용하는 곳이 없다.
+     *
+     * @todo SC-230
+     */
     public static function get()
     {
         $iMLogProperty = Property::iMLog();
@@ -40,6 +47,15 @@ class IMLog
         return self::parse($iMLogProperty);
     }
 
+    /**
+     * @param array $iMLogProperty
+     *
+     * @return string
+     *
+     * @deprecated 사용하는 곳이 바로 위다.
+     *
+     * @todo SC-230
+     */
     public static function parse(array $iMLogProperty)
     {
         $str = '';

@@ -14,6 +14,8 @@ class TypeChecker
      * @param array $value The data to be checked.
      *
      * @return bool True if the $value is correct.
+     *
+     * @todo 해당 부분을 클래스로 확인할 수 있도록 변경해준다.
      */
     public static function StructureCheck($tpl, $value)
     {
