@@ -1,5 +1,7 @@
 <?php
 
+namespace Saseul\Tests\Unit\Core;
+
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
@@ -126,5 +128,19 @@ class TrackerTest extends TestCase
         // Assert
         $actual = $this->db->getTrackerCollection()->findOne(['host' => $hostData['host']]);
         $this->assertSame('ban', $actual['status']);
+    }
+
+    public function testGivenFakeValidatorAddressThenSetRank(): void
+    {
+        // Arrange
+        $address = '0x6f258c97ad7848aef661465018dc48e55131eff91c4e48';
+
+        // Act
+        Tracker::setRank($address, Role::VALIDATOR);
+
+        // Assert
+        $actual = $this->db->getTrackerCollection()->findOne(['address' => $address]);
+        $this->assertSame($address, $actual['address']);
+        $this->assertSame(Role::VALIDATOR, $actual['rank']);
     }
 }
