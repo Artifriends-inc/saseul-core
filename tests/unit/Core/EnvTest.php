@@ -14,9 +14,9 @@ class EnvTest extends TestCase
         $genesisKey = Env::loadGenesisKey($genesisKeyPath);
 
         // Assert
-        $this->assertIsArray($genesisKey);
-        $this->assertArrayHasKey('genesis_message', $genesisKey);
-        $this->assertArrayHasKey('special_thanks', $genesisKey);
+        static::assertIsArray($genesisKey);
+        static::assertArrayHasKey('genesis_message', $genesisKey);
+        static::assertArrayHasKey('special_thanks', $genesisKey);
     }
 
     public function testGivenHostInfoEnvThenLoad(): void
@@ -38,7 +38,7 @@ class EnvTest extends TestCase
         Env::load();
 
         // Assert
-        $this->assertSame($assertEnv['host'], Env::$nodeInfo['host']);
-        $this->assertSame($assertEnv['public_key'], Env::$nodeInfo['public_key']);
+        static::assertSame($assertEnv['host'], Env::$nodeInfo['host']);
+        static::assertSame($assertEnv['public_key'], Env::$nodeInfo['public_key']);
     }
 }

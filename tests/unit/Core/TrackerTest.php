@@ -1,6 +1,5 @@
 <?php
 
-
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
@@ -33,7 +32,7 @@ class TrackerTest extends TestCase
         $actual = Tracker::addTrackerOnDb();
 
         // Assert
-        $this->assertSame(Rank::VALIDATOR, $actual);
+        static::assertSame(Rank::VALIDATOR, $actual);
     }
 
     public function testGivenLightNodeAddressThenAddTrackerOnDbReturnLightNode(): void
@@ -45,7 +44,7 @@ class TrackerTest extends TestCase
         $actual = Tracker::addTrackerOnDb();
 
         // Assert
-        $this->assertSame(Rank::LIGHT, $actual);
+        static::assertSame(Rank::LIGHT, $actual);
     }
 
     public function testGivenNotValidatorNodeAddressThenIsValidatorReturnFalse(): void
@@ -57,7 +56,7 @@ class TrackerTest extends TestCase
         $actual = Tracker::isValidator($address);
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenValidatorNodeAddressThenIsValidatorReturnTrue(): void
@@ -76,6 +75,6 @@ class TrackerTest extends TestCase
         $actual = Tracker::isValidator($address);
 
         // Assert
-        $this->assertTrue($actual);
+        static::assertTrue($actual);
     }
 }

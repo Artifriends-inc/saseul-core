@@ -18,7 +18,7 @@ class ChangeRoleTest extends TestCase
     private $version;
     private $timeStamp;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new ChangeRole();
         $this->sutName = 'ChangeRole';
@@ -28,10 +28,11 @@ class ChangeRoleTest extends TestCase
         $this->version = '1.0';
         $this->timeStamp = DateTime::Microtime();
     }
+
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
-        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
+        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullRoleThenGetValidityReturnsFalse(): void
@@ -46,13 +47,17 @@ class ChangeRoleTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNonStringRoleThenGetValidityReturnsFalse(): void
@@ -68,13 +73,17 @@ class ChangeRoleTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     private function makeHash($transaction)

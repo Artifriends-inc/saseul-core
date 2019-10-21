@@ -25,8 +25,8 @@ class ExternalApiTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        $this->assertInstanceOf(HttpResponse::class, $actual);
-        $this->assertEquals(HttpStatus::BAD_REQUEST, $actual->getCode());
-        $this->assertEmpty($actual->getData());
+        static::assertInstanceOf(HttpResponse::class, $actual);
+        static::assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
+        static::assertEmpty($actual->getData());
     }
 }

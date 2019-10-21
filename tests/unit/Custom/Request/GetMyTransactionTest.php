@@ -8,10 +8,10 @@ class GetMyTransactionTest extends TestCase
 {
     public function testSutInheritsAbstractRequest()
     {
-        # Arrange
+        // Arrange
         $sut = new GetMyTransaction();
 
-        # Assert
-        $this->assertInstanceOf(AbstractRequest::class, $sut);
+        // Assert
+        static::assertInstanceOf(AbstractRequest::class, $sut);
     }
 }

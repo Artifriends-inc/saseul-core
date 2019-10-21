@@ -12,6 +12,6 @@ class GetAccountInfoTest extends TestCase
         $sut = new GetAccountInfo();
 
         // Assert
-        $this->assertInstanceOf(AbstractRequest::class, $sut);
+        static::assertInstanceOf(AbstractRequest::class, $sut);
     }
 }

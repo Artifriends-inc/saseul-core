@@ -23,7 +23,7 @@ class SendCoinTest extends TestCase
     private $amount;
     private $fee;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new SendCoin();
         $this->sutName = 'SendCoin';
@@ -41,7 +41,7 @@ class SendCoinTest extends TestCase
     public function testSutAbstractTransaction(): void
     {
         // Assert
-        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
+        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullToThenGetValidityReturnsFalse(): void
@@ -57,15 +57,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNonStringToThenGetValidityReturnsFalse(): void
@@ -82,15 +89,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenWrongSizeToThenGetValidityReturnsFalse(): void
@@ -107,15 +121,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNullAmountThenGetValidityReturnsFalse(): void
@@ -131,15 +152,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNonNumericAmountThenGetValidityReturnsFalse(): void
@@ -162,7 +190,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNegativeAmountThenGetValidityReturnsFalse(): void
@@ -179,15 +207,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenAmountZeroThenGetValidityReturnsFalse(): void
@@ -204,15 +239,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNullFeeThenGetValidityReturnsFalse(): void
@@ -228,15 +270,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNonNumericFeeThenGetValidityReturnsFalse(): void
@@ -253,15 +302,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNegativeFeeThenGetValidityReturnsFalse(): void
@@ -278,15 +334,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
@@ -304,15 +367,22 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenValidTransactionThenGetValidityReturnsTrue(): void
@@ -329,14 +399,21 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertTrue($actual);
+        static::assertTrue($actual);
     }
 }

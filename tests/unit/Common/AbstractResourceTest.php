@@ -42,7 +42,7 @@ class AbstractResourceTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenInvalidSignatureThenGetValidityMethodReturnsFalse(): void
@@ -64,7 +64,7 @@ class AbstractResourceTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNotSamePublicKeyThenGetValidityMethodReturnsFalse(): void
@@ -86,6 +86,6 @@ class AbstractResourceTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 }

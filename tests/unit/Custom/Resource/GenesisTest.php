@@ -51,7 +51,7 @@ class GenesisTest extends TestCase
     public function testSutInheritsAbstractRequest(): void
     {
         // Assert
-        $this->assertInstanceOf(AbstractResource::class, $this->sut);
+        static::assertInstanceOf(AbstractResource::class, $this->sut);
     }
 
     public function testGivenBlockDataThenValidityMethodReturnsFalse(): void
@@ -78,7 +78,7 @@ class GenesisTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenBlockDataThenProcess(): void
@@ -104,10 +104,10 @@ class GenesisTest extends TestCase
         $apiChunkFile = Directory::API_CHUNKS . '/' . $apiChunkId . '.json';
         $apiChunk = Chunk::getChunk($apiChunkFile);
 
-        $this->assertArrayHasKey('transaction', $apiChunk[0]);
-        $this->assertArrayHasKey('signature', $apiChunk[0]);
-        $this->assertSame($signature, $apiChunk[0]['signature']);
-        $this->assertSame($publicKey, $apiChunk[0]['public_key']);
+        static::assertArrayHasKey('transaction', $apiChunk[0]);
+        static::assertArrayHasKey('signature', $apiChunk[0]);
+        static::assertSame($signature, $apiChunk[0]['signature']);
+        static::assertSame($publicKey, $apiChunk[0]['public_key']);
 
         // Teardown
         unlink($apiChunkFile);

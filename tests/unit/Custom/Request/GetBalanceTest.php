@@ -8,10 +8,10 @@ class GetBalanceTest extends TestCase
 {
     public function testSutInheritsAbstractRequest()
     {
-        # Arrange
+        // Arrange
         $sut = new GetBalance();
 
-        # Assert
-        $this->assertInstanceOf(AbstractRequest::class, $sut);
+        // Assert
+        static::assertInstanceOf(AbstractRequest::class, $sut);
     }
 }

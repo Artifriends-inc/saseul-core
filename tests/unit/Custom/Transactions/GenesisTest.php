@@ -20,7 +20,7 @@ class GenesisTest extends TestCase
     private $timeStamp;
     private $coin_amount;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new Genesis();
         $this->sutName = 'Genesis';
@@ -36,7 +36,7 @@ class GenesisTest extends TestCase
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
-        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
+        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullCoinAmountThenGetValidityReturnsFalse(): void
@@ -51,13 +51,17 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNonNumericCoinAmountThenGetValidityReturnsFalse(): void
@@ -74,13 +78,17 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenZeroCoinAmountThenGetValidityReturnsFalse(): void
@@ -97,13 +105,17 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNegativeCoinlAmountThenGetValidityReturnsFalse(): void
@@ -120,13 +132,17 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenCoinAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
@@ -143,13 +159,17 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     private function makeHash($transaction)

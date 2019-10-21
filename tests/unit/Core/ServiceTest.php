@@ -29,7 +29,7 @@ class ServiceTest extends TestCase
         $act = Service::initApi();
 
         // Assert
-        $this->assertFalse($act);
+        static::assertFalse($act);
     }
 
     public function testGivenEmptyEnvThenInitScriptRaisesException(): void
@@ -41,7 +41,7 @@ class ServiceTest extends TestCase
         $act = Service::initScript();
 
         // Assert
-        $this->assertFalse($act);
+        static::assertFalse($act);
     }
 
     public function testGivenEmptyEnvThenInitDaemonRaisesException(): void
@@ -53,14 +53,14 @@ class ServiceTest extends TestCase
         $act = Service::initDaemon();
 
         // Assert
-        $this->assertFalse($act);
+        static::assertFalse($act);
     }
 
     private function prepareEnv(): void
     {
-        putenv("NODE_HOST=");
-        putenv("NODE_ADDRESS=");
-        putenv("NODE_PUBLIC_KEY=");
-        putenv("NODE_PRIVATE_KEY=");
+        putenv('NODE_HOST=');
+        putenv('NODE_ADDRESS=');
+        putenv('NODE_PUBLIC_KEY=');
+        putenv('NODE_PRIVATE_KEY=');
     }
 }

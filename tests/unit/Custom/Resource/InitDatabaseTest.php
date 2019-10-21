@@ -2,10 +2,10 @@
 
 namespace Saseul\tests\Custom\Resource;
 
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Saseul\Common\AbstractResource;
 use Saseul\Custom\Resource\InitDatabase;
-use PHPUnit\Framework\TestCase;
 use Saseul\System\Key;
 
 class InitDatabaseTest extends TestCase
@@ -22,7 +22,7 @@ class InitDatabaseTest extends TestCase
     public function testSutInheritsAbstractRequest(): void
     {
         // Assert
-        $this->assertInstanceOf(AbstractResource::class, $this->sut);
+        static::assertInstanceOf(AbstractResource::class, $this->sut);
     }
 
     public function testGivenInvalidFromAddressThenGetValidityMethodReturnsFalse(): void
@@ -45,6 +45,6 @@ class InitDatabaseTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 }

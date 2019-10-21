@@ -1,8 +1,7 @@
 <?php
 
-
-use Saseul\Util\DateTime;
 use PHPUnit\Framework\TestCase;
+use Saseul\Util\DateTime;
 
 class DateTimeTest extends TestCase
 {
@@ -12,7 +11,7 @@ class DateTimeTest extends TestCase
         // Act
         $today = DateTime::Date();
         // Assert
-        $this->assertSame(date('YmdHis'), $today);
-        $this->assertIsString($today);
+        static::assertSame(date('YmdHis'), $today);
+        static::assertIsString($today);
     }
 }

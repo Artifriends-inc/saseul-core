@@ -23,7 +23,7 @@ class CreateTokenTest extends TestCase
     private $token_name;
     private $token_publisher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new CreateToken();
         $this->sutName = 'CreateToken';
@@ -36,13 +36,15 @@ class CreateTokenTest extends TestCase
         Env::$genesis['coin_amount'] = $this->token_amount + 100;
         $this->token_name = 'token name';
         $this->token_publisher = str_repeat(
-            '*', Account::ADDRESS_SIZE);
+            '*',
+            Account::ADDRESS_SIZE
+        );
     }
 
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
-        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
+        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullTokenAmountThenGetValidityReturnsFalse(): void
@@ -59,13 +61,17 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenZeroTokenAmountThenGetValidityReturnsFalse(): void
@@ -83,13 +89,17 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenTokenAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
@@ -108,13 +118,17 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNonStringTokenNameThenGetValidityReturnsFalse(): void
@@ -133,13 +147,17 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenTokenNameMoreThan63ThenGetValidityReturnsFalse(): void
@@ -158,13 +176,17 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenNonStringTokenPublisherThenGetValidityReturnsFalse(): void
@@ -183,13 +205,17 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     public function testGivenWrongSizeTokenPublisherThenGetValidityReturnsFalse(): void
@@ -208,13 +234,17 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
 
         // Assert
-        $this->assertFalse($actual);
+        static::assertFalse($actual);
     }
 
     private function makeHash($transaction)
