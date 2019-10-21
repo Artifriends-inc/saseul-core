@@ -27,7 +27,9 @@ class TransactionTest extends TestCase
         $sut = new Transaction();
 
         // Assert
-        static::assertInstanceOf(ExternalApi::class, $sut);
+        $this->assertInstanceOf(ExternalApi::class, $sut);
+        $this->assertInstanceOf(ExternalApi::class, $sut);     // $this를 쓰나 static을 쓰나 결국 같은 코드를 실행
+                                                                        // assertInstanceOf는 static 으로 함수가 선언되어 있다.
     }
 
     public function testValidSendCoinTransactionReturnsOK(): void
@@ -41,15 +43,15 @@ class TransactionTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        static::assertNotNull($actual);
-        static::assertInstanceOf(HttpResponse::class, $actual);
-        static::assertSame(HttpStatus::OK, $actual->getCode());
-        static::assertIsArray($actual->getData());
-        static::assertTrue(array_key_exists('message', $actual->getData()));
-        static::assertTrue(array_key_exists('transaction', $actual->getData()));
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertSame(HttpStatus::OK, $actual->getCode());
+        $this->assertIsArray($actual->getData());
+        $this->assertTrue(array_key_exists('message', $actual->getData()));
+        $this->assertTrue(array_key_exists('transaction', $actual->getData()));
         $this->assertAddedTransactionExactly();
-        static::assertTrue(array_key_exists('public_key', $actual->getData()));
-        static::assertTrue(array_key_exists('signature', $actual->getData()));
+        $this->assertTrue(array_key_exists('public_key', $actual->getData()));
+        $this->assertTrue(array_key_exists('signature', $actual->getData()));
     }
 
     public function testGivenNonExistentTypeThenReturnsNotFound(): void
@@ -63,9 +65,9 @@ class TransactionTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        static::assertNotNull($actual);
-        static::assertInstanceOf(HttpResponse::class, $actual);
-        static::assertSame(HttpStatus::NOT_FOUND, $actual->getCode());
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertSame(HttpStatus::NOT_FOUND, $actual->getCode());
     }
 
     public function testGivenInvalidPublicKeyThenReturnsBadRequest(): void
@@ -81,9 +83,9 @@ class TransactionTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        static::assertNotNull($actual);
-        static::assertInstanceOf(HttpResponse::class, $actual);
-        static::assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
     }
 
     public function testGivenInvalidSignatureThenRaisesException(): void
@@ -101,18 +103,18 @@ class TransactionTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        static::assertNotNull($actual);
-        static::assertInstanceOf(HttpResponse::class, $actual);
-        static::assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
     }
 
     private function assertAddedTransactionExactly(): void
     {
         $actual = $this->getChunkOfTransaction();
-        static::assertIsArray($actual);
-        static::assertCount(count($actual), $this->transaction);
+        $this->assertIsArray($actual);
+        $this->assertCount(count($actual), $this->transaction);
         foreach ($actual as $key => $value) {
-            static::assertSame($this->transaction[$key], $value);
+            $this->assertSame($this->transaction[$key], $value);
         }
     }
 

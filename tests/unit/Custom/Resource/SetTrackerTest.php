@@ -33,7 +33,7 @@ class SetTrackerTest extends TestCase
         $actual = $this->sut->getResponse();
 
         // Assert
-        static::assertSame(Rank::VALIDATOR, $actual['role']);
+        $this->assertSame(Rank::VALIDATOR, $actual['role']);
     }
 
     public function testGivenLightNodeAddressThenProcessCheck(): void
@@ -46,6 +46,6 @@ class SetTrackerTest extends TestCase
         $actual = $this->sut->getResponse();
 
         // Assert
-        static::assertSame(Rank::LIGHT, $actual['role']);
+        $this->assertSame(Rank::LIGHT, $actual['role']);
     }
 }

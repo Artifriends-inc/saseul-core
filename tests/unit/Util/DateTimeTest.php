@@ -11,7 +11,7 @@ class DateTimeTest extends TestCase
         // Act
         $today = DateTime::Date();
         // Assert
-        static::assertSame(date('YmdHis'), $today);
-        static::assertIsString($today);
+        $this->assertSame(date('YmdHis'), $today);
+        $this->assertIsString($today);
     }
 }

@@ -12,6 +12,6 @@ class GetTokenBalanceTest extends TestCase
         $sut = new GetTokenBalance();
 
         // Assert
-        static::assertInstanceOf(AbstractRequest::class, $sut);
+        $this->assertInstanceOf(AbstractRequest::class, $sut);
     }
 }

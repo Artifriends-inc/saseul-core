@@ -36,7 +36,7 @@ class GenesisTest extends TestCase
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
-        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
+        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullCoinAmountThenGetValidityReturnsFalse(): void
@@ -61,7 +61,7 @@ class GenesisTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonNumericCoinAmountThenGetValidityReturnsFalse(): void
@@ -88,7 +88,7 @@ class GenesisTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenZeroCoinAmountThenGetValidityReturnsFalse(): void
@@ -115,7 +115,7 @@ class GenesisTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNegativeCoinlAmountThenGetValidityReturnsFalse(): void
@@ -142,7 +142,7 @@ class GenesisTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenCoinAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
@@ -169,7 +169,7 @@ class GenesisTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     private function makeHash($transaction)

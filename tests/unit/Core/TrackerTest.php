@@ -32,7 +32,7 @@ class TrackerTest extends TestCase
         $actual = Tracker::addTrackerOnDb();
 
         // Assert
-        static::assertSame(Rank::VALIDATOR, $actual);
+        $this->assertSame(Rank::VALIDATOR, $actual);
     }
 
     public function testGivenLightNodeAddressThenAddTrackerOnDbReturnLightNode(): void
@@ -44,7 +44,7 @@ class TrackerTest extends TestCase
         $actual = Tracker::addTrackerOnDb();
 
         // Assert
-        static::assertSame(Rank::LIGHT, $actual);
+        $this->assertSame(Rank::LIGHT, $actual);
     }
 
     public function testGivenNotValidatorNodeAddressThenIsValidatorReturnFalse(): void
@@ -56,7 +56,7 @@ class TrackerTest extends TestCase
         $actual = Tracker::isValidator($address);
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenValidatorNodeAddressThenIsValidatorReturnTrue(): void
@@ -75,6 +75,6 @@ class TrackerTest extends TestCase
         $actual = Tracker::isValidator($address);
 
         // Assert
-        static::assertTrue($actual);
+        $this->assertTrue($actual);
     }
 }

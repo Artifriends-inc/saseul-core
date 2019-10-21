@@ -12,6 +12,6 @@ class GetMyTransactionTest extends TestCase
         $sut = new GetMyTransaction();
 
         // Assert
-        static::assertInstanceOf(AbstractRequest::class, $sut);
+        $this->assertInstanceOf(AbstractRequest::class, $sut);
     }
 }

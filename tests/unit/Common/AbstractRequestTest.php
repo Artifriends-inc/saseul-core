@@ -29,7 +29,7 @@ class AbstractRequestTest extends TestCase
         $actual = $sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonTimestampThenGetValidityMethodReturnsFalse()
@@ -54,7 +54,7 @@ class AbstractRequestTest extends TestCase
         $actual = $sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenInvalidFromThenGetValidityMethodReturnsFalse()
@@ -80,7 +80,7 @@ class AbstractRequestTest extends TestCase
         $actual = $sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenInvalidSignatureThenGetValidityMethodReturnsFalse()
@@ -106,7 +106,7 @@ class AbstractRequestTest extends TestCase
         $actual = $sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenValidRequestThenGetValidityMethodReturnsTrue()
@@ -132,6 +132,6 @@ class AbstractRequestTest extends TestCase
         $actual = $sut->getValidity();
 
         // Assert
-        static::assertTrue($actual);
+        $this->assertTrue($actual);
     }
 }

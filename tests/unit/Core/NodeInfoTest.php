@@ -17,7 +17,7 @@ class NodeInfoTest extends TestCase
         $act = NodeInfo::isExist();
 
         // Assert
-        static::assertTrue($act);
+        $this->assertTrue($act);
     }
 
     public function testGivenEmptyEnvThenFalse(): void
@@ -29,7 +29,7 @@ class NodeInfoTest extends TestCase
         $act = NodeInfo::isExist();
 
         // Assert
-        static::assertFalse($act);
+        $this->assertFalse($act);
     }
 
     public function testGetPrivateKey(): void
@@ -41,7 +41,7 @@ class NodeInfoTest extends TestCase
         $act = NodeInfo::getPrivateKey();
 
         // Assert
-        static::assertSame(Env::$nodeInfo['private_key'], $act);
+        $this->assertSame(Env::$nodeInfo['private_key'], $act);
     }
 
     public function testGetPublicKey(): void
@@ -53,7 +53,7 @@ class NodeInfoTest extends TestCase
         $act = NodeInfo::getPublicKey();
 
         // Assert
-        static::assertSame(Env::$nodeInfo['public_key'], $act);
+        $this->assertSame(Env::$nodeInfo['public_key'], $act);
     }
 
     public function testGetHost(): void
@@ -65,7 +65,7 @@ class NodeInfoTest extends TestCase
         $act = NodeInfo::getHost();
 
         // Assert
-        static::assertSame(Env::$nodeInfo['host'], $act);
+        $this->assertSame(Env::$nodeInfo['host'], $act);
     }
 
     public function testGetAddress(): void
@@ -77,6 +77,6 @@ class NodeInfoTest extends TestCase
         $act = NodeInfo::getAddress();
 
         // Assert
-        static::assertSame(Env::$nodeInfo['address'], $act);
+        $this->assertSame(Env::$nodeInfo['address'], $act);
     }
 }

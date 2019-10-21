@@ -12,6 +12,6 @@ class GetBalanceTest extends TestCase
         $sut = new GetBalance();
 
         // Assert
-        static::assertInstanceOf(AbstractRequest::class, $sut);
+        $this->assertInstanceOf(AbstractRequest::class, $sut);
     }
 }

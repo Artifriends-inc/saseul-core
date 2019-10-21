@@ -38,7 +38,7 @@ class DepositTest extends TestCase
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
-        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
+        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullCoinAmountThenGetValidityReturnsFalse(): void
@@ -64,7 +64,7 @@ class DepositTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonNumericCoinAmountThenGetValidityReturnsFalse(): void
@@ -92,7 +92,7 @@ class DepositTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenZeroCoinAmountThenGetValidityReturnsFalse(): void
@@ -120,7 +120,7 @@ class DepositTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNegativeCoinAmountThenGetValidityReturnsFalse(): void
@@ -148,7 +148,7 @@ class DepositTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenCoinAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
@@ -176,7 +176,7 @@ class DepositTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNullFeeThenGetValidityReturnsFalse(): void
@@ -202,7 +202,7 @@ class DepositTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonNumericFeeThenGetValidityReturnsFalse(): void
@@ -230,7 +230,7 @@ class DepositTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNegativeFeeThenGetValidityReturnsFalse(): void
@@ -258,7 +258,7 @@ class DepositTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     private function makeHash($transaction)

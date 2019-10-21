@@ -51,7 +51,7 @@ class GetBlockCountTest extends TestCase
         $blockCount = Block::getCount();
 
         // Assert
-        static::assertSame(0, $blockCount);
+        $this->assertSame(0, $blockCount);
     }
 
     public function testGivenBlockDataThenCountBlock(): void
@@ -67,6 +67,6 @@ class GetBlockCountTest extends TestCase
         $blockCount = Block::getCount();
 
         // Assert
-        static::assertSame(2, $blockCount);
+        $this->assertSame(2, $blockCount);
     }
 }

@@ -37,7 +37,7 @@ class SendTokenTest extends TestCase
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
-        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
+        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullToThenGetValidityReturnsFalse(): void
@@ -67,7 +67,7 @@ class SendTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonStringToThenGetValidityReturnsFalse(): void
@@ -98,7 +98,7 @@ class SendTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenWrongSizeToThenGetValidityReturnsFalse(): void
@@ -129,7 +129,7 @@ class SendTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNullAmountThenGetValidityReturnsFalse(): void
@@ -159,7 +159,7 @@ class SendTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonNumericAmountThenGetValidityReturnsFalse(): void
@@ -181,7 +181,7 @@ class SendTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNegativeAmountThenGetValidityReturnsFalse(): void
@@ -212,7 +212,7 @@ class SendTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenAmountZeroThenGetValidityReturnsFalse(): void
@@ -243,6 +243,6 @@ class SendTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 }

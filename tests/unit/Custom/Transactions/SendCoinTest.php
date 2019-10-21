@@ -41,7 +41,7 @@ class SendCoinTest extends TestCase
     public function testSutAbstractTransaction(): void
     {
         // Assert
-        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
+        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullToThenGetValidityReturnsFalse(): void
@@ -72,7 +72,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonStringToThenGetValidityReturnsFalse(): void
@@ -104,7 +104,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenWrongSizeToThenGetValidityReturnsFalse(): void
@@ -136,7 +136,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNullAmountThenGetValidityReturnsFalse(): void
@@ -167,7 +167,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonNumericAmountThenGetValidityReturnsFalse(): void
@@ -190,7 +190,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNegativeAmountThenGetValidityReturnsFalse(): void
@@ -222,7 +222,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenAmountZeroThenGetValidityReturnsFalse(): void
@@ -254,7 +254,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNullFeeThenGetValidityReturnsFalse(): void
@@ -285,7 +285,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonNumericFeeThenGetValidityReturnsFalse(): void
@@ -317,7 +317,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNegativeFeeThenGetValidityReturnsFalse(): void
@@ -349,7 +349,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
@@ -382,7 +382,7 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenValidTransactionThenGetValidityReturnsTrue(): void
@@ -414,6 +414,6 @@ class SendCoinTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertTrue($actual);
+        $this->assertTrue($actual);
     }
 }

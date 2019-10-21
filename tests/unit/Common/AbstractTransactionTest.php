@@ -35,7 +35,7 @@ class AbstractTransactionTest extends TestCase
         $sut = new ReflectionClass(AbstractTransaction::class);
 
         // Assert
-        static::assertTrue($sut->isAbstract());
+        $this->assertTrue($sut->isAbstract());
     }
 
     public function testGivenNonVersionThenGetValidityMethodReturnsFalse(): void
@@ -54,7 +54,7 @@ class AbstractTransactionTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenInvalidTypeThenGetValidityMethodReturnsFalse(): void
@@ -73,7 +73,7 @@ class AbstractTransactionTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonTimestampThenGetValidityMethodReturnsFalse(): void
@@ -92,7 +92,7 @@ class AbstractTransactionTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenInvalidFromThenGetValidityMethodReturnsFalse(): void
@@ -112,7 +112,7 @@ class AbstractTransactionTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenInvalidSignatureThenGetValidityMethodReturnsFalse(): void
@@ -133,7 +133,7 @@ class AbstractTransactionTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenValidTransactionThenGetValidityMethodReturnsTrue(): void
@@ -153,6 +153,6 @@ class AbstractTransactionTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertTrue($actual);
+        $this->assertTrue($actual);
     }
 }

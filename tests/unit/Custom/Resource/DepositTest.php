@@ -26,7 +26,7 @@ class DepositTest extends TestCase
     public function testSutInheritsAbstractRequest(): void
     {
         // Assert
-        static::assertInstanceOf(AbstractResource::class, $this->sut);
+        $this->assertInstanceOf(AbstractResource::class, $this->sut);
     }
 
     public function testGivenBlockDataThenProcessCheck(): void
@@ -52,10 +52,10 @@ class DepositTest extends TestCase
         $apiChunkFile = Directory::API_CHUNKS . '/' . $apiChunkId . '.json';
         $apiChunk = Chunk::getChunk($apiChunkFile);
 
-        static::assertArrayHasKey('transaction', $apiChunk[0]);
-        static::assertArrayHasKey('signature', $apiChunk[0]);
-        static::assertSame($signature, $apiChunk[0]['signature']);
-        static::assertSame($publicKey, $apiChunk[0]['public_key']);
+        $this->assertArrayHasKey('transaction', $apiChunk[0]);
+        $this->assertArrayHasKey('signature', $apiChunk[0]);
+        $this->assertSame($signature, $apiChunk[0]['signature']);
+        $this->assertSame($publicKey, $apiChunk[0]['public_key']);
 
         // Teardown
         unlink($apiChunkFile);

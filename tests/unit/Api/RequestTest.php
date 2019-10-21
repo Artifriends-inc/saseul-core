@@ -19,7 +19,7 @@ class RequestTest extends TestCase
         $sut = new Request();
 
         // Assert
-        static::assertInstanceOf(ExternalApi::class, $sut);
+        $this->assertInstanceOf(ExternalApi::class, $sut);
     }
 
     public function testValidRequestReturnsOK(): void
@@ -33,12 +33,12 @@ class RequestTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        static::assertNotNull($actual);
-        static::assertInstanceOf(HttpResponse::class, $actual);
-        static::assertSame(HttpStatus::OK, $actual->getCode());
-        static::assertIsArray($actual->getData());
-        static::assertTrue(array_key_exists('balance', $actual->getData()));
-        static::assertTrue(array_key_exists('deposit', $actual->getData()));
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertSame(HttpStatus::OK, $actual->getCode());
+        $this->assertIsArray($actual->getData());
+        $this->assertTrue(array_key_exists('balance', $actual->getData()));
+        $this->assertTrue(array_key_exists('deposit', $actual->getData()));
     }
 
     public function testGivenNonExistentTypeThenReturnsNotFound(): void
@@ -52,9 +52,9 @@ class RequestTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        static::assertNotNull($actual);
-        static::assertInstanceOf(HttpResponse::class, $actual);
-        static::assertSame(HttpStatus::NOT_FOUND, $actual->getCode());
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertSame(HttpStatus::NOT_FOUND, $actual->getCode());
     }
 
     public function testGivenInvalidPublicKeyThenReturnsBadRequest(): void
@@ -70,9 +70,9 @@ class RequestTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        static::assertNotNull($actual);
-        static::assertInstanceOf(HttpResponse::class, $actual);
-        static::assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
     }
 
     public function testGivenInvalidSignatureThenRaisesException(): void
@@ -90,9 +90,9 @@ class RequestTest extends TestCase
         $actual = $sut->invoke($request);
 
         // Assert
-        static::assertNotNull($actual);
-        static::assertInstanceOf(HttpResponse::class, $actual);
-        static::assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
+        $this->assertNotNull($actual);
+        $this->assertInstanceOf(HttpResponse::class, $actual);
+        $this->assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
     }
 
     private function prepareRequest($type): void

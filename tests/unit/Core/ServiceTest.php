@@ -29,7 +29,7 @@ class ServiceTest extends TestCase
         $act = Service::initApi();
 
         // Assert
-        static::assertFalse($act);
+        $this->assertFalse($act);
     }
 
     public function testGivenEmptyEnvThenInitScriptRaisesException(): void
@@ -41,7 +41,7 @@ class ServiceTest extends TestCase
         $act = Service::initScript();
 
         // Assert
-        static::assertFalse($act);
+        $this->assertFalse($act);
     }
 
     public function testGivenEmptyEnvThenInitDaemonRaisesException(): void
@@ -53,7 +53,7 @@ class ServiceTest extends TestCase
         $act = Service::initDaemon();
 
         // Assert
-        static::assertFalse($act);
+        $this->assertFalse($act);
     }
 
     private function prepareEnv(): void

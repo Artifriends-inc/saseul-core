@@ -32,7 +32,7 @@ class ChangeRoleTest extends TestCase
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
-        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
+        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullRoleThenGetValidityReturnsFalse(): void
@@ -57,7 +57,7 @@ class ChangeRoleTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonStringRoleThenGetValidityReturnsFalse(): void
@@ -83,7 +83,7 @@ class ChangeRoleTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     private function makeHash($transaction)

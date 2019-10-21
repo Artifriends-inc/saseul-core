@@ -22,7 +22,7 @@ class InitDatabaseTest extends TestCase
     public function testSutInheritsAbstractRequest(): void
     {
         // Assert
-        static::assertInstanceOf(AbstractResource::class, $this->sut);
+        $this->assertInstanceOf(AbstractResource::class, $this->sut);
     }
 
     public function testGivenInvalidFromAddressThenGetValidityMethodReturnsFalse(): void
@@ -45,6 +45,6 @@ class InitDatabaseTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 }

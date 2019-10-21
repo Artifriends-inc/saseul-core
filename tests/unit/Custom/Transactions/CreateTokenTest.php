@@ -44,7 +44,7 @@ class CreateTokenTest extends TestCase
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
-        static::assertInstanceOf(AbstractTransaction::class, $this->sut);
+        $this->assertInstanceOf(AbstractTransaction::class, $this->sut);
     }
 
     public function testGivenNullTokenAmountThenGetValidityReturnsFalse(): void
@@ -71,7 +71,7 @@ class CreateTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenZeroTokenAmountThenGetValidityReturnsFalse(): void
@@ -99,7 +99,7 @@ class CreateTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenTokenAmountMoreThanGenesisCoinThenGetValidityReturnsFalse(): void
@@ -128,7 +128,7 @@ class CreateTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonStringTokenNameThenGetValidityReturnsFalse(): void
@@ -157,7 +157,7 @@ class CreateTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenTokenNameMoreThan63ThenGetValidityReturnsFalse(): void
@@ -186,7 +186,7 @@ class CreateTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenNonStringTokenPublisherThenGetValidityReturnsFalse(): void
@@ -215,7 +215,7 @@ class CreateTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     public function testGivenWrongSizeTokenPublisherThenGetValidityReturnsFalse(): void
@@ -244,7 +244,7 @@ class CreateTokenTest extends TestCase
         $actual = $this->sut->getValidity();
 
         // Assert
-        static::assertFalse($actual);
+        $this->assertFalse($actual);
     }
 
     private function makeHash($transaction)

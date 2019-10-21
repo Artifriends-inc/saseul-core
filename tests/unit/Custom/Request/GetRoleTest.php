@@ -12,6 +12,6 @@ class GetRoleTest extends TestCase
         $sut = new GetRole();
 
         // Assert
-        static::assertInstanceOf(AbstractRequest::class, $sut);
+        $this->assertInstanceOf(AbstractRequest::class, $sut);
     }
 }
