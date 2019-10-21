@@ -28,8 +28,6 @@ class TransactionTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(ExternalApi::class, $sut);
-        $this->assertInstanceOf(ExternalApi::class, $sut);     // $this를 쓰나 static을 쓰나 결국 같은 코드를 실행
-                                                                        // assertInstanceOf는 static 으로 함수가 선언되어 있다.
     }
 
     public function testValidSendCoinTransactionReturnsOK(): void
