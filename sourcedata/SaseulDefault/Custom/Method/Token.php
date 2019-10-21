@@ -37,26 +37,4 @@ class Token
 
         return $all;
     }
-
-    public static function SetAll($all)
-    {
-        $db = Database::getInstance();
-
-        foreach ($all as $address => $item) {
-            foreach ($item as $token_name => $balance) {
-                $filter = ['address' => $address, 'token_name' => $token_name];
-                $row = [
-                    '$set' => [
-                        'balance' => $balance,
-                    ],
-                ];
-                $opt = ['upsert' => true];
-                $db->bulk->update($filter, $row, $opt);
-            }
-        }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_TOKEN);
-        }
-    }
 }
