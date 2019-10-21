@@ -47,25 +47,4 @@ class Coin
 
         return $all;
     }
-
-    public static function SetAll($all)
-    {
-        $db = Database::getInstance();
-
-        foreach ($all as $address => $item) {
-            $filter = ['address' => $address];
-            $row = [
-                '$set' => [
-                    'balance' => $item['balance'],
-                    'deposit' => $item['deposit'],
-                ],
-            ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
-        }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_COIN);
-        }
-    }
 }
