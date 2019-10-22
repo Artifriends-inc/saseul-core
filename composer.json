@@ -42,6 +42,8 @@
         "ext-json": "*",
         "ext-mongodb": "^1.6",
         "ext-http": "*",
+        "ext-fileinfo": "*",
+        "ext-memcached": "*",
         "guzzlehttp/guzzle": "^6",
         "mongodb/mongodb": "^1.5"
     },
@@ -54,7 +56,7 @@
     },
     "scripts": {
         "docker-build": [
-            "DOCKER_BUILDKIT=1 docker build -t saseul-core ."
+            "DOCKER_BUILDKIT=1 docker build --rm --force-rm --no-cache --pull -t saseul-core ."
         ],
         "docker-up": [
             "docker-compose up -d"
@@ -94,11 +96,14 @@
         "ci-phan": [
             "@phan"
         ],
+        "ci-docker-build": [
+            "docker build -t saseul-core ."
+        ],
         "ci-fix": [
             "./vendor/bin/php-cs-fixer fix --using-cache=no --dry-run --diff"
         ],
         "ci-test": [
-            "./vendor/bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover build/logs/clover.xml"
+            "docker-compose run --user='root' -T --rm node bash -c './vendor/bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover build/logs/clover.xml'"
         ],
         "init-db": [
             "@docker-up",

@@ -3,12 +3,20 @@
 namespace Saseul\Tests\Unit\Core;
 
 use PHPUnit\Framework\TestCase;
+use Saseul\Constant\Directory;
 use Saseul\Core\Generation;
+use Saseul\Core\Property;
 use Saseul\System\Database;
 
 class GenerationTest extends TestCase
 {
+    protected static $archiveFile;
     private $db;
+
+    public static function tearDownAfterClass(): void
+    {
+        unlink(self::$archiveFile);
+    }
 
     protected function setUp(): void
     {
@@ -48,5 +56,17 @@ class GenerationTest extends TestCase
         $actural = $this->db->getGenerationsCollection()->findOne(['origin_blockhash' => $insertFinalizeData['origin_blockhash']]);
         $this->assertSame($insertFinalizeData['origin_blockhash'], $actural['origin_blockhash']);
         $this->assertSame($insertFinalizeData['final_blockhash'], $actural['final_blockhash']);
+    }
+
+    public function testArchiveSource(): void
+    {
+        // Act
+        Generation::archiveSource();
+
+        // Assert
+        $sourceHash = (new Property())->getSourceHash();
+        self::$archiveFile = Directory::TAR_SOURCE_DIR . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
+
+        $this->assertTrue(is_file(self::$archiveFile));
     }
 }

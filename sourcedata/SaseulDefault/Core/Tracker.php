@@ -212,7 +212,7 @@ class Tracker
      *
      * @param array $nodeInfoList 알고 있는 Node 들의 정보
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function setHosts(array $nodeInfoList): void
     {

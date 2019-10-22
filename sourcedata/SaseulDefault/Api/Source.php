@@ -28,7 +28,7 @@ class Source extends Api
         }
 
         $sourceHash = $generation['source_hash'];
-        $sourceName = Directory::SOURCE . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
+        $sourceName = Directory::TAR_SOURCE_DIR . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
         $this->findGz($sourceName);
     }
 
