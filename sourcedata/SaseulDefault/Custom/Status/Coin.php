@@ -2,6 +2,7 @@
 
 namespace Saseul\Custom\Status;
 
+use Exception;
 use Saseul\Common\Status;
 use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
@@ -80,32 +81,39 @@ class Coin extends Status
         }
     }
 
+    /**
+     * Coin 값을 DB에 저장한다.
+     *
+     * @throws Exception
+     */
     public static function _Save()
     {
         $db = Database::getInstance();
 
-        foreach (self::$balances as $k => $v) {
-            $filter = ['address' => $k];
-            $row = [
-                '$set' => ['balance' => $v],
-            ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
-        }
+        $balanceOperation = static::upsertCoinDB('balance', self::$balances);
+        $depositOperation = static::upsertCoinDB('deposit', self::$deposits);
 
-        foreach (self::$deposits as $k => $v) {
-            $filter = ['address' => $k];
-            $row = [
-                '$set' => ['deposit' => $v],
-            ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
-        }
+        $operations = array_merge($balanceOperation, $depositOperation);
 
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_COIN);
-        }
+        $db->getCoinCollection()->bulkWrite($operations);
 
         self::_Reset();
+    }
+
+    private static function upsertCoinDB(string $type, array $memData): array
+    {
+        $operations = [];
+
+        foreach ($memData as $key => $value) {
+            $operations[] = [
+                'updateOne' => [
+                    ['address' => $key],
+                    ['$set' => [$type => $value]],
+                    ['upsert' => true],
+                ]
+            ];
+        }
+
+        return $operations;
     }
 }
