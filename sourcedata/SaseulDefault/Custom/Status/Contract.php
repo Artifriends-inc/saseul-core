@@ -2,11 +2,17 @@
 
 namespace Saseul\Custom\Status;
 
+use Exception;
 use Saseul\Common\Status;
 use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
+/**
+ * Class Contract.
+ *
+ * 사용하지 않고 있다.
+ */
 class Contract extends Status
 {
     protected static $cids = [];
@@ -71,36 +77,39 @@ class Contract extends Status
         }
     }
 
+    /**
+     * Contract 정보를 저장한다.
+     *
+     * @throws Exception
+     */
     public static function _Save()
     {
         $db = Database::getInstance();
 
-        foreach (self::$contracts as $k => $v) {
-            $filter = ['cid' => $k];
-            $row = [
-                '$set' => [
-                    'contract' => $v,
-                    'status' => 'active',
-                ],
+        $operations = [];
+        foreach (self::$contracts as $key => $value) {
+            $operations[] = [
+                'updateOne' => [
+                    ['cid' => $key],
+                    ['$set' => [
+                        'contract' => $value,
+                        'status' => 'active'
+                    ]],
+                    ['upsert' => true],
+                ]
             ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
         }
 
         foreach (self::$burn_cids as $cid) {
-            $filter = ['cid' => $cid];
-            $row = [
-                '$set' => [
-                    'status' => 'burn',
-                ],
+            $operations[] = [
+                'updateOne' => [
+                    ['cid' => $cid],
+                    ['$set' => ['status' => 'burn']],
+                    ['upsert' => true],
+                ]
             ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
         }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_CONTRACT);
-        }
+        $db->getContractCollection()->bulkWrite($operations);
 
         self::_Reset();
     }
