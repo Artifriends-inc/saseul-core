@@ -20,7 +20,7 @@ class GenesisTest extends TestCase
     private $timeStamp;
     private $coin_amount;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new Genesis();
         $this->sutName = 'Genesis';
@@ -51,7 +51,11 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -74,7 +78,11 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -97,7 +105,11 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -120,7 +132,11 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -143,7 +159,11 @@ class GenesisTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();

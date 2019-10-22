@@ -8,10 +8,10 @@ class GetTokenBalanceTest extends TestCase
 {
     public function testSutInheritsAbstractRequest()
     {
-        # Arrange
+        // Arrange
         $sut = new GetTokenBalance();
 
-        # Assert
+        // Assert
         $this->assertInstanceOf(AbstractRequest::class, $sut);
     }
 }

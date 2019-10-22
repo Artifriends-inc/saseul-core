@@ -23,7 +23,7 @@ class SendCoinTest extends TestCase
     private $amount;
     private $fee;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new SendCoin();
         $this->sutName = 'SendCoin';
@@ -57,9 +57,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -82,9 +89,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -107,9 +121,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -131,9 +152,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -179,9 +207,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -204,9 +239,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -228,9 +270,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -253,9 +302,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -278,9 +334,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -304,9 +367,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -329,9 +399,16 @@ class SendCoinTest extends TestCase
         ];
         $thash = hash('sha256', json_encode($transaction));
         $signature = Key::makeSignature(
-            $thash, $this->privateKey, $this->publicKey);
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();

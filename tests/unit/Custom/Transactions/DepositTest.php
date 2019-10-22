@@ -21,7 +21,7 @@ class DepositTest extends TestCase
     private $coin_amount;
     private $fee;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new Deposit();
         $this->sutName = 'Deposit';
@@ -54,7 +54,11 @@ class DepositTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -78,7 +82,11 @@ class DepositTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -102,7 +110,11 @@ class DepositTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -126,7 +138,11 @@ class DepositTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -150,7 +166,11 @@ class DepositTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -172,7 +192,11 @@ class DepositTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -196,7 +220,11 @@ class DepositTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -220,7 +248,11 @@ class DepositTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();

@@ -21,7 +21,7 @@ class WithdrawTest extends TestCase
     private $withdrawal_amount;
     private $fee;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new Withdraw();
         $this->sutName = 'Withdraw';
@@ -34,6 +34,7 @@ class WithdrawTest extends TestCase
         $this->fee = 100;
         Env::$genesis['coin_amount'] = $this->withdrawal_amount + 100;
     }
+
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
@@ -53,7 +54,11 @@ class WithdrawTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -77,7 +82,11 @@ class WithdrawTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -101,7 +110,11 @@ class WithdrawTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -125,7 +138,11 @@ class WithdrawTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -149,7 +166,11 @@ class WithdrawTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -173,7 +194,11 @@ class WithdrawTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -195,7 +220,11 @@ class WithdrawTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -220,7 +249,11 @@ class WithdrawTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();

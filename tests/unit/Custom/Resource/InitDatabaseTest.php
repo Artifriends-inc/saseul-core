@@ -2,10 +2,10 @@
 
 namespace Saseul\tests\Custom\Resource;
 
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Saseul\Common\AbstractResource;
 use Saseul\Custom\Resource\InitDatabase;
-use PHPUnit\Framework\TestCase;
 use Saseul\System\Key;
 
 class InitDatabaseTest extends TestCase

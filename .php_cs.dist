@@ -13,6 +13,7 @@ $finder = PhpCsFixer\Finder::create()
         'sourcedata/SaseulDefault/Script',
         'sourcedata/SaseulDefault/System',
         'sourcedata/SaseulDefault/Util',
+        'tests'
     ])
 ;
 
@@ -31,6 +32,7 @@ return PhpCsFixer\Config::create()
         'trailing_comma_in_multiline_array' => false,
         'strict_comparison' => false,
         'strict_param' => false,
+        'php_unit_test_case_static_method_calls' => [ 'call_type' => 'this' ],
     ])
     ->setFinder($finder)
     ->setRiskyAllowed(true)

@@ -1,8 +1,7 @@
 <?php
 
-
-use Saseul\Util\DateTime;
 use PHPUnit\Framework\TestCase;
+use Saseul\Util\DateTime;
 
 class DateTimeTest extends TestCase
 {

@@ -58,9 +58,9 @@ class ServiceTest extends TestCase
 
     private function prepareEnv(): void
     {
-        putenv("NODE_HOST=");
-        putenv("NODE_ADDRESS=");
-        putenv("NODE_PUBLIC_KEY=");
-        putenv("NODE_PRIVATE_KEY=");
+        putenv('NODE_HOST=');
+        putenv('NODE_ADDRESS=');
+        putenv('NODE_PUBLIC_KEY=');
+        putenv('NODE_PRIVATE_KEY=');
     }
 }

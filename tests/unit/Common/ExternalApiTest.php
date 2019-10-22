@@ -26,7 +26,7 @@ class ExternalApiTest extends TestCase
 
         // Assert
         $this->assertInstanceOf(HttpResponse::class, $actual);
-        $this->assertEquals(HttpStatus::BAD_REQUEST, $actual->getCode());
+        $this->assertSame(HttpStatus::BAD_REQUEST, $actual->getCode());
         $this->assertEmpty($actual->getData());
     }
 }

@@ -18,7 +18,7 @@ class ChangeRoleTest extends TestCase
     private $version;
     private $timeStamp;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new ChangeRole();
         $this->sutName = 'ChangeRole';
@@ -28,6 +28,7 @@ class ChangeRoleTest extends TestCase
         $this->version = '1.0';
         $this->timeStamp = DateTime::Microtime();
     }
+
     public function testSutInheritsAbstractTransaction(): void
     {
         // Assert
@@ -46,7 +47,11 @@ class ChangeRoleTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -68,7 +73,11 @@ class ChangeRoleTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();

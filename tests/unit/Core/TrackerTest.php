@@ -1,6 +1,5 @@
 <?php
 
-
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\Rank;
 use Saseul\Constant\Role;

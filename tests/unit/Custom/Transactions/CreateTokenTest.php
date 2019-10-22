@@ -23,7 +23,7 @@ class CreateTokenTest extends TestCase
     private $token_name;
     private $token_publisher;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = new CreateToken();
         $this->sutName = 'CreateToken';
@@ -36,7 +36,9 @@ class CreateTokenTest extends TestCase
         Env::$genesis['coin_amount'] = $this->token_amount + 100;
         $this->token_name = 'token name';
         $this->token_publisher = str_repeat(
-            '*', Account::ADDRESS_SIZE);
+            '*',
+            Account::ADDRESS_SIZE
+        );
     }
 
     public function testSutInheritsAbstractTransaction(): void
@@ -59,7 +61,11 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -83,7 +89,11 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -108,7 +118,11 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -133,7 +147,11 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -158,7 +176,11 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -183,7 +205,11 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();
@@ -208,7 +234,11 @@ class CreateTokenTest extends TestCase
         $thash = $this->makeHash($transaction);
         $signature = $this->makeSignature($thash);
         $this->sut->initialize(
-            $transaction, $thash, $this->publicKey, $signature);
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
 
         // Act
         $actual = $this->sut->getValidity();

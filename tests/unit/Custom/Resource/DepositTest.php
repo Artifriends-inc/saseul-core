@@ -2,12 +2,12 @@
 
 namespace Saseul\tests\Custom\Resource;
 
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use Saseul\Common\AbstractResource;
 use Saseul\Constant\Directory;
 use Saseul\Core\Chunk;
 use Saseul\Custom\Resource\Deposit;
-use PHPUnit\Framework\TestCase;
-use Saseul\Common\AbstractResource;
 use Saseul\System\Key;
 
 class DepositTest extends TestCase

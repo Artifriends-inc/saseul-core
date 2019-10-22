@@ -18,7 +18,7 @@ class AbstractTransactionTest extends TestCase
     private $version;
     private $timeStamp;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->sut = $this->getMockForAbstractClass(AbstractTransaction::class);
         $this->sutName = (new ReflectionClass(get_class($this->sut)))->getShortName();

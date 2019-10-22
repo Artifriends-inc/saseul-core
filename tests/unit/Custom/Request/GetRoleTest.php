@@ -8,10 +8,10 @@ class GetRoleTest extends TestCase
 {
     public function testSutInheritsAbstractRequest()
     {
-        # Arrange
+        // Arrange
         $sut = new GetRole();
 
-        # Assert
+        // Assert
         $this->assertInstanceOf(AbstractRequest::class, $sut);
     }
 }
