@@ -186,4 +186,36 @@ class TrackerTest extends TestCase
         $this->assertSame($assertData[1]['host'], $changeActural['host']);
         $this->assertSame($assertData[1]['address'], $changeActural['address']);
     }
+
+    public function testGivenMyNodeInfoThenSetMyHost(): void
+    {
+        // Arrange
+        $nodeListData = [
+            [
+                'host' => NodeInfo::getHost(),
+                'address' => NodeInfo::getAddress(),
+            ],
+            [
+                'host' => NodeInfo::getHost(),
+                'address' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e49'
+            ]
+        ];
+        $this->db->getTrackerCollection()->insertMany($nodeListData);
+
+        // Act
+        Tracker::setMyHost();
+
+        // Assert
+        $emptyHostActual = $this->db->getTrackerCollection()->findOne([
+            'address' => $nodeListData[1]['address'],
+        ]);
+        $myHostActual = $this->db->getTrackerCollection()->findOne([
+            'address' => NodeInfo::getAddress(),
+        ]);
+
+        $this->assertSame(NodeInfo::getHost(), $myHostActual['host']);
+
+        $this->assertSame('', $emptyHostActual['host']);
+        $this->assertSame($nodeListData[1]['address'], $emptyHostActual['address']);
+    }
 }

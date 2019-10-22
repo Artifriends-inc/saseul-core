@@ -246,18 +246,30 @@ class Tracker
         $db->getTrackerCollection()->bulkWrite($operations);
     }
 
-    public static function setMyHost()
+    /**
+     * 해당 Node Tracker 정보를 DB에 저장한다.
+     */
+    public static function setMyHost(): void
     {
         $db = Database::getInstance();
         $host = NodeInfo::getHost();
         $address = NodeInfo::getAddress();
 
-        $db->bulk->update(['host' => $host, 'address' => ['$nin' => [null, '']]], ['$set' => ['host' => '']], ['multi' => true]);
-        $db->bulk->update(['address' => $address], ['$set' => ['host' => $host]], ['upsert' => true]);
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
-        }
+        $db->getTrackerCollection()->bulkWrite([
+            [
+                'updateMany' => [
+                    ['host' => $host, 'address' => ['$nin' => [null, '']]],
+                    ['$set' => ['host' => '']],
+                ]
+            ],
+            [
+                'updateOne' => [
+                    ['address' => $address],
+                    ['$set' => ['host' => $host]],
+                    ['upsert' => true],
+                ]
+            ],
+        ]);
     }
 
     public static function registerRequest($infos): void
