@@ -2,10 +2,15 @@
 
 namespace Saseul\Custom\Status;
 
+use Exception;
 use Saseul\Common\Status;
-use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
+/**
+ * Class Fee.
+ *
+ * 사용하고 있지 않다.
+ */
 class Fee extends Status
 {
     protected static $validators = [];
@@ -161,22 +166,34 @@ class Fee extends Status
             $remain = $remain - 1;
         }
 
-        // Set Balance;
-        $db = Database::getInstance();
-
-        foreach ($validators as $validator) {
-            $filter = ['address' => $validator['address']];
-            $row = [
-                '$set' => ['balance' => $validator['balance']],
-            ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
-        }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_COIN);
-        }
+        static::setBalance($validators);
 
         self::_Reset();
+    }
+
+    /**
+     * 테스트 하기 힘들어 우선 빼냈다. 나중에 확인하여 같이 넣어 코드를 수정한다.
+     *
+     * @param array $nodeList
+     *
+     * @throws Exception
+     *
+     * @todo private 로 변경되어야 한다.
+     */
+    public static function setBalance(array $nodeList): void
+    {
+        $db = Database::getInstance();
+
+        $operators = [];
+        foreach ($nodeList as $node) {
+            $operators[] = [
+                'updateOne' => [
+                    ['address' => $node['address']],
+                    ['$set' => ['balance' => $node['balance']]],
+                    ['upsert' => true],
+                ]
+            ];
+        }
+        $db->getCoinCollection()->bulkWrite($operators);
     }
 }
