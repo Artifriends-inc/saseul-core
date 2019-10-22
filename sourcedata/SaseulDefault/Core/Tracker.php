@@ -193,26 +193,57 @@ class Tracker
         return [];
     }
 
-    public static function setHosts($infos): void
+    public static function setData($filter, $item)
     {
         $db = Database::getInstance();
 
-        foreach ($infos as $info) {
+        $opt = ['upsert' => true];
+        $db->bulk->update($filter, ['$set' => $item], $opt);
+
+        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
+    }
+
+    /**
+     * Host 정보를 업데이트한다.
+     *
+     * ### 제약 조건
+     * - 하나의 Host는 두개이상의 Address를 가진 Node가 있을 수 없다.
+     * - 나 자신의 정보는 업데이트 하지 않는다.
+     *
+     * @param array $nodeInfoList 알고 있는 Node 들의 정보
+     *
+     * @throws \Exception
+     */
+    public static function setHosts(array $nodeInfoList): void
+    {
+        $db = Database::getInstance();
+
+        if ((false !== ($key = array_search(NodeInfo::getAddress(), $nodeInfoList, true)))
+            || (false !== ($key = array_search(NodeInfo::getHost(), $nodeInfoList, true)))) {
+            unset($nodeInfoList[$key]);
+        }
+
+        $operations = [];
+        foreach ($nodeInfoList as $info) {
             $host = $info['host'];
             $address = $info['address'];
 
-            // ignore my info;
-            if ($address === NodeInfo::getAddress() || $host === NodeInfo::getHost()) {
-                continue;
-            }
-
-            $db->bulk->update(['host' => $host, 'address' => ['$nin' => [null, '']]], ['$set' => ['host' => '']], ['multi' => true]);
-            $db->bulk->update(['address' => $address], ['$set' => ['host' => $host]], ['upsert' => true]);
+            $operations[] = [
+                'updateMany' => [
+                    ['host' => $host, 'address' => ['$nin' => [null, '']]],
+                    ['$set' => ['host' => '']],
+                ],
+            ];
+            $operations[] = [
+                'updateOne' => [
+                    ['address' => $address],
+                    ['$set' => ['host' => $host]],
+                    ['upsert' => true],
+                ]
+            ];
         }
 
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
-        }
+        $db->getTrackerCollection()->bulkWrite($operations);
     }
 
     public static function setMyHost()
