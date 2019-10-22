@@ -77,4 +77,54 @@ class TrackerTest extends TestCase
         // Assert
         $this->assertTrue($actual);
     }
+
+    public function testGivenBanListThenResetBanList(): void
+    {
+        // Arrange
+        $hostList = [
+            [
+                'host' => '192.168.10.41',
+                'status' => 'ban',
+            ],
+            [
+                'host' => '192.168.10.42',
+                'status' => 'ban',
+            ],
+            [
+                'host' => '192.168.10.43',
+                'status' => 'admitted',
+            ]
+        ];
+        $this->db->getTrackerCollection()->insertMany($hostList);
+
+        // Act
+        Tracker::resetBanList();
+
+        // Assert
+        $hostOneActual = $this->db->getTrackerCollection()->findOne(
+            ['host' => $hostList[0]['host']]
+        );
+        $hostTwoActual = $this->db->getTrackerCollection()->findOne(
+            ['host' => $hostList[1]['host']]
+        );
+        $this->assertSame('admitted', $hostOneActual['status']);
+        $this->assertSame('admitted', $hostTwoActual['status']);
+    }
+
+    public function testGivenHostListThenBanHost(): void
+    {
+        // Arrange
+        $hostData = [
+            'host' => '192.168.10.41',
+            'status' => 'admitted'
+        ];
+        $this->db->getTrackerCollection()->insertOne($hostData);
+
+        // Act
+        Tracker::banHost($hostData['host']);
+
+        // Assert
+        $actual = $this->db->getTrackerCollection()->findOne(['host' => $hostData['host']]);
+        $this->assertSame('ban', $actual['status']);
+    }
 }

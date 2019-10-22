@@ -2,6 +2,7 @@
 
 namespace Saseul\Core;
 
+use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
@@ -106,7 +107,7 @@ class Tracker
      *
      * @param $address
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @return bool
      */
@@ -277,7 +278,7 @@ class Tracker
     /**
      * Tracker 등록시 Genesis 노드인지를 확인하여 아니라면 Genesis Address 를 명시해준다.
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @return string
      */
@@ -312,13 +313,22 @@ class Tracker
         return $role;
     }
 
-    public static function updateData($filter, $item)
+    /**
+     * 입력받은 데이터를 업데이트한다.
+     *
+     * @param array $filter DB 쿼리문
+     * @param array $update 업데이트할 데이터
+     *
+     * @throws Exception
+     */
+    private static function updateData(array $filter, array $update)
     {
         $db = Database::getInstance();
 
-        $db->bulk->update($filter, ['$set' => $item], ['multi' => true]);
-
-        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
+        $db->getTrackerCollection()->updateMany(
+            $filter,
+            ['$set' => $update],
+        );
     }
 
     private static function logger()
