@@ -56,24 +56,26 @@ class TokenList extends Status
         }
     }
 
+    /**
+     * Token List 정보를 업데이트 한다.
+     *
+     * @throws \Exception
+     */
     public static function _Save()
     {
         $db = Database::getInstance();
 
-        foreach (self::$token_info as $token_name => $info) {
-            $filter = ['token_name' => $token_name];
-            $row = [
-                '$set' => [
-                    'info' => $info,
-                ],
+        $operations = [];
+        foreach (self::$token_info as $tokenName => $info) {
+            $operations[] = [
+                'updateOne' => [
+                    ['token_name' => $tokenName],
+                    ['$set' => ['info' => $info]],
+                    ['upsert' => true],
+                ]
             ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
         }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_TOKEN_LIST);
-        }
+        $db->getTokenListCollection()->bulkWrite($operations);
 
         self::_Reset();
     }
