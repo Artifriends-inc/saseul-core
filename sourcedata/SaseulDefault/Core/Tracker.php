@@ -144,9 +144,23 @@ class Tracker
         self::setRank($address, Rank::LIGHT);
     }
 
-    public static function setRank($address, $rank)
+    /**
+     * Role을 설정한다.
+     *
+     * @param string $address Node Account address
+     * @param string $rank    설정한 Role
+     *
+     * @throws Exception
+     */
+    public static function setRank(string $address, string $rank): void
     {
-        self::setData(['address' => $address], ['rank' => $rank, 'status' => 'none']);
+        $db = Database::getInstance();
+
+        $db->getTrackerCollection()->updateOne(
+            ['address' => $address],
+            ['$set' => ['rank' => $rank, 'status' => 'none']],
+            ['upsert' => true]
+        );
     }
 
     public static function GetRole($address): string
@@ -177,16 +191,6 @@ class Tracker
         }
 
         return [];
-    }
-
-    public static function setData($filter, $item)
-    {
-        $db = Database::getInstance();
-
-        $opt = ['upsert' => true];
-        $db->bulk->update($filter, ['$set' => $item], $opt);
-
-        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
     }
 
     public static function setHosts($infos): void
