@@ -59,26 +59,28 @@ class Token extends Status
         }
     }
 
+    /**
+     * Token 정보를 저장한다.
+     *
+     * @throws \Exception
+     */
     public static function _Save()
     {
         $db = Database::getInstance();
 
-        foreach (self::$balances as $address => $item) {
-            foreach ($item as $token_name => $balance) {
-                $filter = ['address' => $address, 'token_name' => $token_name];
-                $row = [
-                    '$set' => [
-                        'balance' => $balance,
-                    ],
+        $operations = [];
+        foreach (self::$balances as $address => $tokenList) {
+            foreach ($tokenList as $tokenName => $balance) {
+                $operations[] = [
+                    'updateOne' => [
+                        ['address' => $address, 'token_name' => $tokenName],
+                        ['$set' => ['balance' => $balance]],
+                        ['upsert' => true],
+                    ]
                 ];
-                $opt = ['upsert' => true];
-                $db->bulk->update($filter, $row, $opt);
             }
         }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_TOKEN);
-        }
+        $db->getTokenCollection()->bulkWrite($operations);
 
         self::_Reset();
     }
