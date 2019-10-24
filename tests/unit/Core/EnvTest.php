@@ -8,7 +8,7 @@ class EnvTest extends TestCase
     public function testGivenGenesisKeyPathThenLoadGenesisKeyReturnKeyHash(): void
     {
         // Arrange
-        $genesisKeyPath = './data/genesis_key.json';
+        $genesisKeyPath = './data/core/genesis_key.json';
 
         // Act
         $genesisKey = Env::loadGenesisKey($genesisKeyPath);
@@ -17,6 +17,37 @@ class EnvTest extends TestCase
         $this->assertIsArray($genesisKey);
         $this->assertArrayHasKey('genesis_message', $genesisKey);
         $this->assertArrayHasKey('special_thanks', $genesisKey);
+    }
+
+    public function testGivenGenesisInfoEnvThenLoad(): void
+    {
+        // Arrange
+        $assertGenesisEnv = [
+            'host' => '10.10.10.10',
+            'address' => '0x.565885',
+            'coin_amount' => '1000',
+            'deposit_amount' => '100',
+            'key_path' => './data/core/genesis_key.json',
+        ];
+
+        putenv("GENESIS_HOST={$assertGenesisEnv['host']}");
+        putenv("GENESIS_ADDRESS={$assertGenesisEnv['address']}");
+        putenv("GENESIS_COIN_VALUE={$assertGenesisEnv['coin_amount']}");
+        putenv("GENESIS_DEPOSIT_VALUE={$assertGenesisEnv['deposit_amount']}");
+        putenv("GENESIS_KEY_PATH={$assertGenesisEnv['key_path']}");
+
+        // Act
+        Env::load();
+
+        // Assert
+        $this->assertSame($assertGenesisEnv['host'], Env::$genesis['host']);
+        $this->assertSame($assertGenesisEnv['address'], Env::$genesis['address']);
+        $this->assertSame($assertGenesisEnv['coin_amount'], Env::$genesis['coin_amount']);
+        $this->assertSame($assertGenesisEnv['deposit_amount'], Env::$genesis['deposit_amount']);
+
+        $genesisKey = ENV::loadGenesisKey($assertGenesisEnv['key_path']);
+        $this->assertIsArray(ENV::$genesis['key']);
+        $this->assertSame($genesisKey, Env::$genesis['key']);
     }
 
     public function testGivenHostInfoEnvThenLoad(): void
