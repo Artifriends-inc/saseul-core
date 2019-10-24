@@ -9,6 +9,11 @@ use Saseul\Core\Block;
 use Saseul\Core\Generation;
 use Saseul\Util\TypeChecker;
 
+/**
+ * Class GenerationInfo.
+ *
+ * Generation 정보를 전달한다.
+ */
 class GenerationInfo extends Api
 {
     private $block_number;
@@ -29,7 +34,7 @@ class GenerationInfo extends Api
 
         $sourceHash = $generation['source_hash'];
         $fileExists = false;
-        $sourceName = Directory::SOURCE . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
+        $sourceName = Directory::TAR_SOURCE_DIR . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
 
         if (is_file($sourceName)) {
             $fileExists = true;

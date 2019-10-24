@@ -134,9 +134,9 @@ class Generation
     }
 
     /**
-     * source data dir 를 압축한다.
+     * Source Dir 을 압축 파일로 만든다.
      */
-    public static function makeSourceArchive(): void
+    public static function archiveSource(): void
     {
         $target = Directory::SASEUL_SOURCE;
 
@@ -147,7 +147,7 @@ class Generation
         $allFiles = File::getAllfiles($target);
         $allFilehashs = array_map('sha1_file', $allFiles);
         $sourceHash = Merkle::MakeMerkleHash($allFilehashs);
-        $sourceFile = Directory::SOURCE . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
+        $sourceFile = Directory::TAR_SOURCE_DIR . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
 
         Property::sourceHash($sourceHash);
         Property::sourceVersion(Version::CURRENT);

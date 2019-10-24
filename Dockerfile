@@ -3,7 +3,8 @@
 #
 FROM composer:1.8 AS vendor
 
-COPY composer.* .
+COPY composer.json .
+COPY composer.lock .
 
 RUN composer install \
     --ignore-platform-reqs \
@@ -41,8 +42,8 @@ RUN git clone https://github.com/encedo/php-ed25519-ext.git \
 FROM php:7.3-fpm
 
 RUN apt update \
-    && apt install -y --no-install-recommends \
-            libmemcached-dev zlib1g-dev\
+    && apt install -y -qq --no-install-recommends \
+            libmemcached-dev zlib1g-dev \
     && apt autoclean \
     && rm -rf /var/lib/apt/lists/*
 

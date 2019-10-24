@@ -148,7 +148,7 @@ class Service
 
         Property::init();
         Tracker::init();
-        Generation::makeSourceArchive();
+        Generation::archiveSource();
 
         return true;
     }

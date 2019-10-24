@@ -28,12 +28,12 @@ class SourceManager
     }
 
     /**
-     * @todo 빈 string 보다는 다른 값을 넣어 반환하는 것이 좋지 않을까?
-     *
      * @param $host
      * @param $blockNumber
      *
      * @return string
+     *
+     * @todo 빈 string 보다는 다른 값을 넣어 반환하는 것이 좋지 않을까?
      */
     public function getSource($host, $blockNumber): string
     {
@@ -49,7 +49,15 @@ class SourceManager
         return '';
     }
 
-    public function makeSourceArchive($sourceArchive, $sourceHash)
+    /**
+     * 받아온 Source 파일을 Saseul<source hash> 폴더에 푼다.
+     *
+     * @param $sourceArchive
+     * @param $sourceHash
+     *
+     * @return string
+     */
+    public function restoreSource(string $sourceArchive, string $sourceHash): string
     {
         $sourceFolder = Directory::SOURCE;
         $sourceFullPath = "{$sourceFolder}/Saseul{$sourceHash}";
@@ -63,16 +71,22 @@ class SourceManager
 
         $cmd = "tar -xvzf {$sourceArchive} -C {$sourceFullPath} ";
         shell_exec($cmd);
+        // Todo: 10 초 이상 걸리면??
         usleep(10000);
 
-        return "{$sourceFullPath}";
+        return $sourceFullPath;
     }
 
+    /**
+     * Source 폴더를 변경한다.
+     *
+     * @param $sourceFolder
+     */
     public function changeSourceFolder($sourceFolder)
     {
         $saseulSource = Directory::SASEUL_SOURCE;
 
-        // symlink;
+        // symlink
         if (file_exists($saseulSource)) {
             unlink($saseulSource);
         }

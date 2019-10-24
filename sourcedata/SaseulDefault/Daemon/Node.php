@@ -270,12 +270,12 @@ class Node
         $target = $this->source_manager->selectGenerationInfo($netGenerationInfo);
         $targetInfo = $target['item'];
         // Todo: 해당 주석부분을 확인해서 변경해야한다.
-//        $unique = $target['unique'];
-//
-//        if ($unique === false) {
-//            # fork 인지 ;; 정보 기록 필요함.
-//            # 필요에 따라서 네트워크 ban;
-//        }
+        // $unique = $target['unique'];
+        //
+        // if ($unique === false) {
+        //    # fork 인지 ;; 정보 기록 필요함.
+        //    # 필요에 따라서 네트워크 ban;
+        // }
 
         $host = $targetInfo['host'];
         $targetSourceHash = $targetInfo['source_hash'];
@@ -310,7 +310,7 @@ class Node
             return;
         }
 
-        $sourceFolder = $this->source_manager->makeSourceArchive($sourceArchive, $targetSourceHash);
+        $sourceFolder = $this->source_manager->restoreSource($sourceArchive, $targetSourceHash);
         $this->source_manager->changeSourceFolder($sourceFolder);
 
         sleep(1);
@@ -348,12 +348,12 @@ class Node
 
         $target = $this->sync_manager->selectBlockInfo($netBlockInfo);
         $blockInfo = $target['item'];
-//        $unique = $target['unique'];
-//
-//        if ($unique === false) {
-//            # fork 인지 ;; 정보 기록 필요함.
-//            # 필요에 따라서 네트워크 ban;
-//        }
+        // $unique = $target['unique'];
+        //
+        // if ($unique === false) {
+        //    # fork 인지 ;; 정보 기록 필요함.
+        //    # 필요에 따라서 네트워크 ban;
+        // }
 
         $host = $blockInfo['host'];
 
@@ -381,12 +381,12 @@ class Node
         $target = $this->sync_manager->selectBunchInfo($netBunchInfo);
         $this->logger->debug('bunch target', [$target]);
         $bunchInfo = $target['item'];
-//        $unique = $target['unique'];
-//
-//        if ($unique === false) {
-//            # fork 인지 ;; 정보 기록 필요함.
-//            # 필요에 따라서 네트워크 ban;
-//        }
+        // $unique = $target['unique'];
+        //
+        // if ($unique === false) {
+        //    # fork 인지 ;; 정보 기록 필요함.
+        //    # 필요에 따라서 네트워크 ban;
+        // }
 
         $host = $bunchInfo['host'];
         Property::subjectNode($this->subjectNodeByHost($aliveNodes, $host));

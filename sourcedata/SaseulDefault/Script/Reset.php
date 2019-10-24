@@ -79,7 +79,7 @@ class Reset extends Script
         Property::init();
 
         Logger::EchoLog('Source archive');
-        Generation::makeSourceArchive();
+        Generation::archiveSource();
 
         Logger::EchoLog('Success');
     }

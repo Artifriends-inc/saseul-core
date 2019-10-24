@@ -31,7 +31,7 @@
         </whitelist>
     </filter>
     <php>
-        <const name="SASEUL_DIR" value="."/>
+        <const name="SASEUL_DIR" value="/app/saseul/"/>
         <const name="ROOT_DIR" value="./src/"/>
         <env name="GENESIS_COIN_VALUE" value="1000000000000000"/>
         <env name="GENESIS_DEPOSIT_VALUE" value="200000000000000"/>

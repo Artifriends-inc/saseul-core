@@ -87,6 +87,11 @@ class Property
         self::sourceVersion('');
     }
 
+    public function getSourceHash(): string
+    {
+        return static::getCache('sourceHash');
+    }
+
     public static function getAll()
     {
         $properties = self::getProperties();
