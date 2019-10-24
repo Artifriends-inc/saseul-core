@@ -42,10 +42,7 @@ class GenesisTest extends TestCase
 
     protected function tearDown(): void
     {
-        $bulk = new BulkWrite();
-        $bulk->delete([]);
 
-        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bulk);
     }
 
     public function testSutInheritsAbstractRequest(): void
