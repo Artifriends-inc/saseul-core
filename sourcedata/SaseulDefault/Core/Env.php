@@ -35,11 +35,18 @@ class Env
         'level' => ''
     ];
 
+    /**
+     * Genesis key 를 path로 부터 읽어온다.
+     *
+     * @param string $path Genesis key 파일이 있는 위치
+     *
+     * @return array
+     */
     public static function loadGenesisKey(string $path): array
     {
         $get_key = file_get_contents($path);
 
-        return json_decode($get_key, true);
+        return json_decode($get_key, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -58,7 +65,9 @@ class Env
         self::$genesis['address'] = self::getFromEnv('GENESIS_ADDRESS');
         self::$genesis['coin_amount'] = self::getFromEnv('GENESIS_COIN_VALUE');
         self::$genesis['deposit_amount'] = self::getFromEnv('GENESIS_DEPOSIT_VALUE');
-        self::$genesis['key'] = self::loadGenesisKey(SASEUL_DIR . '/data/genesis_key.json');
+
+        $genesis_key_path = self::getFromEnv('GENESIS_KEY_PATH');
+        self::$genesis['key'] = self::loadGenesisKey($genesis_key_path);
 
         // Log
         self::$log['path'] = self::getFromEnv('LOG_PATH');
