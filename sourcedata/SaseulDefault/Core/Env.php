@@ -44,7 +44,7 @@ class Env
      */
     public static function loadGenesisKey(string $path): array
     {
-        $get_key = file_get_contents($path);
+        $get_key = file_get_contents(SASEUL_DIR . '/' . $path);
 
         return json_decode($get_key, true, 512, JSON_THROW_ON_ERROR);
     }
