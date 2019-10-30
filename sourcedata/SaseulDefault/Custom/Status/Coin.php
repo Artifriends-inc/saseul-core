@@ -86,7 +86,7 @@ class Coin extends Status
      *
      * @throws Exception
      */
-    public static function _Save()
+    public static function _Save(): void
     {
         $db = Database::getInstance();
 
@@ -94,6 +94,10 @@ class Coin extends Status
         $depositOperation = static::upsertCoinDB('deposit', self::$deposits);
 
         $operations = array_merge($balanceOperation, $depositOperation);
+
+        if (empty($operations)) {
+            return;
+        }
 
         $db->getCoinCollection()->bulkWrite($operations);
 

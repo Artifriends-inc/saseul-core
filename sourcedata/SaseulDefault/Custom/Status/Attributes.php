@@ -62,7 +62,7 @@ class Attributes extends Status
      *
      * @throws Exception
      */
-    public static function _Save()
+    public static function _Save(): void
     {
         $db = Database::getInstance();
 
@@ -76,6 +76,11 @@ class Attributes extends Status
                 ]
             ];
         }
+
+        if (empty($operations)) {
+            return;
+        }
+
         $db->getAttributesCollection()->bulkWrite($operations);
 
         self::_Reset();

@@ -61,7 +61,7 @@ class TokenList extends Status
      *
      * @throws \Exception
      */
-    public static function _Save()
+    public static function _Save(): void
     {
         $db = Database::getInstance();
 
@@ -75,6 +75,11 @@ class TokenList extends Status
                 ]
             ];
         }
+
+        if (empty($operations)) {
+            return;
+        }
+
         $db->getTokenListCollection()->bulkWrite($operations);
 
         self::_Reset();

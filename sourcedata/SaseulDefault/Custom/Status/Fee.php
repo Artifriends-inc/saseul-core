@@ -184,9 +184,9 @@ class Fee extends Status
     {
         $db = Database::getInstance();
 
-        $operators = [];
+        $operations = [];
         foreach ($nodeList as $node) {
-            $operators[] = [
+            $operations[] = [
                 'updateOne' => [
                     ['address' => $node['address']],
                     ['$set' => ['balance' => $node['balance']]],
@@ -194,6 +194,11 @@ class Fee extends Status
                 ]
             ];
         }
-        $db->getCoinCollection()->bulkWrite($operators);
+
+        if (empty($operations)) {
+            return;
+        }
+
+        $db->getCoinCollection()->bulkWrite($operations);
     }
 }

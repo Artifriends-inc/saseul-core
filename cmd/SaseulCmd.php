@@ -108,6 +108,10 @@ class SaseulCmd
      */
     private static function setEnv(): array
     {
+        // const
+        define('SASEUL_DIR', dirname(__DIR__));
+        define('ROOT_DIR', __DIR__);
+
         return [
             'private_key' => getenv('NODE_PRIVATE_KEY'),
             'public_key' => getenv('NODE_PUBLIC_KEY'),
@@ -121,7 +125,7 @@ class SaseulCmd
         return [
             'coin_amount' => getenv('GENESIS_COIN_VALUE'),
             'deposit_amount' => getenv('GENESIS_DEPOSIT_VALUE'),
-            'key' => Env::loadGenesisKey('data/genesis_key.json'),
+            'key' => Env::loadGenesisKey('data/core/genesis_key.json'),
         ];
     }
 
