@@ -103,7 +103,7 @@
             "./vendor/bin/php-cs-fixer fix --using-cache=no --dry-run --diff"
         ],
         "ci-test": [
-            "docker-compose run --user='root' -T --rm node bash -c './vendor/bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover build/logs/clover.xml'"
+            "docker-compose run --user='root' -T --rm node bash -c './vendor/bin/phpunit -c phpunit.xml --coverage-text --coverage-clover build/logs/clover.xml'"
         ],
         "init-db": [
             "@docker-up",
