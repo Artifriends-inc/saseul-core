@@ -118,8 +118,9 @@
             "docker-compose exec -T api bash -c 'composer docker-set-light'"
         ],
         "make-genesis": [
-            "@set-light",
-            "sleep 10",
+            "@docker-up",
+            "sleep 20",
+            "docker-compose exec -T api bash -c 'composer docker-set-validator'",
             "docker-compose exec -T api bash -c 'composer docker-set-validator'",
             "docker-compose exec -T api bash -c 'composer docker-make-genesis'"
         ],

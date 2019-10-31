@@ -343,21 +343,46 @@ class Tracker
 
         if (Env::$nodeInfo['address'] !== Env::$genesis['address']) {
             $dbData[] = [
-                'host' => '',
-                'address' => Env::$genesis['address'],
-                'rank' => Rank::VALIDATOR,
-                'status' => 'admitted',
+                'updateOne' => [
+                    [
+                        'address' => Env::$genesis['address'],
+                        'rank' => Rank::VALIDATOR,
+                    ],
+                    [
+                        '$set' => [
+                            'host' => '',
+                            'address' => Env::$genesis['address'],
+                            'rank' => Rank::VALIDATOR,
+                            'status' => 'admitted',
+                        ]
+                    ],
+                    [
+                        'upsert' => true,
+                    ]
+                ]
             ];
         }
 
         $dbData[] = [
-            'host' => Env::$nodeInfo['host'],
-            'address' => Env::$nodeInfo['address'],
-            'rank' => $role,
-            'status' => 'admitted',
+            'updateOne' => [
+                [
+                    'address' => Env::$nodeInfo['address'],
+                ],
+                [
+                    '$set' => [
+                        'host' => Env::$nodeInfo['host'],
+                        'address' => Env::$nodeInfo['address'],
+                        'rank' => $role,
+                        'status' => 'admitted',
+                    ]
+                ],
+                [
+                    'upsert' => true,
+                ]
+            ]
         ];
 
-        $db->getTrackerCollection()->insertMany($dbData);
+        $db->getTrackerCollection()->bulkWrite($dbData);
 
         return $role;
     }

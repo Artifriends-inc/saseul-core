@@ -82,7 +82,7 @@ class Contract extends Status
      *
      * @throws Exception
      */
-    public static function _Save()
+    public static function _Save(): void
     {
         $db = Database::getInstance();
 
@@ -109,6 +109,11 @@ class Contract extends Status
                 ]
             ];
         }
+
+        if (empty($operations)) {
+            return;
+        }
+
         $db->getContractCollection()->bulkWrite($operations);
 
         self::_Reset();

@@ -16,7 +16,7 @@ class Status
     {
     }
 
-    public static function _Save()
+    public static function _Save(): void
     {
     }
 
