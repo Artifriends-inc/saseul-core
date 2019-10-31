@@ -2,10 +2,10 @@
 
 namespace Saseul\Common;
 
+use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Logger;
-use Saseul\Util\Mongo;
 
 /**
  * Class Schema.
@@ -21,20 +21,16 @@ class Schema
      *
      * @param Database $db
      *
-     * @throws \Exception
-     *
-     * @return bool
+     * @throws Exception
      */
-    public static function dropDatabaseOnMongoDB(Database $db): bool
+    public static function dropDatabaseOnMongoDB(Database $db): void
     {
         $dropCommited = $db->getCommittedDB()->drop();
         $dropTracker = $db->getTrackerDB()->drop();
 
         $logger = Logger::getLogger(Logger::MONGO);
         $logger->debug('drop committed table', [$dropCommited, $dropCommited['ok']]);
-        $logger->debug('drop trakcer table', [$dropTracker, $dropTracker['ok']]);
-
-        return $dropCommited['ok'] && $dropTracker['ok'];
+        $logger->debug('drop tracker table', [$dropTracker, $dropTracker['ok']]);
     }
 
     /**
@@ -44,7 +40,7 @@ class Schema
      *
      * @param Database $db
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function createIndexOnMongoDB(Database $db): void
     {

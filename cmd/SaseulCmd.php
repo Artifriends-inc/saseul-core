@@ -21,54 +21,20 @@ class SaseulCmd
     }
 
     /**
-     * MongoDB 를 초기화한다.
+     * Node 를 초기화하고 Tracker 를 설정한다.
      *
      * @param Event $event
      */
-    public static function initData(Event $event): void
-    {
-        $env = self::setEnv();
-
-        $initDbData = [
-            'type' => 'InitDatabase',
-            'from' => $env['address'],
-            'timestamp' => DateTime::Microtime(),
-        ];
-        $res = self::sendRequest($env, $initDbData)->getBody();
-        echo $res . PHP_EOL;
-    }
-
-    public static function setLightTracker(Event $event): void
+    public static function initializationNode(Event $event): void
     {
         $env = self::setEnv();
 
         $lightTrackerData = [
-            'type' => 'SetTracker',
+            'type' => 'InitializationNode',
             'from' => $env['address'],
             'timestamp' => DateTime::Microtime(),
         ];
         $res = self::sendRequest($env, $lightTrackerData)->getBody();
-        echo $res . PHP_EOL;
-    }
-
-    public static function setValidatorTracker(Event $event): void
-    {
-        $env = self::setEnv();
-
-        $initDbData = [
-            'type' => 'InitDatabase',
-            'from' => $env['address'],
-            'timestamp' => DateTime::Microtime(),
-        ];
-        $res = self::sendRequest($env, $initDbData)->getBody();
-        echo $res . PHP_EOL;
-
-        $validatorTrackerData = [
-            'type' => 'SetTracker',
-            'from' => $env['address'],
-            'timestamp' => DateTime::Microtime(),
-        ];
-        $res = self::sendRequest($env, $validatorTrackerData)->getBody();
         echo $res . PHP_EOL;
     }
 
@@ -140,7 +106,7 @@ class SaseulCmd
     private static function sendRequest(array $env, array $data): ResponseInterface
     {
         $thash = hash('sha256', json_encode($data, JSON_THROW_ON_ERROR));
-        $requestData =  [
+        $requestData = [
             'resource' => json_encode($data, JSON_THROW_ON_ERROR),
             'public_key' => $env['public_key'],
             'signature' => Key::makeSignature($thash, $env['private_key'], $env['public_key']),

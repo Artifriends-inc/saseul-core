@@ -114,26 +114,19 @@
         "set-light": [
             "@docker-up",
             "sleep 10",
-            "docker-compose exec -T api bash -c 'composer docker-init-db'",
-            "docker-compose exec -T api bash -c 'composer docker-set-light'"
+            "docker-compose exec -T api bash -c 'composer init-node-on-docker'"
         ],
         "make-genesis": [
             "@docker-up",
             "sleep 20",
-            "docker-compose exec -T api bash -c 'composer docker-set-validator'",
-            "docker-compose exec -T api bash -c 'composer docker-set-validator'",
-            "docker-compose exec -T api bash -c 'composer docker-make-genesis'"
+            "docker-compose exec -T api bash -c 'composer init-node-on-docker'",
+            "docker-compose exec -T api bash -c 'composer init-node-on-docker'",
+            "docker-compose exec -T api bash -c 'composer make-genesis-on-docker'"
         ],
-        "docker-init-db": [
-            "Cmd\\SaseulCmd::initData"
+        "init-node-on-docker": [
+            "Cmd\\SaseulCmd::initializationNode"
         ],
-        "docker-set-light": [
-            "Cmd\\SaseulCmd::setLightTracker"
-        ],
-        "docker-set-validator": [
-            "Cmd\\SaseulCmd::setValidatorTracker"
-        ],
-        "docker-make-genesis": [
+        "make-genesis-on-docker": [
             "Cmd\\SaseulCmd::makeGenesis"
         ]
     },
