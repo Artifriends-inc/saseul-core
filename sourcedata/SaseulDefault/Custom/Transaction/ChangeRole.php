@@ -67,11 +67,11 @@ class ChangeRole extends AbstractTransaction
 
     private function isValidRole(): bool
     {
-        return $this->isNotNull($this->role)
+        return $this->isNotNull()
             && is_string($this->role);
     }
 
-    private function isNotNull($value): bool
+    private function isNotNull(): bool
     {
         return ($this->role === null) === false;
     }
