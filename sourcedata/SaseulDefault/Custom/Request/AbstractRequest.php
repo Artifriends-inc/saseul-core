@@ -2,17 +2,31 @@
 
 namespace Saseul\Custom\Request;
 
+use ReflectionClass;
 use Saseul\System\Key;
 use Saseul\Version;
 
 abstract class AbstractRequest implements RequestInterface
 {
+    /** @var string Transaction hash */
     protected $thash;
+
+    /** @var string Public key */
     protected $public_key;
+
+    /** @var string Request signature */
     protected $signature;
+
+    /** @var string Request Type */
     protected $type;
+
+    /** @var string SASEUL core version */
     protected $version;
+
+    /** @var string Request sender */
     protected $from;
+
+    /** @var int|string Request sending timestamp */
     protected $timestamp;
 
     public function initialize(array $request, string $thash, string $public_key, string $signature): void
@@ -29,7 +43,7 @@ abstract class AbstractRequest implements RequestInterface
 
     public function getValidity(): bool
     {
-        $calledRequest = new \ReflectionClass(get_class($this));
+        $calledRequest = new ReflectionClass(get_class($this));
 
         return Version::isValid($this->version)
             && !empty($this->timestamp)

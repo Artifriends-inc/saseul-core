@@ -2,18 +2,27 @@
 
 namespace Saseul\Custom\Request;
 
+use MongoDB\Driver\Exception\Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
+/**
+ * Class GetMyTransaction.
+ * 요청한 Account 에 대한 Transaction 정보를 가져온다.
+ */
 class GetMyTransaction extends AbstractRequest
 {
+    /**
+     * @throws Exception
+     *
+     * @return array (See below)
+     */
     public function getResponse(): array
     {
         $db = Database::getInstance();
 
         $namespace = MongoDb::NAMESPACE_TRANSACTION;
-//        $filter = ['public_key' => Config::$node_public_key];
         $filter = ['public_key' => $this->public_key];
         $opt = ['sort' => ['timestamp' => -1]];
         $rs = $db->Query($namespace, $filter, $opt);
@@ -27,7 +36,7 @@ class GetMyTransaction extends AbstractRequest
             unset($item['_id']);
 
             $transactions[] = $item;
-            $count = $count + 1;
+            ++$count;
 
             if ($count >= $max) {
                 break;
