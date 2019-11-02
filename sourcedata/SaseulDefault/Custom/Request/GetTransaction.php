@@ -2,8 +2,7 @@
 
 namespace Saseul\Custom\Request;
 
-use MongoDB\Driver\Exception\Exception;
-use Saseul\Constant\MongoDb;
+use Exception;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
@@ -36,21 +35,11 @@ class GetTransaction extends AbstractRequest
     {
         $db = Database::getInstance();
 
-        $namespace = MongoDb::NAMESPACE_TRANSACTION;
-        $filter = ['thash' => $this->find_thash];
-        $opt = ['sort' => ['timestamp' => -1]];
-        $rs = $db->Query($namespace, $filter, $opt);
-
-        $transaction = [];
-
-        foreach ($rs as $item) {
-            $item = Parser::objectToArray($item);
-            unset($item['_id']);
-
-            $transaction = $item;
-
-            break;
-        }
+        $cursor = $db->getTransactionsCollection()->findOne(
+            ['thash' => $this->find_thash],
+        );
+        $transaction = Parser::objectToArray($cursor);
+        unset($transaction['_id']);
 
         return $transaction;
     }
