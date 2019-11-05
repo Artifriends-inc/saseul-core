@@ -39,7 +39,6 @@ class SendToken extends AbstractTransaction
     public function getStatus(): void
     {
         $this->from_token_balance = Token::GetBalance($this->from, $this->token_name);
-        $this->to_token_balance = Token::GetBalance($this->to, $this->token_name);
     }
 
     public function makeDecision(): string
@@ -54,9 +53,10 @@ class SendToken extends AbstractTransaction
     public function setStatus(): void
     {
         $this->from_token_balance = (int) $this->from_token_balance - (int) $this->amount;
-        $this->to_token_balance = (int) $this->to_token_balance + (int) $this->amount;
-
         Token::SetBalance($this->from, $this->token_name, $this->from_token_balance);
+
+        $this->to_token_balance = Token::GetBalance($this->to, $this->token_name);
+        $this->to_token_balance = (int) $this->to_token_balance + (int) $this->amount;
         Token::SetBalance($this->to, $this->token_name, $this->to_token_balance);
     }
 

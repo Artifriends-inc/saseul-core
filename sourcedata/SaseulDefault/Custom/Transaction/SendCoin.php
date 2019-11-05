@@ -48,7 +48,6 @@ class SendCoin extends AbstractTransaction
     public function getStatus(): void
     {
         $this->from_balance = Coin::GetBalance($this->from);
-        $this->to_balance = Coin::GetBalance($this->to);
         $this->coin_fee = Fee::GetFee();
     }
 
@@ -65,11 +64,13 @@ class SendCoin extends AbstractTransaction
     {
         $this->from_balance = (int) $this->from_balance - (int) $this->amount;
         $this->from_balance = (int) $this->from_balance - (int) $this->fee;
-        $this->to_balance = (int) $this->to_balance + (int) $this->amount;
-        $this->coin_fee = (int) $this->coin_fee + (int) $this->fee;
-
         Coin::SetBalance($this->from, $this->from_balance);
+
+        $this->to_balance = Coin::GetBalance($this->to);
+        $this->to_balance = (int) $this->to_balance + (int) $this->amount;
         Coin::SetBalance($this->to, $this->to_balance);
+
+        $this->coin_fee = (int) $this->coin_fee + (int) $this->fee;
         Fee::SetFee($this->coin_fee);
     }
 

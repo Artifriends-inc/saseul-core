@@ -5,6 +5,7 @@ namespace Saseul\Tests\Unit\Custom\Transactions;
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\Account;
 use Saseul\Core\Env;
+use Saseul\Custom\Status\Coin;
 use Saseul\Custom\Transaction\AbstractTransaction;
 use Saseul\Custom\Transaction\SendCoin;
 use Saseul\System\Key;
@@ -415,5 +416,39 @@ class SendCoinTest extends TestCase
 
         // Assert
         $this->assertTrue($actual);
+    }
+
+    public function testGivenSameFromAndToThenEqualsCoinBalanceFromAndTo(): void
+    {
+        // Arrange
+        $transaction = [
+            'type' => $this->sutName,
+            'from' => $this->from,
+            'version' => $this->version,
+            'timestamp' => $this->timeStamp,
+            'to' => $this->from,
+            'amount' => $this->amount,
+            'fee' => $this->fee
+        ];
+        $thash = hash('sha256', json_encode($transaction));
+        $signature = Key::makeSignature(
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
+        $this->sut->initialize(
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
+
+        $this->sut->getStatus();
+
+        // Act
+        $this->sut->setStatus();
+
+        // Assert
+        $this->assertSame(Coin::GetBalance($transaction['from']), Coin::GetBalance($transaction['to']));
     }
 }

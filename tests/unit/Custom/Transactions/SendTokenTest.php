@@ -4,6 +4,7 @@ namespace Saseul\Tests\Unit\Custom\Transactions;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\Account;
+use Saseul\Custom\Status\Token;
 use Saseul\Custom\Transaction\AbstractTransaction;
 use Saseul\Custom\Transaction\SendToken;
 use Saseul\System\Key;
@@ -244,5 +245,42 @@ class SendTokenTest extends TestCase
 
         // Assert
         $this->assertFalse($actual);
+    }
+
+    public function testGivenSameFromAndToThenEqualsTokenBalanceFromAndTo(): void
+    {
+        // Arrange
+        $transaction = [
+            'type' => $this->sutName,
+            'from' => $this->from,
+            'version' => $this->version,
+            'timestamp' => $this->timeStamp,
+            'to' => $this->from,
+            'amount' => $this->amount,
+            'token_name' => 'SendTokenTest'
+        ];
+        $thash = hash('sha256', json_encode($transaction));
+        $signature = Key::makeSignature(
+            $thash,
+            $this->privateKey,
+            $this->publicKey
+        );
+        $this->sut->initialize(
+            $transaction,
+            $thash,
+            $this->publicKey,
+            $signature
+        );
+
+        $this->sut->getStatus();
+
+        // Act
+        $this->sut->setStatus();
+
+        // Assert
+        $this->assertSame(
+            Token::GetBalance($transaction['from'], 'SendTokenTest'),
+            Token::GetBalance($transaction['to'], 'SendTokenTest')
+        );
     }
 }
