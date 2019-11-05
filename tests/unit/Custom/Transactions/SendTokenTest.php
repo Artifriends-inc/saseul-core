@@ -278,7 +278,9 @@ class SendTokenTest extends TestCase
         $this->sut->setStatus();
 
         // Assert
-        $this->assertSame(Token::GetBalance($transaction['from'], 'SendTokenTest'),
-            Token::GetBalance($transaction['to'], 'SendTokenTest'));
+        $this->assertSame(
+            Token::GetBalance($transaction['from'], 'SendTokenTest'),
+            Token::GetBalance($transaction['to'], 'SendTokenTest')
+        );
     }
 }
