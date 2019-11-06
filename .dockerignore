@@ -34,3 +34,4 @@ data/db/*
 data/logs/*
 data/core/*
 tests/
+cmd/
