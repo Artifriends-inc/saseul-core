@@ -4,12 +4,12 @@ namespace Saseul\Constant;
 
 class Role
 {
-    const LIGHT = 'light';
-    const VALIDATOR = 'validator';
-    const SUPERVISOR = 'supervisor';
-    const ARBITER = 'arbiter';
-    const ROLES = [self::VALIDATOR, self::SUPERVISOR, self::ARBITER, self::LIGHT];
-    const FULL_NODES = [self::VALIDATOR, self::SUPERVISOR, self::ARBITER];
+    public const LIGHT = 'light';
+    public const VALIDATOR = 'validator';
+    public const SUPERVISOR = 'supervisor';
+    public const ARBITER = 'arbiter';
+    public const ROLES = [self::VALIDATOR, self::SUPERVISOR, self::ARBITER, self::LIGHT];
+    public const FULL_NODES = [self::VALIDATOR, self::SUPERVISOR, self::ARBITER];
 
     public static function isExist($role)
     {
