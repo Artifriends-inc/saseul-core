@@ -350,7 +350,7 @@ class Tracker
                     ],
                     [
                         '$set' => [
-                            'host' => '',
+                            'host' => Env::$genesis['host'],
                             'address' => Env::$genesis['address'],
                             'rank' => Rank::VALIDATOR,
                             'status' => 'admitted',
