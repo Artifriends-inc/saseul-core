@@ -1,21 +1,37 @@
 <?php
 
-use MongoDB\Driver\BulkWrite;
-use MongoDB\Driver\Manager;
 use PHPUnit\Framework\TestCase;
-use Saseul\Constant\MongoDb;
 use Saseul\Core\Block;
+use Saseul\System\Database;
 
 class GetBlockCountTest extends TestCase
 {
-    private $manager;
-    private $blockList;
+    protected static $db;
 
-    protected function setUp(): void
+    public static function setUpBeforeClass(): void
     {
-        $this->manager = new Manager('mongodb://mongo');
+        self::$db = Database::getInstance();
+        self::$db->getBlocksCollection()->drop();
+    }
 
-        $this->blockList = [
+    protected function tearDown(): void
+    {
+        self::$db->getBlocksCollection()->drop();
+    }
+
+    public function testGivenEmptyDataThenCountBlockReturnZero(): void
+    {
+        // Act
+        $blockCount = Block::getCount();
+
+        // Assert
+        $this->assertSame(0, $blockCount);
+    }
+
+    public function testGivenBlockDataThenCountBlock(): void
+    {
+        // Arrange
+        $insertData = [
             [
                 'block_number' => 1,
                 'last_blockhash' => '',
@@ -33,35 +49,7 @@ class GetBlockCountTest extends TestCase
                 'timestamp' => 1562121309367785,
             ]
         ];
-    }
-
-    protected function tearDown(): void
-    {
-        $bluk = new BulkWrite();
-        $bluk->delete([]);
-
-        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bluk);
-    }
-
-    public function testGivenEmptyDataThenCountBlockReturnZero(): void
-    {
-        // Arrange
-
-        // Act
-        $blockCount = Block::getCount();
-
-        // Assert
-        $this->assertSame(0, $blockCount);
-    }
-
-    public function testGivenBlockDataThenCountBlock(): void
-    {
-        // Arrange
-        $bulk = new BulkWrite();
-        $bulk->insert($this->blockList[0]);
-        $bulk->insert($this->blockList[1]);
-
-        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bulk);
+        self::$db->getBlocksCollection()->insertMany($insertData);
 
         // Act
         $blockCount = Block::getCount();

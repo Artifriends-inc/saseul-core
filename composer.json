@@ -22,13 +22,13 @@
             "Saseul\\Daemon\\": "src/Saseul/Daemon/",
             "Saseul\\System\\": "src/Saseul/System/",
             "Saseul\\Util\\": "src/Saseul/Util/",
-            "Saseul\\Script\\": "src/Saseul/Script/",
-            "Cmd\\": "cmd/"
+            "Saseul\\Script\\": "src/Saseul/Script/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Saseul\\Tests\\Unit\\": "./tests/unit"
+            "Saseul\\Tests\\Unit\\": "./tests/unit",
+            "Cmd\\": "cmd/"
         }
     },
     "config": {
@@ -87,7 +87,7 @@
             "PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan"
         ],
         "fix": [
-            "./vendor/bin/php-cs-fixer fix --using-cache=no"
+            "./vendor/bin/php-cs-fixer fix -v"
         ],
         "test": [
             "docker-compose run -T --rm node bash -c './vendor/bin/phpunit --coverage-text --coverage-html build/coverage-report'",
@@ -100,7 +100,7 @@
             "docker build -t saseul-core ."
         ],
         "ci-fix": [
-            "./vendor/bin/php-cs-fixer fix --using-cache=no --dry-run --diff"
+            "./vendor/bin/php-cs-fixer fix --dry-run --diff -v"
         ],
         "ci-test": [
             "docker-compose run --user='root' -T --rm node bash -c './vendor/bin/phpunit -c phpunit.xml --coverage-text --coverage-clover build/logs/clover.xml'"
