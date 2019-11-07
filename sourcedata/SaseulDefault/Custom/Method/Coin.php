@@ -2,6 +2,7 @@
 
 namespace Saseul\Custom\Method;
 
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
 /**
@@ -20,7 +21,7 @@ class Coin
      */
     public static function GetAll($addresses)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $all = [];
 
@@ -32,7 +33,7 @@ class Coin
         }
 
         $filter = ['address' => ['$in' => $addresses]];
-        $rs = $db->Query('saseul_committed.coin', $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_COIN, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->address, $item->balance)) {
@@ -45,26 +46,5 @@ class Coin
         }
 
         return $all;
-    }
-
-    public static function SetAll($all)
-    {
-        $db = Database::GetInstance();
-
-        foreach ($all as $address => $item) {
-            $filter = ['address' => $address];
-            $row = [
-                '$set' => [
-                    'balance' => $item['balance'],
-                    'deposit' => $item['deposit'],
-                ],
-            ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
-        }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite('saseul_committed.coin');
-        }
     }
 }

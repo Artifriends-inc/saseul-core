@@ -2,13 +2,12 @@
 
 namespace Saseul\Custom\Status;
 
-use Saseul\System\Database;
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
+use Saseul\System\Database;
 
 class Token extends Status
 {
-    protected static $namespace = 'saseul_committed.token';
-
     protected static $addresses = [];
     protected static $token_names = [];
     protected static $balances = [];
@@ -49,9 +48,9 @@ class Token extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['address' => ['$in' => self::$addresses], 'token_name' => ['$in' => self::$token_names]];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_TOKEN, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->balance)) {
@@ -60,26 +59,33 @@ class Token extends Status
         }
     }
 
-    public static function _Save()
+    /**
+     * Token 정보를 저장한다.
+     *
+     * @throws \Exception
+     */
+    public static function _Save(): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
-        foreach (self::$balances as $address => $item) {
-            foreach ($item as $token_name => $balance) {
-                $filter = ['address' => $address, 'token_name' => $token_name];
-                $row = [
-                    '$set' => [
-                        'balance' => $balance,
-                    ],
+        $operations = [];
+        foreach (self::$balances as $address => $tokenList) {
+            foreach ($tokenList as $tokenName => $balance) {
+                $operations[] = [
+                    'updateOne' => [
+                        ['address' => $address, 'token_name' => $tokenName],
+                        ['$set' => ['balance' => $balance]],
+                        ['upsert' => true],
+                    ]
                 ];
-                $opt = ['upsert' => true];
-                $db->bulk->update($filter, $row, $opt);
             }
         }
 
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+        if (empty($operations)) {
+            return;
         }
+
+        $db->getTokenCollection()->bulkWrite($operations);
 
         self::_Reset();
     }

@@ -2,14 +2,14 @@
 
 namespace Saseul\Custom\Status;
 
-use Saseul\System\Database;
-use Saseul\Constant\Role;
+use Exception;
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
+use Saseul\Constant\Role;
+use Saseul\System\Database;
 
 class Attributes extends Status
 {
-    protected static $namespace = 'saseul_committed.attributes';
-
     protected static $addresses_role = [];
     protected static $roles = [];
 
@@ -46,9 +46,9 @@ class Attributes extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['address' => ['$in' => self::$addresses_role], 'key' => 'role'];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->value)) {
@@ -57,25 +57,31 @@ class Attributes extends Status
         }
     }
 
-    public static function _Save()
+    /**
+     * Memory 에 저장해둔 정보를 DB에 저장한다.
+     *
+     * @throws Exception
+     */
+    public static function _Save(): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
-        foreach (self::$roles as $k => $v) {
-            $filter = ['address' => $k, 'key' => 'role'];
-            $row = [
-                '$set' => [
-                    'key' => 'role',
-                    'value' => $v,
-                ],
+        $operations = [];
+        foreach (self::$roles as $key => $value) {
+            $operations[] = [
+                'updateOne' => [
+                    ['address' => $key, 'key' => 'role'],
+                    ['$set' => ['key' => 'role', 'value' => $value]],
+                    ['upsert' => true],
+                ]
             ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
         }
 
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+        if (empty($operations)) {
+            return;
         }
+
+        $db->getAttributesCollection()->bulkWrite($operations);
 
         self::_Reset();
     }

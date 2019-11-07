@@ -2,9 +2,9 @@
 
 namespace Saseul\Consensus;
 
+use ReflectionClass;
 use Saseul\Constant\Decision;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDbConfig;
 use Saseul\Constant\Structure;
 use Saseul\Core\Chunk;
 use Saseul\Core\IMLog;
@@ -13,18 +13,25 @@ use Saseul\Custom\Status\Fee;
 use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
-use Saseul\Util\Logger;
+use Saseul\Util\Mongo;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
+// TODO: TEST 코드가 추가 되어야한다.
 class CommitManager
 {
     private static $instance = null;
 
     private $db;
     private $rest;
-    private $transaction_manager;
     private $status_manager;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
+        $this->rest = RestCall::GetInstance();
+        $this->status_manager = new StatusManager();
+    }
 
     public static function GetInstance()
     {
@@ -33,14 +40,6 @@ class CommitManager
         }
 
         return self::$instance;
-    }
-
-    public function __construct()
-    {
-        $this->db = Database::GetInstance();
-        $this->rest = RestCall::GetInstance();
-        $this->transaction_manager = new TransactionManager();
-        $this->status_manager = new StatusManager();
     }
 
     public function init()
@@ -83,12 +82,13 @@ class CommitManager
         Chunk::RemoveBroadcastChunk($lastBlock['s_timestamp']);
     }
 
-    public function orderedTransactions($transactions, $minTimestamp, $maxTimestamp) {
+    public function orderedTransactions($transactions, $minTimestamp, $maxTimestamp)
+    {
         $orderKey = [];
         $txs = [];
 
         $this->status_manager->Reset();
-        
+
         foreach ($transactions as $key => $item) {
             if (TypeChecker::StructureCheck(Structure::TX_ITEM, $item) === false) {
                 continue;
@@ -106,11 +106,18 @@ class CommitManager
                 continue;
             }
 
-            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
-            $validity = $this->transaction_manager->GetTransactionValidity();
-            $this->transaction_manager->LoadStatus();
+            // TODO: 호출되는 Transaction의 type들이 최초 한 번 만 생성되어 계속 사용되는게 맞는지 계속 재생성인지 확인 필요
+            $transactionType = $this->createTransactionTypeInstance($type);
+            $transactionType->initialize(
+                $transaction,
+                $thash,
+                $public_key,
+                $signature
+            );
+            $validity = $transactionType->getValidity();
+            $transactionType->loadStatus();
 
-            if ($validity == false) {
+            if ($validity === false) {
                 continue;
             }
 
@@ -150,13 +157,13 @@ class CommitManager
 //                'cnt' => count($result['data']['items']),
 //            ];
 
-            # check structure;
+            // check structure;
             if (!isset($result['data']['items']) || !is_array($result['data']['items'])) {
                 continue;
             }
 
             foreach ($result['data']['items'] as $item) {
-                # check structure;
+                // check structure;
                 if (TypeChecker::StructureCheck(Structure::BROADCAST_ITEM, $item) === false) {
                     continue;
                 }
@@ -167,13 +174,13 @@ class CommitManager
                 $public_key = $item['public_key'];
                 $content_signature = $item['content_signature'];
 
-                # check request is valid;
+                // check request is valid;
                 if (!Key::isValidAddress($address, $public_key) ||
                     !Chunk::isValidContentSignaure($public_key, DateTime::toTime($maxTime), $content_signature, $transactions)) {
                     continue;
                 }
 
-                # add broadcast chunk;
+                // add broadcast chunk;
                 Chunk::makeBroadcastChunk($file_name, $public_key, $content_signature, $transactions);
 
                 $chunks = $this->mergedChunks($chunks, $transactions, $minTime, $maxTime);
@@ -205,9 +212,8 @@ class CommitManager
         }
 
         $results = $this->rest->MultiPOST($hosts, 'broadcast2', $data, false, [], 3);
-        $chunks = $this->collectChunk($results, $chunks, $minTime, $maxTime);
 
-        return $chunks;
+        return $this->collectChunk($results, $chunks, $minTime, $maxTime);
     }
 
     public function collectBroadcastChunk(array $aliveValidators, array $oldChunks, int $minTime, int $maxTime)
@@ -221,7 +227,7 @@ class CommitManager
             $hosts[] = $node['host'];
         }
 
-        # try;
+        // try;
         $broadcastCode = Chunk::broadcastCode(DateTime::toTime($maxTime));
         $data = [
             'broadcast_code' => $broadcastCode,
@@ -236,7 +242,7 @@ class CommitManager
         $broadcastCodes = $this->collectBroadcastCode($results, []);
         $most = TypeChecker::findMostItem(array_values($broadcastCodes), 'broadcast_code');
 
-        # 이거 살리면 확실하게 Stable;
+        // 이거 살리면 확실하게 Stable;
 //        if ($most['unique'] === true && $most['item']['broadcast_code'] === $broadcastCode) {
 //            return $chunks;
 //        }
@@ -244,7 +250,7 @@ class CommitManager
             return $chunks;
         }
 
-        # retry;
+        // retry;
         $broadcastCode = Chunk::broadcastCode(DateTime::toTime($maxTime));
         $data = [
             'broadcast_code' => $broadcastCode,
@@ -255,12 +261,10 @@ class CommitManager
         ];
 
         $results = $this->rest->MultiPOST($hosts, 'broadcast3', $data, false, [], 3);
-        $chunks = $this->collectChunk($results, $chunks, $minTime, $maxTime);
 
-        return $chunks;
-
-        # TODO : 리스크 실험 해야함.
-        # 이거 살리면 확실하게 Stable;
+        return $this->collectChunk($results, $chunks, $minTime, $maxTime);
+        // TODO : 리스크 실험 해야함.
+        //   이거 살리면 확실하게 Stable;
 //        $broadcastCodes = $this->collectBroadcastCode($results, $broadcastCodes);
 //        $most = TypeChecker::findMostItem(array_values($broadcastCodes), 'broadcast_code');
 //
@@ -278,12 +282,12 @@ class CommitManager
         foreach ($results as $rs) {
             $result = json_decode($rs['result'], true);
 
-            # check structure;
+            // check structure;
             if (!isset($result['data'])) {
                 continue;
             }
 
-            # check structure;
+            // check structure;
             if (TypeChecker::StructureCheck(Structure::BROADCAST_RESULT, $result['data']) === false) {
                 continue;
             }
@@ -297,7 +301,8 @@ class CommitManager
         return $broadcastCodes;
     }
 
-    public function mergedChunks(array $oldChunks, array $transactions, $minTimestamp, $maxTimestamp) {
+    public function mergedChunks(array $oldChunks, array $transactions, $minTimestamp, $maxTimestamp)
+    {
         $keys = $oldChunks['keys'];
         $txs = $oldChunks['txs'];
 
@@ -319,13 +324,21 @@ class CommitManager
                 continue;
             }
 
-            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
+            // TODO: 호출되는 Transaction의 type들이 최초 한 번 만 생성되어 계속 사용되는게 맞는지 계속 재생성인지 확인 필요
+            $transactionType = $this->createTransactionTypeInstance($type);
+            $transactionType->initialize(
+                $transaction,
+                $thash,
+                $public_key,
+                $signature
+            );
+            $validity = $transactionType->getValidity();
 
-            if ($this->transaction_manager->GetTransactionValidity() === false) {
+            if ($validity === false) {
                 continue;
             }
 
-            $this->transaction_manager->LoadStatus();
+            $transactionType->loadStatus();
 
             $keys[] = $key;
 
@@ -339,17 +352,15 @@ class CommitManager
             ];
         }
 
-        $chunks = [
+        return [
             'keys' => $keys,
             'txs' => $txs,
         ];
-
-        return $chunks;
     }
 
     public function completeTransactions($transactions)
     {
-        # load status;
+        // load status
         $this->status_manager->Load();
 
         foreach ($transactions as $key => $item) {
@@ -360,36 +371,60 @@ class CommitManager
 
             $type = $transaction['type'];
 
-            $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
-            $this->transaction_manager->GetStatus();
-            $result = $this->transaction_manager->MakeDecision();
+            // TODO: 호출되는 Transaction의 type들이 최초 한 번 만 생성되어 계속 사용되는게 맞는지 계속 재생성인지 확인 필요
+            $transactionType = $this->createTransactionTypeInstance($type);
+            $transactionType->initialize(
+                $transaction,
+                $thash,
+                $public_key,
+                $signature
+            );
+            $transactionType->getStatus();
+            $result = $transactionType->makeDecision();
+
             $transactions[$key]['result'] = $result;
 
             if ($result === Decision::REJECT) {
                 continue;
             }
 
-            $this->transaction_manager->SetStatus();
+            $transactionType->setStatus();
         }
 
         return $transactions;
     }
 
-    public function commitTransaction($transactions, $expectBlock)
+    /**
+     * 등록된 Transaction 에 Blockhash 값을 입력한다.
+     *
+     * @param array $transactions Transaction List
+     * @param array $expectBlock  이번 commit 되는 블록 정보
+     */
+    public function commitTransaction(array $transactions, array $expectBlock): void
     {
         $blockhash = $expectBlock['blockhash'];
 
+        $operationList = [];
         foreach ($transactions as $transaction) {
             $transaction['block'] = $blockhash;
-            $filter = ['thash' => $transaction['thash'], 'timestamp' => $transaction['timestamp']];
-            $row = ['$set' => $transaction];
-            $opt = ['upsert' => true];
-            $this->db->bulk->update($filter, $row, $opt);
+
+            $operationList[] = [
+                'updateOne' => [
+                    [
+                        'thash' => $transaction['thash'],
+                        'timestamp' => $transaction['timestamp'],
+                    ],
+                    [
+                        '$set' => $transaction,
+                    ],
+                    [
+                        'upsert' => true,
+                    ]
+                ]
+            ];
         }
 
-        if ($this->db->bulk->count() > 0) {
-            $this->db->BulkWrite(MongoDbConfig::DB_COMMITTED . '.transactions');
-        }
+        $this->db->getTransactionsCollection()->bulkWrite($operationList);
     }
 
     public function commitBlock($expectBlock)
@@ -397,7 +432,7 @@ class CommitManager
         $this->db->bulk->insert($expectBlock);
 
         if ($this->db->bulk->count() > 0) {
-            $this->db->BulkWrite(MongoDbConfig::DB_COMMITTED . '.blocks');
+            $this->db->BulkWrite(Mongo::DB_COMMITTED . '.blocks');
         }
     }
 
@@ -426,5 +461,12 @@ class CommitManager
         }
 
         fclose($file);
+    }
+
+    private function createTransactionTypeInstance(string $type)
+    {
+        $classNameWithPath = "Saseul\\Custom\\Transaction\\{$type}";
+
+        return (new ReflectionClass($classNameWithPath))->newInstance();
     }
 }

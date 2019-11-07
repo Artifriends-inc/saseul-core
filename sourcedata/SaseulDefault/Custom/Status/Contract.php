@@ -2,14 +2,19 @@
 
 namespace Saseul\Custom\Status;
 
-use Saseul\System\Database;
+use Exception;
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
+use Saseul\System\Database;
 use Saseul\Util\Parser;
 
+/**
+ * Class Contract.
+ *
+ * 사용하지 않고 있다.
+ */
 class Contract extends Status
 {
-    protected static $namespace = 'saseul_committed.contract';
-
     protected static $cids = [];
     protected static $contracts = [];
     protected static $burn_cids = [];
@@ -61,9 +66,9 @@ class Contract extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['cid' => ['$in' => self::$cids]];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_CONTRACT, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->contract)) {
@@ -72,36 +77,44 @@ class Contract extends Status
         }
     }
 
-    public static function _Save()
+    /**
+     * Contract 정보를 저장한다.
+     *
+     * @throws Exception
+     */
+    public static function _Save(): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
-        foreach (self::$contracts as $k => $v) {
-            $filter = ['cid' => $k];
-            $row = [
-                '$set' => [
-                    'contract' => $v,
-                    'status' => 'active',
-                ],
+        $operations = [];
+        foreach (self::$contracts as $key => $value) {
+            $operations[] = [
+                'updateOne' => [
+                    ['cid' => $key],
+                    ['$set' => [
+                        'contract' => $value,
+                        'status' => 'active'
+                    ]],
+                    ['upsert' => true],
+                ]
             ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
         }
 
         foreach (self::$burn_cids as $cid) {
-            $filter = ['cid' => $cid];
-            $row = [
-                '$set' => [
-                    'status' => 'burn',
-                ],
+            $operations[] = [
+                'updateOne' => [
+                    ['cid' => $cid],
+                    ['$set' => ['status' => 'burn']],
+                    ['upsert' => true],
+                ]
             ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
         }
 
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+        if (empty($operations)) {
+            return;
         }
+
+        $db->getContractCollection()->bulkWrite($operations);
 
         self::_Reset();
     }

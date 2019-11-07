@@ -2,79 +2,67 @@
 
 namespace Saseul\Api;
 
-use Saseul\Common\Api;
-use Saseul\Consensus\TransactionManager;
+use Saseul\Common\ExternalApi;
 use Saseul\Core\Chunk;
 use Saseul\Core\NodeInfo;
 use Saseul\Core\Tracker;
+use Saseul\System\HttpStatus;
 use Saseul\Util\RestCall;
 
-class Transaction extends Api
+// TODO: Transaction API Unit Test 추가 필요
+class Transaction extends ExternalApi
 {
-    protected $rest;
+    private $transactionResult;
 
-    protected $transaction_manager;
-
-    protected $transaction;
-    protected $public_key;
-    protected $signature;
-
-    public function __construct()
+    public function handle(): void
     {
-        $this->rest = RestCall::GetInstance();
+        $this->initialize();
+        if ($this->api->getValidity()) {
+            $this->handleTransaction();
+            $this->makeResult(HttpStatus::OK, $this->transactionResult);
 
-        $this->transaction_manager = new TransactionManager();
-    }
-
-    public function _init()
-    {
-        $this->transaction = json_decode($this->getParam($_REQUEST, 'transaction', ['default' => '{}']), true);
-        $this->public_key = $this->getParam($_REQUEST, 'public_key', ['default' => '']);
-        $this->signature = $this->getParam($_REQUEST, 'signature', ['default' => '']);
-    }
-
-    public function _process()
-    {
-        $type = $this->getParam($this->transaction, 'type');
-
-        $transaction = $this->transaction;
-        $thash = hash('sha256', json_encode($transaction));
-        $public_key = $this->public_key;
-        $signature = $this->signature;
-
-        $this->transaction_manager->InitializeTransaction($type, $transaction, $thash, $public_key, $signature);
-        $validity = $this->transaction_manager->GetTransactionValidity();
-
-        if ($validity == false) {
-            $this->Error('Invalid transaction');
+            return;
         }
+
+        $this->makeResult(HttpStatus::BAD_REQUEST);
     }
 
-    public function _end()
+    private function initialize(): void
     {
-        if (Tracker::IsValidator(NodeInfo::getAddress())) {
+        $thash = hash('sha256', json_encode($this->handlerData));
+        $this->api->initialize(
+            $this->handlerData,
+            $thash,
+            $this->public_key,
+            $this->signature
+        );
+    }
+
+    private function handleTransaction(): void
+    {
+        if (Tracker::isValidator(NodeInfo::getAddress())) {
             $this->AddTransaction();
-            $this->data['result'] = 'Transaction is added';
+            $this->transactionResult['message'] = 'Transaction is added';
         } else {
             $this->BroadcastTransaction();
-            $this->data['result'] = 'Transaction is broadcast';
+            $this->transactionResult['message'] = 'Transaction is broadcast';
         }
 
-        $this->data['transaction'] = $this->transaction;
-        $this->data['public_key'] = $this->public_key;
-        $this->data['signature'] = $this->signature;
+        $this->transactionResult['transaction'] = $this->handlerData;
+        $this->transactionResult['public_key'] = $this->public_key;
+        $this->transactionResult['signature'] = $this->signature;
     }
 
-    public function AddTransaction()
+    private function AddTransaction(): void
     {
-        Chunk::SaveAPIChunk([
-            'transaction' => $this->transaction,
+        Chunk::saveApiChunk([
+            'transaction' => $this->handlerData,
             'public_key' => $this->public_key,
             'signature' => $this->signature,
-        ], $this->transaction['timestamp']);
+        ], $this->handlerData['timestamp']);
     }
 
-    public function BroadcastTransaction()
+    private function BroadcastTransaction(): void
     {
         $validator = Tracker::GetRandomValidator();
         if (isset($validator['host'])) {
@@ -82,12 +70,13 @@ class Transaction extends Api
 
             $url = "http://{$host}/transaction";
             $data = [
-                'transaction' => json_encode($this->transaction),
+                'transaction' => json_encode($this->handlerData),
                 'public_key' => $this->public_key,
                 'signature' => $this->signature,
             ];
 
-            $this->rest->POST($url, $data);
+            $rest = RestCall::GetInstance();
+            $rest->POST($url, $data);
         }
     }
 }

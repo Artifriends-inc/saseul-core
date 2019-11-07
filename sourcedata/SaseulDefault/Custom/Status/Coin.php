@@ -2,13 +2,13 @@
 
 namespace Saseul\Custom\Status;
 
-use Saseul\System\Database;
+use Exception;
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
+use Saseul\System\Database;
 
 class Coin extends Status
 {
-    protected static $namespace = 'saseul_committed.coin';
-
     protected static $addresses = [];
     protected static $balances = [];
     protected static $deposits = [];
@@ -66,9 +66,9 @@ class Coin extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['address' => ['$in' => self::$addresses]];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_COIN, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->balance)) {
@@ -81,32 +81,43 @@ class Coin extends Status
         }
     }
 
-    public static function _Save()
+    /**
+     * Coin 값을 DB에 저장한다.
+     *
+     * @throws Exception
+     */
+    public static function _Save(): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
-        foreach (self::$balances as $k => $v) {
-            $filter = ['address' => $k];
-            $row = [
-                '$set' => ['balance' => $v],
-            ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
+        $balanceOperation = static::upsertCoinDB('balance', self::$balances);
+        $depositOperation = static::upsertCoinDB('deposit', self::$deposits);
+
+        $operations = array_merge($balanceOperation, $depositOperation);
+
+        if (empty($operations)) {
+            return;
         }
 
-        foreach (self::$deposits as $k => $v) {
-            $filter = ['address' => $k];
-            $row = [
-                '$set' => ['deposit' => $v],
-            ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
-        }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
-        }
+        $db->getCoinCollection()->bulkWrite($operations);
 
         self::_Reset();
+    }
+
+    private static function upsertCoinDB(string $type, array $memData): array
+    {
+        $operations = [];
+
+        foreach ($memData as $key => $value) {
+            $operations[] = [
+                'updateOne' => [
+                    ['address' => $key],
+                    ['$set' => [$type => $value]],
+                    ['upsert' => true],
+                ]
+            ];
+        }
+
+        return $operations;
     }
 }

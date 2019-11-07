@@ -37,6 +37,9 @@ class StatusManager
         }
     }
 
+    /**
+     * CommitManager 에서 Status 값을 저장한다.
+     */
     public function Save()
     {
         foreach ($this->status_interfaces as $status_interface) {

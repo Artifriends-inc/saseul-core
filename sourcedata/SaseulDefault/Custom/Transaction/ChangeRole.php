@@ -2,82 +2,44 @@
 
 namespace Saseul\Custom\Transaction;
 
+use Saseul\Constant\Decision;
+use Saseul\Constant\Role;
 use Saseul\Custom\Status\Attributes;
 use Saseul\Custom\Status\Coin;
-use Saseul\Constant\Decision;
-use Saseul\System\Key;
-use Saseul\Constant\Role;
-use Saseul\Common\Transaction;
-use Saseul\Version;
 
-class ChangeRole extends Transaction
+class ChangeRole extends AbstractTransaction
 {
-    public const TYPE = 'ChangeRole';
-
-    protected $transaction;
-    protected $thash;
-    protected $public_key;
-    protected $signature;
-
-    protected $status_key;
-
-    private $type;
-    private $version;
-    private $from;
     private $role;
-    private $transactional_data;
-    private $timestamp;
-
     private $from_deposit;
 
-    public function _Init($transaction, $thash, $public_key, $signature)
-    {
-        $this->transaction = $transaction;
-        $this->thash = $thash;
-        $this->public_key = $public_key;
-        $this->signature = $signature;
+    public function initialize(
+        $transaction,
+        $thash,
+        $public_key,
+        $signature
+    ): void {
+        parent::initialize($transaction, $thash, $public_key, $signature);
 
-        if (isset($this->transaction['type'])) {
-            $this->type = $this->transaction['type'];
-        }
-        if (isset($this->transaction['version'])) {
-            $this->version = $this->transaction['version'];
-        }
-        if (isset($this->transaction['from'])) {
-            $this->from = $this->transaction['from'];
-        }
-        if (isset($this->transaction['role'])) {
-            $this->role = $this->transaction['role'];
-        }
-        if (isset($this->transaction['transactional_data'])) {
-            $this->transactional_data = $this->transaction['transactional_data'];
-        }
-        if (isset($this->transaction['timestamp'])) {
-            $this->timestamp = $this->transaction['timestamp'];
-        }
+        $this->role = $transaction['role'] ?? null;
     }
 
-    public function _GetValidity(): bool
+    public function getValidity(): bool
     {
-        return Version::isValid($this->version)
-            && is_string($this->role)
-            && is_numeric($this->timestamp)
-            && $this->type === self::TYPE
-            && Key::isValidAddress($this->from, $this->public_key)
-            && Key::isValidSignature($this->thash, $this->public_key, $this->signature);
+        return parent::getValidity()
+            && $this->isValidRole();
     }
 
-    public function _LoadStatus()
+    public function loadStatus(): void
     {
         Coin::LoadDeposit($this->from);
     }
 
-    public function _GetStatus()
+    public function getStatus(): void
     {
         $this->from_deposit = Coin::GetDeposit($this->from);
     }
 
-    public function _MakeDecision()
+    public function makeDecision(): string
     {
         if (!Role::isExist($this->role)) {
             return Decision::REJECT;
@@ -98,8 +60,19 @@ class ChangeRole extends Transaction
         return Decision::ACCEPT;
     }
 
-    public function _SetStatus()
+    public function setStatus(): void
     {
         Attributes::SetRole($this->from, $this->role);
+    }
+
+    private function isValidRole(): bool
+    {
+        return $this->isNotNull()
+            && is_string($this->role);
+    }
+
+    private function isNotNull(): bool
+    {
+        return ($this->role === null) === false;
     }
 }

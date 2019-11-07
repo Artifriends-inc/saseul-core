@@ -2,14 +2,13 @@
 
 namespace Saseul\Custom\Status;
 
-use Saseul\System\Database;
 use Saseul\Common\Status;
+use Saseul\Constant\MongoDb;
+use Saseul\System\Database;
 use Saseul\Util\Parser;
 
 class TokenList extends Status
 {
-    protected static $namespace = 'saseul_committed.token_list';
-
     protected static $token_names = [];
     protected static $token_info = [];
 
@@ -46,9 +45,9 @@ class TokenList extends Status
             return;
         }
 
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $filter = ['token_name' => ['$in' => self::$token_names]];
-        $rs = $db->Query(self::$namespace, $filter);
+        $rs = $db->Query(MongoDb::NAMESPACE_TOKEN_LIST, $filter);
 
         foreach ($rs as $item) {
             if (isset($item->info)) {
@@ -57,24 +56,31 @@ class TokenList extends Status
         }
     }
 
-    public static function _Save()
+    /**
+     * Token List 정보를 업데이트 한다.
+     *
+     * @throws \Exception
+     */
+    public static function _Save(): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
-        foreach (self::$token_info as $token_name => $info) {
-            $filter = ['token_name' => $token_name];
-            $row = [
-                '$set' => [
-                    'info' => $info,
-                ],
+        $operations = [];
+        foreach (self::$token_info as $tokenName => $info) {
+            $operations[] = [
+                'updateOne' => [
+                    ['token_name' => $tokenName],
+                    ['$set' => ['info' => $info]],
+                    ['upsert' => true],
+                ]
             ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
         }
 
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(self::$namespace);
+        if (empty($operations)) {
+            return;
         }
+
+        $db->getTokenListCollection()->bulkWrite($operations);
 
         self::_Reset();
     }

@@ -4,12 +4,11 @@ namespace Saseul\Script;
 
 use Saseul\Common\Script;
 use Saseul\Constant\Rule;
-use Saseul\Util\Logger;
-use Saseul\Version;
 use Saseul\Core\NodeInfo;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
 use Saseul\Util\RestCall;
+use Saseul\Version;
 
 class SpeedTest extends Script
 {

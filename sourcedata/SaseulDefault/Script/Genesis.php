@@ -4,16 +4,16 @@ namespace Saseul\Script;
 
 use Saseul\Common\Script;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDbConfig;
 use Saseul\Constant\Rule;
-use Saseul\Version;
-use Saseul\Core\NodeInfo;
 use Saseul\Core\Env;
-use Saseul\System\Key;
+use Saseul\Core\NodeInfo;
 use Saseul\System\Cache;
 use Saseul\System\Database;
+use Saseul\System\Key;
 use Saseul\Util\DateTime;
 use Saseul\Util\Logger;
+use Saseul\Util\Mongo;
+use Saseul\Version;
 
 class Genesis extends Script
 {
@@ -26,7 +26,7 @@ class Genesis extends Script
 
     public function __construct($noAsk = false)
     {
-        $this->db = Database::GetInstance();
+        $this->db = Database::getInstance();
         $this->cache = Cache::GetInstance();
 
         $this->noAsk = $noAsk;
@@ -59,7 +59,7 @@ class Genesis extends Script
             $this->Error('There is genesis block already ');
         }
 
-        $rs = $this->db->Command(MongoDbConfig::DB_COMMITTED, ['count' => 'blocks']);
+        $rs = $this->db->Command(Mongo::DB_COMMITTED, ['count' => Mongo::COLLECTION_BLOCKS]);
 
         $count = 0;
 

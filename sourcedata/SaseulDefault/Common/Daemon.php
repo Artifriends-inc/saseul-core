@@ -1,5 +1,7 @@
 <?php
-# TODO: shell_exec 없애야 함.
+
+// TODO: shell_exec 없애야 함.
+
 namespace Saseul\Common;
 
 class Daemon
@@ -11,7 +13,8 @@ class Daemon
 
     public static $isDying = false;
 
-    public static function setOption(string $pidPath, int $gid, int $uid) {
+    public static function setOption(string $pidPath, int $gid, int $uid)
+    {
         self::$pidPath = $pidPath;
         self::$gid = $gid;
         self::$uid = $uid;
@@ -23,7 +26,7 @@ class Daemon
         self::fork();
         self::setEnv();
     }
-    
+
     public static function stop(): void
     {
         if (self::$isDying === true) {
@@ -43,6 +46,12 @@ class Daemon
         exit();
     }
 
+    /**
+     * 코드를 수정하고 나면 해당 매소드를 이용하여 service를 재시작한다.
+     *
+     * @todo service를 재시작하는 것이 아닌, 다른 서비스를 재시작하거나 하는 명령을 다시 구성해야한다.
+     *    service를 직접 재시작하는 명령이 들어가서는 안된다.
+     */
     public static function restart(): void
     {
         if (self::$isDying === true) {
@@ -58,12 +67,12 @@ class Daemon
         shell_exec('service saseuld restart');
         exit();
     }
-    
+
     public static function iterate(int $microSeconds): void
     {
         usleep($microSeconds);
         clearstatcache();
-        
+
         if (function_exists('gc_collect_cycles')) {
             gc_collect_cycles();
         }
@@ -83,7 +92,7 @@ class Daemon
             self::error('error');
         }
 
-        if ((php_sapi_name() !== 'cli')) {
+        if (\PHP_SAPI !== 'cli') {
             self::error('error');
         }
 
@@ -99,23 +108,26 @@ class Daemon
             gc_enable();
         }
     }
-    
+
     public static function fork(): void
     {
         switch ($pid = pcntl_fork()) {
             case 0:
                 self::$pid = posix_getpid();
                 @umask(0);
+
                 break;
             case -1:
                 self::error('Process cannot be forked. ');
+
                 break;
             default:
                 exit();
+
                 break;
         }
     }
-    
+
     public static function setEnv(): void
     {
         if (!file_put_contents(self::$pidPath, self::$pid)) {
@@ -142,7 +154,7 @@ class Daemon
             self::error('Unable to change group');
         }
 
-        declare(ticks = 1);
+        declare(ticks=1);
     }
 
     public static function isRunning(): bool
@@ -157,7 +169,7 @@ class Daemon
             return false;
         }
 
-        if (!posix_kill(intval($pid), 0)) {
+        if (!posix_kill((int) $pid, 0)) {
             unlink(self::$pidPath);
         }
 
@@ -175,7 +187,7 @@ class Daemon
 
         return $pid;
     }
-    
+
     public static function info(string $msg): void
     {
         print_r($msg . PHP_EOL);

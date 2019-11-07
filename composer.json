@@ -1,0 +1,150 @@
+{
+    "name": "artifriends/saseul-core",
+    "license": "LGPL-3.0",
+    "description": "SASEUL Origin core.",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "artifriends",
+            "email": "saseul@artifriends.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "src\\": "src/",
+            "Saseul\\": "src/Saseul/",
+            "Saseul\\API\\": "src/Saseul/API/",
+            "Saseul\\Common\\": "src/Saseul/Common/",
+            "Saseul\\Consensus\\": "src/Saseul/Consensus/",
+            "Saseul\\Constant\\": "src/Saseul/Constant/",
+            "Saseul\\Core\\": "src/Saseul/Core/",
+            "Saseul\\Custom\\": "src/Saseul/Custom/",
+            "Saseul\\Daemon\\": "src/Saseul/Daemon/",
+            "Saseul\\System\\": "src/Saseul/System/",
+            "Saseul\\Util\\": "src/Saseul/Util/",
+            "Saseul\\Script\\": "src/Saseul/Script/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Saseul\\Tests\\Unit\\": "./tests/unit",
+            "Cmd\\": "cmd/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "require": {
+        "php": ">=7.3",
+        "monolog/monolog": "^1.24",
+        "ext-posix": "*",
+        "ext-json": "*",
+        "ext-mongodb": "^1.6",
+        "ext-http": "*",
+        "ext-fileinfo": "*",
+        "ext-memcached": "*",
+        "guzzlehttp/guzzle": "^6",
+        "mongodb/mongodb": "^1.5"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "phpunit/phpunit": "^8",
+        "phan/phan": "^2",
+        "friendsofphp/php-cs-fixer": "^2",
+        "composer/composer": "^1"
+    },
+    "scripts": {
+        "docker-build": [
+            "DOCKER_BUILDKIT=1 docker build --rm --force-rm --no-cache --pull -t saseul-core ."
+        ],
+        "docker-up": [
+            "docker-compose up -d"
+        ],
+        "docker-down": [
+            "docker-compose down"
+        ],
+        "docker-log": [
+            "docker-compose logs -f"
+        ],
+        "make-env": [
+            "cp ./env.example ./.env"
+        ],
+        "add": [
+            "composer require --ignore-platform-reqs"
+        ],
+        "local-install": [
+            "composer install --ignore-platform-reqs"
+        ],
+        "local-update": [
+            "composer update --ignore-platform-reqs"
+        ],
+        "node-clean": [
+            "@docker-down",
+            "sh ./cmd/rm_block_data.sh"
+        ],
+        "phan": [
+            "PHAN_ALLOW_XDEBUG=1 ./vendor/bin/phan"
+        ],
+        "fix": [
+            "./vendor/bin/php-cs-fixer fix -v"
+        ],
+        "test": [
+            "docker-compose run -T --rm node bash -c './vendor/bin/phpunit --coverage-text --coverage-html build/coverage-report'",
+            "@docker-down"
+        ],
+        "ci-phan": [
+            "@phan"
+        ],
+        "ci-docker-build": [
+            "docker build -t saseul-core ."
+        ],
+        "ci-fix": [
+            "./vendor/bin/php-cs-fixer fix --dry-run --diff -v"
+        ],
+        "ci-test": [
+            "docker-compose run --user='root' -T --rm node bash -c './vendor/bin/phpunit -c phpunit.xml --coverage-text --coverage-clover build/logs/clover.xml'"
+        ],
+        "init-db": [
+            "@docker-up",
+            "sleep 10",
+            "docker-compose exec -T api bash -c 'composer docker-init-db'",
+            "@docker-down"
+        ],
+        "set-light": [
+            "@docker-up",
+            "sleep 10",
+            "docker-compose exec -T api bash -c 'composer init-node-on-docker'"
+        ],
+        "make-genesis": [
+            "@docker-up",
+            "sleep 20",
+            "docker-compose exec -T api bash -c 'composer init-node-on-docker'",
+            "docker-compose exec -T api bash -c 'composer init-node-on-docker'",
+            "docker-compose exec -T api bash -c 'composer make-genesis-on-docker'"
+        ],
+        "init-node-on-docker": [
+            "Cmd\\SaseulCmd::initializationNode"
+        ],
+        "make-genesis-on-docker": [
+            "Cmd\\SaseulCmd::makeGenesis"
+        ]
+    },
+    "scripts-descriptions": {
+        "docker-build": "Build SASEUL docker image",
+        "docker-up": "사슬에 연관된 도커 이미지들 대몬 형식으로 실행",
+        "docker-down": "사슬에 연관된 도커 이미지 관련 내용 삭제",
+        "docker-log": "서비스 로그 확인",
+        "make-env": "env 파일 생성",
+        "add": "패키지 추가",
+        "local-install": "패키지 설치",
+        "local-update": "패키지 업데이트",
+        "node-clean": "SASEUL 노드에 관련된 정보들을 전부 삭제",
+        "phan": "정적 분석 실행 ( 수정 X )",
+        "fix": "문법 오류 수정",
+        "test": "테스트 코드 실행",
+        "ci-phan": "[CI] 정적 분석기",
+        "ci-fix": "[CI] 문법 오류 확인",
+        "ci-test": "[CI] 테스트 코드 실행"
+    }
+}

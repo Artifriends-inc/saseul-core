@@ -2,57 +2,29 @@
 
 namespace Saseul\Custom\Request;
 
+use MongoDB\Driver\Exception\Exception;
 use Saseul\Custom\Method\Attributes;
 use Saseul\Custom\Method\Coin;
 use Saseul\Custom\Method\Token;
-use Saseul\System\Key;
-use Saseul\Common\Request;
-use Saseul\Version;
 
-class GetAccountInfo extends Request
+/**
+ * Class GetAccountInfo.
+ * Account 정보를 가져온다.
+ */
+class GetAccountInfo extends AbstractRequest
 {
-    public const TYPE = 'GetAccountInfo';
-
-    protected $request;
-    protected $thash;
-    protected $public_key;
-    protected $signature;
-
-    private $type;
-    private $version;
-    private $from;
-    private $transactional_data;
-    private $timestamp;
-
-    public function initialize(array $request, string $thash, string $public_key, string $signature): void
-    {
-        $this->request = $request;
-        $this->thash = $thash;
-        $this->public_key = $public_key;
-        $this->signature = $signature;
-
-        $this->type = $this->request['type'] ?? '';
-        $this->version = $this->request['version'] ?? '';
-        $this->from = $this->request['from'] ?? '';
-        $this->transactional_data = $this->request['transactional_data'] ?? '';
-        $this->timestamp = $this->request['timestamp'] ?? 0;
-    }
-
-    public function getValidity(): bool
-    {
-        return Version::isValid($this->version)
-            && !empty($this->timestamp)
-            && $this->type === self::TYPE
-            && Key::isValidAddress($this->from, $this->public_key)
-            && Key::isValidSignature($this->thash, $this->public_key, $this->signature);
-    }
-
+    /**
+     * @throws Exception
+     *
+     * @return array (See below)
+     */
     public function getResponse(): array
     {
-        $from = $this->request['from'];
+        $from = $this->from;
         $all = Coin::GetAll([$from]);
         $balance = $all[$from]['balance'];
         $deposit = $all[$from]['deposit'];
+
         $token = Token::GetAll([$from]);
         $token = $token[$from];
 

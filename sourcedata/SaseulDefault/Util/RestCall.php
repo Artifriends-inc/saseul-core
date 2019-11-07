@@ -32,7 +32,7 @@ class RestCall
     public function MultiPOST(array $hosts, string $urlPath = '', $data = [], $ssl = false, $header = [], int $timeout = 1): array
     {
         if (count($hosts) > 1000) {
-            /** 최종 테스트까지 보류 */
+            // 최종 테스트까지 보류
             exit();
         }
 
@@ -79,7 +79,7 @@ class RestCall
             $info = curl_getinfo($item['c']);
 
             $this->multiObj[$k]['result'] = curl_multi_getcontent($item['c']);
-            $this->multiObj[$k]['host'] = preg_replace("/http:\/\/(.*?)\/.*/", '$1', $info['url']);
+            $this->multiObj[$k]['host'] = preg_replace('/http:\\/\\/(.*?)\\/.*/', '$1', $info['url']);
 //            $this->multiObj[$k]['exec_time'] = $info['starttransfer_time'];
             $this->multiObj[$k]['exec_time'] = $info['total_time'];
 
@@ -95,9 +95,9 @@ class RestCall
     /**
      *  Requests an http response using the GET method with the given URL.
      *
-     * @param string $url The URL address to send the request to.
-     * @param bool $ssl If true, verifying the peer's certificate.
-     * @param array $header The keys and values to include in the http header.
+     * @param string $url    The URL address to send the request to.
+     * @param bool   $ssl    If true, verifying the peer's certificate.
+     * @param array  $header The keys and values to include in the http header.
      *
      * @return bool|string true on success or false on failure.
      *                     However, if the CURLOPT_RETURNTRANSFER option is set,
@@ -130,10 +130,10 @@ class RestCall
      *  Requests an HTTP response using the POST method with the given URL
      *  and data.
      *
-     * @param string $url The url address to send the request to.
-     * @param array $data The data to attach to the request.
-     * @param bool $ssl If true, verifying the peer's certificate.
-     * @param array $header The keys and values to include in the http header.
+     * @param string $url    The url address to send the request to.
+     * @param array  $data   The data to attach to the request.
+     * @param bool   $ssl    If true, verifying the peer's certificate.
+     * @param array  $header The keys and values to include in the http header.
      *
      * @return bool|string true on success or false on failure.
      *                     However, if the CURLOPT_RETURNTRANSFER option is set,

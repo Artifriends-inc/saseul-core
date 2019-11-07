@@ -2,30 +2,32 @@
 
 namespace Saseul\Core;
 
-use Saseul\Constant\MongoDbConfig;
+use Exception;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
+use Saseul\Util\Logger;
 use Saseul\Util\Parser;
 
 class Tracker
 {
-    public static function init() {
-        $infos = [];
-        $infos[] = [
-            'host' => NodeInfo::getHost(),
-            'address' => NodeInfo::getAddress(),
-        ];
-
-        self::setHosts($infos);
+    /**
+     * Tracker 를 초기화한다.
+     * Daemon 을 실행할때만 사용한다.
+     */
+    public static function init(): void
+    {
         self::resetBanList();
     }
 
-    public static function resetBanList() {
+    public static function resetBanList()
+    {
         self::updateData(['status' => 'ban'], ['status' => 'admitted']);
     }
 
-    public static function banList() {
+    public static function banList()
+    {
         return self::GetNode(['status' => 'ban']);
     }
 
@@ -36,8 +38,8 @@ class Tracker
 
     public static function GetNode($query)
     {
-        $db = Database::GetInstance();
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_TRACKER, $query);
+        $db = Database::getInstance();
+        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
         $nodes = [];
 
         foreach ($rs as $item) {
@@ -57,8 +59,8 @@ class Tracker
 
     public static function GetNodeAddress($query)
     {
-        $db = Database::GetInstance();
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_TRACKER, $query);
+        $db = Database::getInstance();
+        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
         $nodes = [];
 
         foreach ($rs as $item) {
@@ -68,31 +70,6 @@ class Tracker
         }
 
         return $nodes;
-    }
-
-    public static function IsNode($address, $query)
-    {
-        $db = Database::GetInstance();
-        $query = array_merge(['address' => $address], $query);
-        $command = [
-            'count' => MongoDbConfig::COLLECTION_TRACKER,
-            'query' => $query,
-        ];
-
-        $rs = $db->Command(MongoDbConfig::DB_TRACKER, $command);
-        $count = 0;
-
-        foreach ($rs as $item) {
-            $count = $item->n;
-
-            break;
-        }
-
-        if ($count > 0) {
-            return true;
-        }
-
-        return false;
     }
 
     public static function getAccessibleNodes()
@@ -125,9 +102,26 @@ class Tracker
         return self::GetNodeAddress(['rank' => ['$in' => Rank::FULL_NODES]]);
     }
 
-    public static function IsValidator($address)
+    /**
+     * 입력한 address 를 가진 node가 validator 인지 확인한다.
+     *
+     * @param $address
+     *
+     * @throws Exception
+     *
+     * @return bool
+     */
+    public static function isValidator($address): bool
     {
-        return self::IsNode($address, ['rank' => Rank::VALIDATOR]);
+        $db = Database::getInstance();
+
+        $filter = [
+            'address' => $address,
+            'rank' => Role::VALIDATOR,
+        ];
+        $count = $db->getTrackerCollection()->countDocuments($filter);
+
+        return $count > 0;
     }
 
     public static function SetValidator($address)
@@ -150,21 +144,36 @@ class Tracker
         self::setRank($address, Rank::LIGHT);
     }
 
-    public static function setRank($address, $rank)
+    /**
+     * Role을 설정한다.
+     *
+     * @param string $address Node Account address
+     * @param string $rank    설정한 Role
+     *
+     * @throws Exception
+     */
+    public static function setRank(string $address, string $rank): void
     {
-        self::setData(['address' => $address], ['rank' => $rank, 'status' => 'none']);
+        $db = Database::getInstance();
+
+        $db->getTrackerCollection()->updateOne(
+            ['address' => $address],
+            ['$set' => ['rank' => $rank, 'status' => 'none']],
+            ['upsert' => true]
+        );
     }
 
     public static function GetRole($address): string
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $role = Role::LIGHT;
         $query = ['address' => $address];
 
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_TRACKER, $query);
+        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
 
         foreach ($rs as $item) {
             $role = $item->rank ?? Role::LIGHT;
+
             break;
         }
 
@@ -184,63 +193,109 @@ class Tracker
         return [];
     }
 
-    public static function setData($filter, $item) {
-        $db = Database::GetInstance();
+    public static function setData($filter, $item)
+    {
+        $db = Database::getInstance();
 
         $opt = ['upsert' => true];
         $db->bulk->update($filter, ['$set' => $item], $opt);
 
-        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+        $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
     }
 
-    public static function setHosts($infos): void
+    /**
+     * Host 정보를 업데이트한다.
+     *
+     * ### 제약 조건
+     * - 하나의 Host는 두개이상의 Address를 가진 Node가 있을 수 없다.
+     * - 나 자신의 정보는 업데이트 하지 않는다.
+     *
+     * @param array $nodeInfoList 알고 있는 Node 들의 정보
+     *
+     * @throws Exception
+     */
+    public static function setHosts(array $nodeInfoList): void
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
-        foreach ($infos as $info) {
+        if ((false !== ($key = array_search(NodeInfo::getAddress(), $nodeInfoList, true)))
+            || (false !== ($key = array_search(NodeInfo::getHost(), $nodeInfoList, true)))) {
+            unset($nodeInfoList[$key]);
+        }
+
+        $operations = [];
+        foreach ($nodeInfoList as $info) {
             $host = $info['host'];
             $address = $info['address'];
 
-            # ignore my info;
-            if ($address === NodeInfo::getAddress() || $host === NodeInfo::getHost()) {
-                continue;
-            }
-
-            $db->bulk->update(['host' => $host, 'address' => ['$nin' => [null, '']]], ['$set' => ['host' => '']], ['multi' => true]);
-            $db->bulk->update(['address' => $address], ['$set' => ['host' => $host]], ['upsert' => true]);
+            $operations[] = [
+                'updateMany' => [
+                    ['host' => $host, 'address' => ['$nin' => [null, '']]],
+                    ['$set' => ['host' => '']],
+                ],
+            ];
+            $operations[] = [
+                'updateOne' => [
+                    ['address' => $address],
+                    ['$set' => ['host' => $host]],
+                    ['upsert' => true],
+                ]
+            ];
         }
 
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
-        }
+        $db->getTrackerCollection()->bulkWrite($operations);
     }
 
-    public static function setMyHost() {
-
-        $db = Database::GetInstance();
+    /**
+     * 해당 Node Tracker 정보를 DB에 저장한다.
+     */
+    public static function setMyHost(): void
+    {
+        $db = Database::getInstance();
         $host = NodeInfo::getHost();
         $address = NodeInfo::getAddress();
 
-        $db->bulk->update(['host' => $host, 'address' => ['$nin' => [null, '']]], ['$set' => ['host' => '']], ['multi' => true]);
-        $db->bulk->update(['address' => $address], ['$set' => ['host' => $host]], ['upsert' => true]);
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
-        }
+        $db->getTrackerCollection()->bulkWrite([
+            [
+                'updateMany' => [
+                    ['host' => $host, 'address' => ['$nin' => [null, '']]],
+                    ['$set' => ['host' => '']],
+                ]
+            ],
+            [
+                'updateOne' => [
+                    ['address' => $address],
+                    ['$set' => ['host' => $host]],
+                    ['upsert' => true],
+                ]
+            ],
+        ]);
     }
 
     public static function registerRequest($infos): void
     {
+        // Todo: 변수명에 대해서 리팩토링이 필요하다.
         $newRequest = array_merge(Property::registerRequest(), $infos);
-        $newRequest = array_unique(array_map(function ($obj) { return json_encode($obj); }, $newRequest));
-        $newRequest = array_map(function ($obj) { return json_decode($obj, true); }, $newRequest);
+        $newRequest = array_unique(array_map(function ($obj) {
+            return json_encode($obj);
+        }, $newRequest));
+        $newRequest = array_map(function ($obj) {
+            return json_decode($obj, true);
+        }, $newRequest);
 
         Property::registerRequest($newRequest);
     }
 
-    public static function reset() {
-        $db = Database::GetInstance();
+    /**
+     * Reset 스크립트에서 Genesis Tracker 정보를 저장한다.
+     *
+     * @deprecated Script에서만 사용하고 있기에 Script 항목 삭제시 같이 삭제될 예정.
+     */
+    public static function reset(): void
+    {
+        $db = Database::getInstance();
 
+        // Todo: 해당 부분을 basmith 에서 추가할 수 있도록 해야한다.
         if (NodeInfo::getAddress() === Env::$genesis['address']) {
             $db->bulk->insert([
                 'host' => NodeInfo::getHost(),
@@ -265,15 +320,93 @@ class Tracker
         }
 
         if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+            $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
         }
     }
 
-    public static function updateData($filter, $item) {
-        $db = Database::GetInstance();
+    /**
+     * Tracker 등록시 Genesis 노드인지를 확인하여 아니라면 Genesis Address 를 명시해준다.
+     *
+     * @throws Exception
+     *
+     * @return string
+     */
+    public static function addTrackerOnDb(): string
+    {
+        $db = Database::getInstance();
+        $role = Rank::LIGHT;
+        $dbData = [];
 
-        $db->bulk->update($filter, ['$set' => $item], ['multi' => true]);
+        if (Env::$nodeInfo['address'] === Env::$genesis['address']) {
+            $role = Rank::VALIDATOR;
+        }
 
-        $db->BulkWrite(MongoDbConfig::NAMESPACE_TRACKER);
+        if (Env::$nodeInfo['address'] !== Env::$genesis['address']) {
+            $dbData[] = [
+                'updateOne' => [
+                    [
+                        'address' => Env::$genesis['address'],
+                        'rank' => Rank::VALIDATOR,
+                    ],
+                    [
+                        '$set' => [
+                            'host' => Env::$genesis['host'],
+                            'address' => Env::$genesis['address'],
+                            'rank' => Rank::VALIDATOR,
+                            'status' => 'admitted',
+                        ]
+                    ],
+                    [
+                        'upsert' => true,
+                    ]
+                ]
+            ];
+        }
+
+        $dbData[] = [
+            'updateOne' => [
+                [
+                    'address' => Env::$nodeInfo['address'],
+                ],
+                [
+                    '$set' => [
+                        'host' => Env::$nodeInfo['host'],
+                        'address' => Env::$nodeInfo['address'],
+                        'rank' => $role,
+                        'status' => 'admitted',
+                    ]
+                ],
+                [
+                    'upsert' => true,
+                ]
+            ]
+        ];
+
+        $db->getTrackerCollection()->bulkWrite($dbData);
+
+        return $role;
+    }
+
+    /**
+     * 입력받은 데이터를 업데이트한다.
+     *
+     * @param array $filter DB 쿼리문
+     * @param array $update 업데이트할 데이터
+     *
+     * @throws Exception
+     */
+    private static function updateData(array $filter, array $update)
+    {
+        $db = Database::getInstance();
+
+        $db->getTrackerCollection()->updateMany(
+            $filter,
+            ['$set' => $update],
+        );
+    }
+
+    private static function logger()
+    {
+        return Logger::getLogger('Daemon');
     }
 }

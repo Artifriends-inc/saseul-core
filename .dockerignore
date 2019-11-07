@@ -1,0 +1,7 @@
+# saseul
+blockdata/apichunks/*
+blockdata/broadcastchunks/*
+blockdata/transactions/*
+blockdata/generations/*
+blockdata/txarchives/*
+bin/saseuld.service

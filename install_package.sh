@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-
+# TODO: Delete this FILE.
 # reset variables
 MONGOPATH="/etc/yum.repos.d/mongodb-org-4.0.repo"
 HOMEPATH="/home/ec2-user"
 
-SASEUL_PATH="/var/saseul-origin"
+SASEUL_PATH="/var/saseul"
 
 SASEULD=$SASEUL_PATH/"src/saseuld"
 SASEUL_SCRIPT=$SASEUL_PATH/"src/saseul_script"
-SASEUL_HTTPD_CONF=$SASEUL_PATH/"conf/httpd/saseul-origin-api-httpd.conf"
+SASEUL_HTTPD_CONF=$SASEUL_PATH/"conf/httpd/saseul-api-httpd.conf"
 SASEUL_SERVICE=$SASEUL_PATH/"bin/saseuld.service"
 SASEUL_SOURCE=$SASEUL_PATH/"src/Saseul"
 SASEUL_SOURCE_DEFAULT=$SASEUL_PATH/"sourcedata/SaseulDefault"
 
 TARGET_SASEUL_SCRIPT="/usr/bin/saseul_script"
-TARGET_HTTPD_CONF="/etc/httpd/conf.d/saseul-origin.conf"
+TARGET_HTTPD_CONF="/etc/httpd/conf.d/saseul.conf"
 TARGET_SERVICE="/etc/init.d/saseuld"
 
 SASEUL_BLOCK_PATH=$SASEUL_PATH/"blockdata"
@@ -104,7 +104,7 @@ if [[ -z $(grep "mongodb.so" /etc/php.ini ) ]]
 then
     pecl7 install mongodb
     echo ""
-    echo "; Added by saseul-origin team " $(date) >> /etc/php.ini
+    echo "; Added by saseul team " $(date) >> /etc/php.ini
     echo "extension=mongodb.so" >> /etc/php.ini
 else
     echo "php-mongodb extension exists. "
@@ -128,12 +128,12 @@ fi
 # Add saseul user.
 if [[ -z $(cat /etc/passwd | grep "saseul" ) ]]
 then
-    groupadd saseul-node
+    groupadd saseul
 
     useradd -s /sbin/nologin saseul
 
-    usermod -a -G saseul-node apache
-    usermod -a -G saseul-node saseul
+    usermod -a -G saseul apache
+    usermod -a -G saseul saseul
 fi
 
 # Install composer.
@@ -240,8 +240,8 @@ chkconfig mongod on
 echo ""
 
 ln -s "$SASEUL_SOURCE_DEFAULT" "$SASEUL_SOURCE"
-chown -Rf saseul:saseul-node "$SASEUL_PATH"
-chown -Rf saseul:saseul-node "$SASEUL_SOURCE"
+chown -Rf saseul:saseul "$SASEUL_PATH"
+chown -Rf saseul:saseul "$SASEUL_SOURCE"
 
 service saseuld restart
 sleep 3

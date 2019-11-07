@@ -2,16 +2,9 @@
 
 namespace Saseul\Consensus;
 
-use Saseul\Common\Resource;
-
 class ResourceManager
 {
     private $resource;
-
-    public function __construct()
-    {
-        $this->resource = new Resource();
-    }
 
     public function initialize($type, $request, $thash, $public_key, $signature): void
     {

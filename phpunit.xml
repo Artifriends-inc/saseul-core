@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit
+        backupGlobals="false"
+        backupStaticAttributes="false"
+        bootstrap="vendor/autoload.php"
+        cacheResult="false"
+        colors="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        processIsolation="false"
+        stopOnFailure="false"
+        testdox="true"
+        verbose="true">
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix="Test.php">./tests/unit</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src/Saseul/Api</directory>
+            <directory suffix=".php">./src/Saseul/Common</directory>
+            <directory suffix=".php">./src/Saseul/Consensus</directory>
+            <directory suffix=".php">./src/Saseul/Core</directory>
+            <directory suffix=".php">./src/Saseul/Custom</directory>
+            <directory suffix=".php">./src/Saseul/Daemon</directory>
+            <directory suffix=".php">./src/Saseul/Script</directory>
+            <directory suffix=".php">./src/Saseul/System</directory>
+            <directory suffix=".php">./src/Saseul/Util</directory>
+        </whitelist>
+    </filter>
+    <php>
+        <const name="SASEUL_DIR" value="/app/saseul"/>
+        <const name="ROOT_DIR" value="/app/saseul/src"/>
+        <env name="GENESIS_COIN_VALUE" value="1000000000000000"/>
+        <env name="GENESIS_DEPOSIT_VALUE" value="200000000000000"/>
+        <env name="GENESIS_ADDRESS" value="0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85"/>
+        <env name="NODE_PRIVATE_KEY" value="a745fbb3860f243293a66a5fcadf70efc1fa5fa5f0254b3100057e753ef0d9bb"/>
+        <env name="NODE_PUBLIC_KEY" value="52017bcb4caca8911b3830c281d10f79359ceb3fbe061c990e043ccb589fccc3"/>
+        <env name="NODE_ADDRESS" value="0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85"/>
+        <env name="GENESIS_HOST" value="web"/>
+        <env name="NODE_HOST" value="web"/>
+        <env name="LOG_PATH" value="/var/log/saseul"/>
+        <env name="LOG_LEVEL" value="DEBUG"/>
+    </php>
+</phpunit>

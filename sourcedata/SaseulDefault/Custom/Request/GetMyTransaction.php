@@ -2,75 +2,63 @@
 
 namespace Saseul\Custom\Request;
 
-use Saseul\Constant\MongoDbConfig;
+use Exception;
+use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
-use Saseul\System\Key;
-use Saseul\Common\Request;
-use Saseul\Version;
+use Saseul\Util\Logger;
 use Saseul\Util\Parser;
 
-class GetMyTransaction extends Request
+/**
+ * Class GetMyTransaction.
+ * 요청한 Account 에 대한 Transaction 정보를 가져온다.
+ * 정렬: 시간 역순.
+ */
+class GetMyTransaction extends AbstractRequest
 {
-    public const TYPE = 'GetMyTransaction';
+    /** @var string */
+    private $limit;
 
-    protected $request;
-    protected $thash;
-    protected $public_key;
-    protected $signature;
+    /** @var string */
+    private $offset;
 
-    private $type;
-    private $version;
-    private $from;
-    private $transactional_data;
-    private $timestamp;
+    private $logger;
+
+    public function __construct()
+    {
+        $this->logger = Logger::getLogger(Logger::API);
+    }
 
     public function initialize(array $request, string $thash, string $public_key, string $signature): void
     {
-        $this->request = $request;
-        $this->thash = $thash;
-        $this->public_key = $public_key;
-        $this->signature = $signature;
+        parent::initialize($request, $thash, $public_key, $signature);
 
-        $this->type = $this->request['type'] ?? '';
-        $this->version = $this->request['version'] ?? '';
-        $this->from = $this->request['from'] ?? '';
-        $this->transactional_data = $this->request['transactional_data'] ?? '';
-        $this->timestamp = $this->request['timestamp'] ?? 0;
+        $this->limit = (int) (($request['limit'] !== '0') ? $request['limit'] : '10');
+        $this->offset = (int) $request['offset'];
     }
 
-    public function getValidity(): bool
-    {
-        return Version::isValid($this->version)
-            && !empty($this->timestamp)
-            && $this->type === self::TYPE
-            && Key::isValidAddress($this->from, $this->public_key)
-            && Key::isValidSignature($this->thash, $this->public_key, $this->signature);
-    }
-
+    /**
+     * @throws Exception
+     *
+     * @return array
+     */
     public function getResponse(): array
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
-        $namespace = MongoDbConfig::NAMESPACE_TRANSACTION;
-//        $filter = ['public_key' => Config::$node_public_key];
-        $filter = ['public_key' => $this->public_key];
-        $opt = ['sort' => ['timestamp' => -1]];
-        $rs = $db->Query($namespace, $filter, $opt);
+        $cursor = $db->getTransactionsCollection()->find(
+            ['public_key' => $this->public_key],
+            [
+                'sort' => ['timestamp' => MongoDb::DESC],
+                'limit' => $this->limit,
+                'skip' => ($this->limit * $this->offset),
+            ]
+        );
 
-        $max = 10;
-        $count = 0;
         $transactions = [];
-
-        foreach ($rs as $item) {
+        foreach ($cursor as $item) {
             $item = Parser::objectToArray($item);
             unset($item['_id']);
-
             $transactions[] = $item;
-            $count = $count + 1;
-
-            if ($count >= $max) {
-                break;
-            }
         }
 
         return $transactions;

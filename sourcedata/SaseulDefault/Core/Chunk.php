@@ -3,7 +3,7 @@
 namespace Saseul\Core;
 
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\System\Cache;
 use Saseul\System\Database;
@@ -27,7 +27,7 @@ class Chunk
                 continue;
             }
 
-            $time = (int)(pathinfo($filePath)['filename']);
+            $time = (int) (pathinfo($filePath)['filename']);
 
             if ($maxTime >= $time && $time > $minTime) {
                 $contents = '[' . preg_replace('/\,*?$/', '', file_get_contents($filePath)) . ']';
@@ -46,11 +46,9 @@ class Chunk
                     break;
                 }
             }
-        };
+        }
 
-        $txs = array_slice($txs, 0, $maxCount);
-
-        return $txs;
+        return array_slice($txs, 0, $maxCount);
     }
 
     public static function broadcastChunk(string $fileName): array
@@ -59,8 +57,7 @@ class Chunk
 
         $chunks = self::chunkList(Directory::BROADCAST_CHUNKS);
 
-        foreach ($chunks as $filePath)
-        {
+        foreach ($chunks as $filePath) {
             if (!is_file($filePath)) {
                 continue;
             }
@@ -91,17 +88,17 @@ class Chunk
         sort($validatorAddress);
 
         foreach (scandir(Directory::BROADCAST_CHUNKS) as $item) {
-            if (preg_match("/{$timestamp}\.json$/", $item)) {
-                $address = preg_replace("/_{$timestamp}\.json/", '', $item);
+            if (preg_match("/{$timestamp}\\.json$/", $item)) {
+                $address = preg_replace("/_{$timestamp}\\.json/", '', $item);
                 $collectedAddress[] = $address;
             }
         }
 
         foreach ($validatorAddress as $address) {
             if (in_array($address, $collectedAddress)) {
-                $broadcastCode.= '1';
+                $broadcastCode .= '1';
             } else {
-                $broadcastCode.= '0';
+                $broadcastCode .= '0';
             }
         }
 
@@ -114,7 +111,7 @@ class Chunk
         $directory = Directory::BROADCAST_CHUNKS;
 
         foreach (scandir($directory) as $item) {
-            if (preg_match("/{$timestamp}\.json$/", $item)) {
+            if (preg_match("/{$timestamp}\\.json$/", $item)) {
                 $files[] = pathinfo("{$directory}/{$item}")['filename'];
             }
         }
@@ -261,12 +258,19 @@ class Chunk
         }
     }
 
-    public static function GetChunk($filename)
+    /**
+     * Chunk 파일을 읽어온다.
+     *
+     * @param $filename
+     *
+     * @return mixed
+     */
+    public static function getChunk($filename)
     {
         $file = fopen($filename, 'r');
         $contents = fread($file, filesize($filename));
         fclose($file);
-        $contents = '[' . preg_replace('/\,*?$/', '', $contents) . ']';
+        $contents = '[' . preg_replace('/,*?$/', '', $contents) . ']';
 
         return json_decode($contents, true);
     }
@@ -399,9 +403,15 @@ class Chunk
         chmod($keyname, 0775);
     }
 
-    public static function SaveAPIChunk($contents, $timestamp)
+    /**
+     * 입력된 Transaction 데이터를 API chunk 폴더에 저장한다.
+     *
+     * @param $contents
+     * @param $timestamp
+     */
+    public static function saveApiChunk($contents, $timestamp): void
     {
-        $filename = Directory::API_CHUNKS . '/' . self::GetID($timestamp) . '.json';
+        $filename = Directory::API_CHUNKS . '/' . self::getId($timestamp) . '.json';
 
         $sign = false;
 
@@ -413,12 +423,20 @@ class Chunk
         fwrite($file, json_encode($contents) . ",\n");
         fclose($file);
 
+        // Todo: 해당 부분은 dir 옵션으로 처리가 가능하다.
         if ($sign) {
             chmod($filename, 0775);
         }
     }
 
-    public static function GetID($timestamp)
+    /**
+     * Transaction ID 값을 정의한다.
+     *
+     * @param $timestamp
+     *
+     * @return null|string|string[]
+     */
+    public static function getId($timestamp): ?string
     {
         $tid = $timestamp - ($timestamp % Rule::MICROINTERVAL_OF_CHUNK)
             + Rule::MICROINTERVAL_OF_CHUNK;
@@ -428,7 +446,7 @@ class Chunk
 
     public static function removeOldBlock(int $lastBlockNumber)
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $lastGenerationNumber = Block::generationOriginNumber($lastBlockNumber);
         $lastBunchNumber = Block::generationOriginNumber($lastGenerationNumber) + Rule::BUNCH;
 
@@ -442,10 +460,10 @@ class Chunk
         } while ($lastBunchNumber > Rule::BUNCH);
 
         do {
-            # 바로 이전 세대를 남기기 위해 한번 더 라스트로 이동;
+            // 바로 이전 세대를 남기기 위해 한번 더 라스트로 이동;
             $lastGenerationNumber = Block::generationOriginNumber($lastGenerationNumber);
             $query = ['block_number' => ['$lt' => $lastGenerationNumber]];
-            $blocks = Block::datas(MongoDbConfig::NAMESPACE_BLOCK, Rule::GENERATION, $query);
+            $blocks = Block::datas(MongoDb::NAMESPACE_BLOCK, Rule::GENERATION, $query);
 
             $blockhashs = [];
 
@@ -455,10 +473,10 @@ class Chunk
 
             if (count($blockhashs) > 0) {
                 $db->bulk->delete(['block' => ['$in' => $blockhashs]]);
-                $db->BulkWrite(MongoDbConfig::NAMESPACE_TRANSACTION);
+                $db->BulkWrite(MongoDb::NAMESPACE_TRANSACTION);
 
                 $db->bulk->delete(['blockhash' => ['$in' => $blockhashs]]);
-                $db->BulkWrite(MongoDbConfig::NAMESPACE_BLOCK);
+                $db->BulkWrite(MongoDb::NAMESPACE_BLOCK);
             }
         } while ($lastGenerationNumber > Rule::GENERATION);
     }

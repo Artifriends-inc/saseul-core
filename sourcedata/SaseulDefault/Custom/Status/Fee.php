@@ -2,13 +2,17 @@
 
 namespace Saseul\Custom\Status;
 
-use Saseul\System\Database;
+use Exception;
 use Saseul\Common\Status;
+use Saseul\System\Database;
 
+/**
+ * Class Fee.
+ *
+ * 사용하고 있지 않다.
+ */
 class Fee extends Status
 {
-    protected static $namespace = 'saseul_committed.contract';
-
     protected static $validators = [];
     protected static $fee = 0;
     protected static $blockhash = '';
@@ -162,22 +166,39 @@ class Fee extends Status
             $remain = $remain - 1;
         }
 
-        // Set Balance;
-        $db = Database::GetInstance();
-
-        foreach ($validators as $validator) {
-            $filter = ['address' => $validator['address']];
-            $row = [
-                '$set' => ['balance' => $validator['balance']],
-            ];
-            $opt = ['upsert' => true];
-            $db->bulk->update($filter, $row, $opt);
-        }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite('saseul_committed.coin');
-        }
+        static::setBalance($validators);
 
         self::_Reset();
+    }
+
+    /**
+     * 테스트 하기 힘들어 우선 빼냈다. 나중에 확인하여 같이 넣어 코드를 수정한다.
+     *
+     * @param array $nodeList
+     *
+     * @throws Exception
+     *
+     * @todo private 로 변경되어야 한다.
+     */
+    public static function setBalance(array $nodeList): void
+    {
+        $db = Database::getInstance();
+
+        $operations = [];
+        foreach ($nodeList as $node) {
+            $operations[] = [
+                'updateOne' => [
+                    ['address' => $node['address']],
+                    ['$set' => ['balance' => $node['balance']]],
+                    ['upsert' => true],
+                ]
+            ];
+        }
+
+        if (empty($operations)) {
+            return;
+        }
+
+        $db->getCoinCollection()->bulkWrite($operations);
     }
 }

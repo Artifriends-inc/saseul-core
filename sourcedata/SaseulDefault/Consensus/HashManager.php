@@ -7,13 +7,18 @@ use Saseul\Core\NodeInfo;
 use Saseul\Core\Property;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
-use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
 class HashManager
 {
     private static $instance = null;
+    private $rest;
+
+    public function __construct()
+    {
+        $this->rest = RestCall::GetInstance();
+    }
 
     public static function GetInstance()
     {
@@ -22,13 +27,6 @@ class HashManager
         }
 
         return self::$instance;
-    }
-
-    private $rest;
-
-    public function __construct()
-    {
-        $this->rest = RestCall::GetInstance();
     }
 
     public function myHashInfo($myRound, $expectBlock)
@@ -63,7 +61,7 @@ class HashManager
             'signature' => $signature,
         ];
 
-        # save
+        // save
         Property::hashInfo($round_key, [$myAddress => $myHashInfo]);
 
         return $myHashInfo;
@@ -78,7 +76,7 @@ class HashManager
             $hosts[] = $validator['host'];
         }
 
-        # 3 times;
+        // 3 times;
         for ($i = 0; $i < 3; $i++) {
             $now = DateTime::Microtime();
 
@@ -142,6 +140,7 @@ class HashManager
                 $best = $item;
                 $bestAddress = $address;
                 $bestBlockhash = $best['decision']['blockhash'];
+
                 continue;
             }
 
@@ -156,10 +155,11 @@ class HashManager
                     $best = $item;
                     $bestAddress = $address;
                     $bestBlockhash = $best['decision']['blockhash'];
+
                     continue;
                 }
 
-                # different;
+                // different;
                 $sign = true;
             }
         }

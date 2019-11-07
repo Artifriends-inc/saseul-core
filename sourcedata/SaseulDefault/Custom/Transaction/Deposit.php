@@ -2,112 +2,88 @@
 
 namespace Saseul\Custom\Transaction;
 
-use Saseul\Custom\Status\Coin;
-use Saseul\Custom\Status\Fee;
 use Saseul\Constant\Decision;
 use Saseul\Core\Env;
-use Saseul\System\Key;
-use Saseul\Common\Transaction;
-use Saseul\Version;
+use Saseul\Custom\Status\Coin;
+use Saseul\Custom\Status\Fee;
 
-class Deposit extends Transaction
+// TODO: Deposit Api의 용도를 정확하게 파악하여 클래스 이름의 조정이 필요함
+class Deposit extends AbstractTransaction
 {
-    public const TYPE = 'Deposit';
-
-    protected $transaction;
-    protected $thash;
-    protected $public_key;
-    protected $signature;
-
-    protected $status_key;
-
-    private $type;
-    private $version;
-    private $from;
-    private $amount;
+    private $coin_amount;
     private $fee;
-    private $transactional_data;
-    private $timestamp;
-
     private $from_balance;
     private $from_deposit;
     private $coin_fee;
 
-    public function _Init($transaction, $thash, $public_key, $signature)
+    public function initialize($transaction, $thash, $public_key, $signature): void
     {
-        $this->transaction = $transaction;
-        $this->thash = $thash;
-        $this->public_key = $public_key;
-        $this->signature = $signature;
+        parent::initialize($transaction, $thash, $public_key, $signature);
 
-        if (isset($this->transaction['type'])) {
-            $this->type = $this->transaction['type'];
-        }
-        if (isset($this->transaction['version'])) {
-            $this->version = $this->transaction['version'];
-        }
-        if (isset($this->transaction['from'])) {
-            $this->from = $this->transaction['from'];
-        }
-        if (isset($this->transaction['amount'])) {
-            $this->amount = $this->transaction['amount'];
-        }
-        if (isset($this->transaction['fee'])) {
-            $this->fee = $this->transaction['fee'];
-        }
-        if (isset($this->transaction['transactional_data'])) {
-            $this->transactional_data = $this->transaction['transactional_data'];
-        }
-        if (isset($this->transaction['timestamp'])) {
-            $this->timestamp = $this->transaction['timestamp'];
-        }
+        $this->coin_amount = $transaction['amount'] ?? null;
+        $this->fee = $transaction['fee'] ?? null;
     }
 
-    public function _GetValidity(): bool
+    public function getValidity(): bool
     {
-        return Version::isValid($this->version)
-            && is_numeric($this->amount)
-            && is_numeric($this->fee)
-            && is_numeric($this->timestamp)
-            && $this->type === self::TYPE
-            && ((int) $this->amount <= Env::$genesis['coin_amount'])
-            && ((int) $this->amount > 0)
-            && ((int) $this->fee >= 0)
-            && Key::isValidAddress($this->from, $this->public_key)
-            && Key::isValidSignature($this->thash, $this->public_key, $this->signature);
+        return parent::getValidity()
+            && $this->isValidCoinAmount()
+            && $this->isValidFee();
     }
 
-    public function _LoadStatus()
+    public function loadStatus(): void
     {
         Coin::LoadBalance($this->from);
         Coin::LoadDeposit($this->from);
     }
 
-    public function _GetStatus()
+    public function getStatus(): void
     {
         $this->from_balance = Coin::GetBalance($this->from);
         $this->from_deposit = Coin::GetDeposit($this->from);
         $this->coin_fee = Fee::GetFee();
     }
 
-    public function _MakeDecision()
+    public function makeDecision(): string
     {
-        if ((int) $this->amount + (int) $this->fee > (int) $this->from_balance) {
+        if ((int) $this->coin_amount + (int) $this->fee > (int) $this->from_balance) {
             return Decision::REJECT;
         }
 
         return Decision::ACCEPT;
     }
 
-    public function _SetStatus()
+    public function setStatus(): void
     {
-        $this->from_balance = (int) $this->from_balance - (int) $this->amount;
+        $this->from_balance = (int) $this->from_balance - (int) $this->coin_amount;
         $this->from_balance = (int) $this->from_balance - (int) $this->fee;
-        $this->from_deposit = (int) $this->from_deposit + (int) $this->amount;
+        $this->from_deposit = (int) $this->from_deposit + (int) $this->coin_amount;
         $this->coin_fee = (int) $this->coin_fee + (int) $this->fee;
 
         Coin::SetBalance($this->from, $this->from_balance);
         Coin::SetDeposit($this->from, $this->from_deposit);
         Fee::SetFee($this->coin_fee);
+    }
+
+    private function isValidFee(): bool
+    {
+        return $this->isNotNull($this->fee)
+            && is_numeric($this->fee)
+            && ((int) $this->fee >= 0);
+    }
+
+    // TODO: Deposit API 가 정확한 용도에 따라 Coin Amount에 대한 추가 유효성 검사 필요
+    // TODO: coin_amount에 대한 최대치 한도 적용 필요
+    private function isValidCoinAmount(): bool
+    {
+        return $this->isNotNull($this->coin_amount)
+            && is_numeric($this->coin_amount)
+            && ((int) $this->coin_amount > 0)
+            && ((int) $this->coin_amount <= Env::$genesis['coin_amount']);
+    }
+
+    private function isNotNull($value): bool
+    {
+        return ($value === null) === false;
     }
 }

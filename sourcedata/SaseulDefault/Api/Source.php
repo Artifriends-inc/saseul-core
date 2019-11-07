@@ -3,11 +3,11 @@
 namespace Saseul\Api;
 
 use Saseul\Common\Api;
-use Saseul\Util\TypeChecker;
 use Saseul\Constant\Directory;
 use Saseul\Constant\Structure;
 use Saseul\Core\Block;
 use Saseul\Core\Generation;
+use Saseul\Util\TypeChecker;
 
 class Source extends Api
 {
@@ -28,7 +28,7 @@ class Source extends Api
         }
 
         $sourceHash = $generation['source_hash'];
-        $sourceName = Directory::SOURCE . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
+        $sourceName = Directory::TAR_SOURCE_DIR . '/' . Directory::SOURCE_PREFIX . "{$sourceHash}.tar.gz";
         $this->findGz($sourceName);
     }
 
@@ -38,11 +38,11 @@ class Source extends Api
             $fileSize = filesize($sourceName);
             $filename = pathinfo($sourceName)['basename'];
 
-            header("Pragma: public");
-            header("Expires: 0");
-            header("Content-Type: application/octet-stream");
+            header('Pragma: public');
+            header('Expires: 0');
+            header('Content-Type: application/octet-stream');
             header("Content-Disposition: attachment; filename={$filename}");
-            header("Content-Transfer-Encoding: binary");
+            header('Content-Transfer-Encoding: binary');
             header("Content-Length: {$fileSize}");
 
             ob_clean();

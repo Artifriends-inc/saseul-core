@@ -2,10 +2,9 @@
 
 namespace Saseul\Core;
 
-use Saseul\Constant\MongoDbConfig;
+use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
-use Saseul\Core\Env;
 use Saseul\System\Database;
 use Saseul\Util\DateTime;
 use Saseul\Util\Parser;
@@ -17,7 +16,8 @@ class Block
         return hash('sha256', json_encode(Env::$genesis['key']));
     }
 
-    public static function generationOriginNumber(int $roundNumber) {
+    public static function generationOriginNumber(int $roundNumber)
+    {
         $originNumber = ($roundNumber - ($roundNumber % Rule::GENERATION) - 1);
 
         if ($originNumber < 0) {
@@ -27,45 +27,42 @@ class Block
         return $originNumber;
     }
 
-    public static function bunchFinalNumber(int $roundNumber) {
-        return ($roundNumber - ($roundNumber % Rule::BUNCH) + Rule::BUNCH - 1);
+    public static function bunchFinalNumber(int $roundNumber)
+    {
+        return $roundNumber - ($roundNumber % Rule::BUNCH) + Rule::BUNCH - 1;
     }
 
     public static function lastBlock(): array
     {
         $opt = ['sort' => ['timestamp' => -1]];
-        $block = self::data(MongoDbConfig::NAMESPACE_BLOCK, [], $opt);
 
-        return $block;
+        return self::data(MongoDb::NAMESPACE_BLOCK, [], $opt);
     }
 
     public static function nextBlock(array $lastBlock, string $blockhash, int $txCount, int $standardTimestamp): array
     {
-        $nextBlock = [
-            'block_number' => ((int)$lastBlock['block_number'] + 1),
+        return [
+            'block_number' => ((int) $lastBlock['block_number'] + 1),
             'last_blockhash' => $lastBlock['blockhash'],
             'blockhash' => $blockhash,
             'transaction_count' => $txCount,
             's_timestamp' => $standardTimestamp,
             'timestamp' => DateTime::Microtime(),
         ];
-
-        return $nextBlock;
     }
 
     public static function lastBlocks(int $max_count = 100): array
     {
         $opt = ['sort' => ['timestamp' => -1]];
 
-        return self::datas(MongoDbConfig::NAMESPACE_BLOCK, $max_count, [], $opt);
+        return self::datas(MongoDb::NAMESPACE_BLOCK, $max_count, [], $opt);
     }
 
     public static function blockByNumber(int $block_number): array
     {
         $query = ['block_number' => $block_number];
-        $block = self::data(MongoDbConfig::NAMESPACE_BLOCK, $query);
 
-        return $block;
+        return self::data(MongoDb::NAMESPACE_BLOCK, $query);
     }
 
     public static function data(string $namespace, array $query = [], array $opt = []): array
@@ -74,7 +71,7 @@ class Block
 
         $blocks = self::datas($namespace, 1, $query, $opt);
 
-        if (isseT($blocks[0])) {
+        if (isset($blocks[0])) {
             $block = $blocks[0];
         }
 
@@ -83,7 +80,7 @@ class Block
 
     public static function datas(string $namespace, int $max_count, array $query = [], array $opt = []): array
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $rs = $db->Query($namespace, $query, $opt);
         $datas = [];
 
@@ -91,12 +88,12 @@ class Block
             $item = Parser::objectToArray($item);
 
             $datas[] = [
-                'block_number' => (int)$item['block_number'] ?? 0,
+                'block_number' => (int) $item['block_number'] ?? 0,
                 'last_blockhash' => $item['last_blockhash'] ?? '',
                 'blockhash' => $item['blockhash'] ?? '',
-                'transaction_count' => (int)$item['transaction_count'] ?? 0,
-                's_timestamp' => (int)$item['s_timestamp'] ?? 0,
-                'timestamp' => (int)$item['timestamp'] ?? 0,
+                'transaction_count' => (int) $item['transaction_count'] ?? 0,
+                's_timestamp' => (int) $item['s_timestamp'] ?? 0,
+                'timestamp' => (int) $item['timestamp'] ?? 0,
             ];
 
             if (count($datas) >= $max_count) {
@@ -107,13 +104,12 @@ class Block
         return $datas;
     }
 
-
     public static function GetLastBlocks(int $max_count = 100): array
     {
         $query = [];
         $opt = ['sort' => ['timestamp' => -1]];
 
-        return self::GetDatas(MongoDbConfig::NAMESPACE_BLOCK, $max_count, $query, $opt);
+        return self::GetDatas(MongoDb::NAMESPACE_BLOCK, $max_count, $query, $opt);
     }
 
     public static function GetLastTransactions(int $max_count = 100): array
@@ -121,12 +117,12 @@ class Block
         $query = [];
         $opt = ['sort' => ['timestamp' => -1]];
 
-        return self::GetDatas(MongoDbConfig::NAMESPACE_TRANSACTION, $max_count, $query, $opt);
+        return self::GetDatas(MongoDb::NAMESPACE_TRANSACTION, $max_count, $query, $opt);
     }
 
     public static function GetDatas(string $namespace, int $max_count, array $query = [], array $opt = []): array
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
         $rs = $db->Query($namespace, $query, $opt);
         $datas = [];
 
@@ -147,7 +143,7 @@ class Block
     {
         $block = self::GetBlockByNumber($block_number);
 
-        if (isset($block['blockhash']) && isset($block['s_timestamp'])) {
+        if (isset($block['blockhash'], $block['s_timestamp'])) {
             return $block['blockhash'] . $block['s_timestamp'];
         }
 
@@ -157,7 +153,7 @@ class Block
     public static function GetBlockByNumber(int $block_number)
     {
         $query = ['block_number' => $block_number];
-        $blocks = self::GetDatas(MongoDbConfig::NAMESPACE_BLOCK, 1, $query);
+        $blocks = self::GetDatas(MongoDb::NAMESPACE_BLOCK, 1, $query);
 
         if (isset($blocks[0])) {
             return $blocks[0];
@@ -168,7 +164,7 @@ class Block
 
     public static function GetLastBlock()
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
         $ret = [
             'block_number' => 0,
@@ -181,8 +177,9 @@ class Block
 
         $query = [];
         $opt = ['sort' => ['timestamp' => -1]];
-        $rs = $db->Query(MongoDbConfig::NAMESPACE_BLOCK, $query, $opt);
+        $rs = $db->Query(MongoDb::NAMESPACE_BLOCK, $query, $opt);
 
+        // Todo: 코드 정리하자.
         foreach ($rs as $item) {
             $item = Parser::objectToArray($item);
 
@@ -211,24 +208,17 @@ class Block
         return $ret;
     }
 
-    public static function GetCount()
+    /**
+     * Block 총수를 가져온다.
+     *
+     * @throws \Exception
+     *
+     * @return int
+     */
+    public static function getCount(): int
     {
-        $db = Database::GetInstance();
+        $db = Database::getInstance();
 
-        $command = [
-            'count' => 'blocks',
-            'query' => [],
-        ];
-
-        $rs = $db->Command(MongoDbConfig::DB_COMMITTED, $command);
-        $count = 0;
-
-        foreach ($rs as $item) {
-            $count = $item->n;
-
-            break;
-        }
-
-        return $count;
+        return $db->getBlocksCollection()->countDocuments();
     }
 }

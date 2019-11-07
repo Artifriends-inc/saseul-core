@@ -17,10 +17,12 @@ class RoundManager
 {
     protected static $instance = null;
     protected $rest;
+    private $logger;
 
     public function __construct()
     {
         $this->rest = RestCall::GetInstance();
+        $this->logger = Logger::getLogger('Daemon');
     }
 
     public static function GetInstance()
@@ -65,13 +67,14 @@ class RoundManager
             'signature' => $signature,
         ];
 
-        # save
+        // save
         Property::round([$myAddress => $round]);
 
         return $round;
     }
 
-    public function netRound(array $nodes, $opt = false) {
+    public function netRound(array $nodes, $opt = false)
+    {
         $rounds = [];
         $hosts = [];
 
@@ -97,28 +100,28 @@ class RoundManager
         foreach ($results as $item) {
             $r = json_decode($item['result'], true);
 
-            # check result;
+            // check result;
             if (!isset($r['data']) || !is_array($r['data'])) {
                 continue;
             }
 
             foreach ($r['data'] as $address => $round) {
-                # check exists;
+                // check exists;
                 if (isset($rounds[$address])) {
                     continue;
                 }
 
-                # check structure;
+                // check structure;
                 if (TypeChecker::StructureCheck(Structure::ROUND, $round) === false) {
                     continue;
                 }
 
-                # check request is valid;
+                // check request is valid;
                 if ($this->checkRequest($address, $round) === false) {
                     continue;
                 }
 
-                # add
+                // add
                 $rounds[$address] = $round;
             }
         }
@@ -165,7 +168,7 @@ class RoundManager
             'net_round_leader' => $netRoundLeader,
         ];
 
-        # save
+        // save
         Property::roundInfo($roundInfo);
 
         return $roundInfo;

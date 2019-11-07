@@ -7,8 +7,6 @@ use Saseul\Consensus\ResourceManager;
 
 class Resource extends Api
 {
-    private $logger;
-
     private $resourceManager;
 
     private $resource;
@@ -17,26 +15,20 @@ class Resource extends Api
 
     public function __construct()
     {
-//        $this->logger = Logger::getLogger('api');
-
         $this->resourceManager = new ResourceManager();
     }
 
-    public function _init()
+    public function _init(): void
     {
         $this->resource = json_decode($this->getParam($_REQUEST, 'resource', ['default' => '{}']), true);
         $this->public_key = $this->getParam($_REQUEST, 'public_key', ['default' => '']);
-        $this->signature = $this->httpRequest->getParam('signature', '');
+        $this->signature = $this->getParam($_REQUEST, 'signature', ['default' => '']);
     }
 
-    public function _process()
+    public function _process(): void
     {
-//        $this->logger->debug('resource', [$this->resource]);
-
         $type = $this->getParam($this->resource, 'type');
         $thash = hash('sha256', json_encode($this->resource));
-
-//        $this->logger->debug('manager', [$type, $this->resource, $thash, $this->public_key, $this->signature]);
 
         $this->resourceManager->initialize(
             $type,
@@ -54,7 +46,7 @@ class Resource extends Api
         $this->resourceManager->process();
     }
 
-    public function _end()
+    public function _end(): void
     {
         $this->data = $this->resourceManager->getResponse();
     }

@@ -42,6 +42,7 @@ class Script
     public function ask(string $msg): string
     {
         Logger::EchoLog(PHP_EOL . $msg);
+
         return trim(fgets(STDIN));
     }
 

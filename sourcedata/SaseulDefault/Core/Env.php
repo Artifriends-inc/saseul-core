@@ -2,37 +2,16 @@
 
 namespace Saseul\Core;
 
-use Saseul\Constant\Structure;
-use Saseul\Util\TypeChecker;
-
 class Env
 {
-    public static function load(): void
-    {
-        # TODO: env 파일 찾는 로직 필요.
-        if (!is_file(SASEUL_DIR . '/env.default')) {
-            return;
-        }
-
-        $env = file_get_contents(SASEUL_DIR. '/env.default');
-        $env = json_decode($env, true);
-
-        if (TypeChecker::StructureCheck(Structure::ENV, $env)) {
-            self::$memcached = $env['memcached'];
-            self::$mongoDb = $env['mongo_db'];
-            self::$nodeInfo = $env['node_info'];
-            self::$genesis = $env['genesis'];
-        }
-    }
-
     public static $memcached = [
-        'host' => 'localhost',
+        'host' => 'memcached',
         'port' => 11211,
         'prefix' => '',
     ];
 
     public static $mongoDb = [
-        'host' => 'localhost',
+        'host' => 'mongo',
         'port' => 27017
     ];
 
@@ -44,41 +23,75 @@ class Env
     ];
 
     public static $genesis = [
-        'host' => '54.180.9.16',
-        'address' => '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85',
-        'coin_amount' => '1000000000000000',
-        'deposit_amount' => '200000000000000',
-        'key' => [
-            'genesis_message' => 'Imagine Beyond and Invent Whatever, Wherever - Published by ArtiFriends. '
-                . 'Thank you for help - YJ.Lee, JW.Lee, SH.Shin, YS.Han, WJ.Choi, DH.Kang, HG.Lee, KH.Kim, '
-                . 'HK.Lee, JS.Han, SM.Park, SJ.Chae, YJ.Jeon, KM.Lee, JH.Kim, '
-                . 'mika, ashal, datalater, namedboy, masterguru9, ujuc, johngrib, kimpi, greenmon, '
-                . 'HS.Lee, TW.Nam, EH.Park, MJ.Mok',
-            'special_thanks' => 'Michelle, Francis, JS.Han, Pang, Jeremy, JG, TY.Lee, SH.Ji, HK.Lim, IS.Choi, '
-                . 'CH.Park, SJ.Park, DH.Shin and CK.Park',
-            'etc_messages' => [
-                [
-                    'writer' => 'Michelle.Kim',
-                    'message' => 'I love jjal. ',
-                ],
-                [
-                    'writer' => 'Francis.W.Han',
-                    'message' => 'khan@artifriends.com, I\'m here with JG and SK. ',
-                ],
-                [
-                    'writer' => 'JG.Lee',
-                    'message' => 'In the beginning God created the blocks and the chains. '
-                        . 'God said, \'Let there be SASEUL\' and saw that it was very good. ',
-                ],
-                [
-                    'writer' => 'namedboy',
-                    'message' => 'This is \'SASEUL\', Welcome to new world.',
-                ],
-                [
-                    'writer' => 'ujuc',
-                    'message' => 'Hello Saseul! :)',
-                ]
-            ]
-        ]
+        'host' => '',
+        'address' => '',
+        'coin_amount' => '',
+        'deposit_amount' => '',
+        'key' => []
     ];
+
+    public static $log = [
+        'path' => '',
+        'level' => ''
+    ];
+
+    /**
+     * Genesis key 를 path로 부터 읽어온다.
+     *
+     * @param string $path Genesis key 파일이 있는 위치
+     *
+     * @return array
+     */
+    public static function loadGenesisKey(string $path): array
+    {
+        $get_key = file_get_contents(SASEUL_DIR . '/' . $path);
+
+        return json_decode($get_key, true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * ENV 값들을 불러온다.
+     */
+    public static function load(): void
+    {
+        // Node info
+        self::$nodeInfo['host'] = self::getFromEnv('NODE_HOST');
+        self::$nodeInfo['address'] = self::getFromEnv('NODE_ADDRESS');
+        self::$nodeInfo['public_key'] = self::getFromEnv('NODE_PUBLIC_KEY');
+        self::$nodeInfo['private_key'] = self::getFromEnv('NODE_PRIVATE_KEY');
+
+        // Genesis
+        self::$genesis['host'] = self::getFromEnv('GENESIS_HOST');
+        self::$genesis['address'] = self::getFromEnv('GENESIS_ADDRESS');
+        self::$genesis['coin_amount'] = self::getFromEnv('GENESIS_COIN_VALUE');
+        self::$genesis['deposit_amount'] = self::getFromEnv('GENESIS_DEPOSIT_VALUE');
+
+        $genesis_key_path = self::getFromEnv('GENESIS_KEY_PATH');
+        self::$genesis['key'] = self::loadGenesisKey($genesis_key_path);
+
+        // Log
+        self::$log['path'] = self::getFromEnv('LOG_PATH');
+        self::$log['level'] = self::getFromEnv('LOG_LEVEL');
+    }
+
+    /**
+     * Check environment param.
+     *
+     * @param string $key
+     *
+     * @return false|string If $key is missing, return false.
+     */
+    private static function getFromEnv(string $key)
+    {
+        $value = getenv($key);
+
+        if (empty($value)) {
+            // Todo: Add logging message
+            echo "Environment variables failed assertions: {$key} is missing.\n";
+
+            return false;
+        }
+
+        return $value;
+    }
 }

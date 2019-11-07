@@ -2,6 +2,8 @@
 
 namespace Saseul\Core;
 
+use Monolog;
+use Saseul\Constant\Directory;
 use Saseul\Constant\Role;
 use Saseul\Daemon\Arbiter;
 use Saseul\Daemon\Light;
@@ -10,108 +12,208 @@ use Saseul\Daemon\Supervisor;
 use Saseul\Daemon\Validator;
 use Saseul\System\Cache;
 use Saseul\System\Database;
+use Saseul\Util\Logger;
 
 class Service
 {
-    public static function checkDatabase(): void
+    /**
+     * Database 연결을 확인한다.
+     *
+     * @param Monolog\Logger $logger
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    public static function checkDatabase(Monolog\Logger $logger): bool
     {
-        if (!Database::GetInstance()->IsConnect()) {
-            self::end('db is not running; ');
-        }
-    }
+        if (!Database::getInstance()->IsConnect()) {
+            $logger->err('DB is not running.');
 
-    public static function checkCache(): void
-    {
-        if (!Cache::GetInstance()->IsConnect()) {
-            self::end('cache is not running; ');
-        }
-    }
-
-    public static function checkSaseulDaemon(): void
-    {
-        if (self::isDaemonRunning() === false) {
-            self::end('saseul is not running; ');
-        }
-    }
-
-    public static function isDaemonRunning() {
-        if (!is_file('/var/saseul-origin/saseuld.pid') || !Property::isReady()) {
             return false;
         }
 
         return true;
     }
 
-    public static function checkNodeInfo($opt = false): void
+    /**
+     * Cache 연결을 확인한다.
+     *
+     * @param Monolog\Logger $logger
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    public static function checkCache(Monolog\Logger $logger): bool
     {
-        if (!NodeInfo::isExist()) {
-            if ($opt === false) {
-                self::end('There is no node.info ');
-            }
+        if (!Cache::GetInstance()->IsConnect()) {
+            $logger->err('Cache is not running.');
 
-            sleep(1);
-            NodeInfo::resetNodeInfo();
+            return false;
         }
+
+        return true;
     }
 
-    public static function initApi()
+    /**
+     * Env 설정을 확인한다.
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     */
+    public static function checkEnv(): bool
     {
         Env::load();
 
-        self::checkDatabase();
-        self::checkCache();
-        self::checkSaseulDaemon();
-        self::checkNodeInfo();
+        if (!self::isEnv()) {
+            echo 'Env is not settings.';
+
+            return false;
+        }
+
+        return true;
     }
 
-    public static function initDaemon()
+    /**
+     * Daemon 이 실행중인지 확인한다.
+     *
+     * @return bool
+     */
+    public static function isDaemonRunning(): bool
     {
-        Env::load();
+        return !(!is_file(Directory::PID_FILE) || !Property::isReady());
+    }
 
-        self::checkDatabase();
-        self::checkCache();
+    /**
+     * API 클래스 생성시 초기값을 설정한다.
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     *
+     * @todo SC-143
+     */
+    public static function initApi(): bool
+    {
+        if (!self::checkEnv()) {
+            return false;
+        }
+
+        $logger = Logger::getLogger(Logger::API);
+
+        if (!self::checkDatabase($logger)) {
+            return false;
+        }
+
+        if (!self::checkCache($logger)) {
+            return false;
+        }
+
+        // Todo: API 분리시 해당 부분은 제외될 수 있다.
+        if (!self::isDaemonRunning()) {
+            $logger->err('SASEUL is not running');
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Daemon 클래스 생성시 초기값을 설정한다.
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     *
+     * @todo SC-144
+     */
+    public static function initDaemon(): bool
+    {
+        if (!self::checkEnv()) {
+            return false;
+        }
+
+        $logger = Logger::getLogger(Logger::DAEMON);
+
+        if (!self::checkDatabase($logger)) {
+            return false;
+        }
+
+        if (!self::checkCache($logger)) {
+            return false;
+        }
 
         Property::init();
-
-        self::checkNodeInfo(true);
-
         Tracker::init();
-        Generation::makeSourceArchive();
+        Generation::archiveSource();
+
+        return true;
     }
 
-    public static function initScript()
+    /**
+     * Script 클래스 생성시 초기값을 설정한다.
+     *
+     * @throws \Exception
+     *
+     * @return bool
+     *
+     * @todo SC-145
+     */
+    public static function initScript(): bool
     {
-        Env::load();
+        if (!self::checkEnv()) {
+            return false;
+        }
 
-        self::checkDatabase();
-        self::checkCache();
-        self::checkNodeInfo();
+        $logger = Logger::getLogger(Logger::SCRIPT);
+
+        if (!self::checkDatabase($logger)) {
+            return false;
+        }
+
+        if (!self::checkCache($logger)) {
+            return false;
+        }
+
+        return true;
     }
 
-    public static function selectRole(): Node
+    public static function selectRole(): ?Node
     {
         switch (Tracker::GetRole(NodeInfo::getAddress())) {
             case Role::LIGHT:
                 return Light::GetInstance();
+
                 break;
             case Role::VALIDATOR:
                 return Validator::GetInstance();
+
                 break;
             case Role::SUPERVISOR:
                 return Supervisor::GetInstance();
+
                 break;
             case Role::ARBITER:
                 return Arbiter::GetInstance();
+
+                break;
+            default:
+                return null;
+
                 break;
         }
-
-        self::end('invalid role; please check node info; ');
-        return Light::GetInstance();
     }
 
-    public static function end($msg)
+    /**
+     * Env 환경을 불러오고 node 정보가 없으면 false.
+     *
+     * @return bool
+     */
+    private static function isEnv(): bool
     {
-        echo(PHP_EOL. $msg. PHP_EOL);
-        exit();
+        return NodeInfo::isExist();
     }
 }

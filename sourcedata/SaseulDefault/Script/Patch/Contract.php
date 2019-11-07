@@ -3,9 +3,9 @@
 namespace Saseul\Script\Patch;
 
 use Saseul\Common\Script;
-use Saseul\Constant\MongoDbConfig;
 use Saseul\System\Database;
 use Saseul\Util\Logger;
+use Saseul\Util\Mongo;
 
 class Contract extends Script
 {
@@ -13,7 +13,7 @@ class Contract extends Script
 
     public function __construct()
     {
-        $this->db = Database::GetInstance();
+        $this->db = Database::getInstance();
     }
 
     public function _process()
@@ -26,15 +26,15 @@ class Contract extends Script
     {
         Logger::EchoLog('Create Database');
 
-        $this->db->Command(MongoDbConfig::DB_COMMITTED, ['create' => 'contract']);
+        $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_CONTRACT]);
     }
 
     public function CreateIndex()
     {
         Logger::EchoLog('Create Index');
 
-        $this->db->Command(MongoDbConfig::DB_COMMITTED, [
-            'createIndexes' => 'contract',
+        $this->db->Command(Mongo::DB_COMMITTED, [
+            'createIndexes' => Mongo::COLLECTION_CONTRACT,
             'indexes' => [
                 ['key' => ['cid' => 1], 'name' => 'cid_asc'],
                 ['key' => ['chash' => 1], 'name' => 'chash_asc'],

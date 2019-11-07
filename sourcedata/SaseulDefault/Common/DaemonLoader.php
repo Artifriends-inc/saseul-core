@@ -2,15 +2,19 @@
 
 namespace Saseul\Common;
 
+use Saseul\Constant\Directory;
 use Saseul\Core\Property;
 use Saseul\Core\Service;
 use Saseul\Core\Tracker;
+use Saseul\Util\Logger;
 
 class DaemonLoader
 {
+    private $logger;
+
     public function __construct()
     {
-        $pidPath = '/var/saseul-origin/saseuld.pid';
+        $pidPath = Directory::PID_FILE;
 
         posix_setgid(getmygid());
         posix_setuid(getmyuid());
@@ -18,7 +22,11 @@ class DaemonLoader
         Daemon::setOption($pidPath, posix_getgid(), posix_getuid());
         Daemon::start();
 
-        Service::initDaemon();
+        $this->logger = Logger::getLogger(Logger::DAEMON);
+
+        if (!Service::initDaemon()) {
+            Daemon::stop();
+        }
     }
 
     public function main(): void
@@ -43,6 +51,12 @@ class DaemonLoader
         Property::banList(Tracker::banList());
 
         $node = Service::selectRole();
+
+        if ($node === null) {
+            $this->logger->err('Invalid role. Please check node info');
+            $this->stop();
+        }
+
         $node->round();
 
         Property::isRoundRunning(false);
