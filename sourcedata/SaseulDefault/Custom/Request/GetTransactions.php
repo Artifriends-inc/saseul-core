@@ -2,23 +2,21 @@
 
 namespace Saseul\Custom\Request;
 
-use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Logger;
 use Saseul\Util\Parser;
 
 /**
- * Class GetMyTransaction.
- * 요청한 Account 에 대한 Transaction 정보를 가져온다.
- * 정렬: 시간 역순.
+ * Class GetTransactions
+ * 가지고 있는 transaction 을 제공한다.
  */
-class GetMyTransaction extends AbstractRequest
+class GetTransactions extends AbstractRequest
 {
-    /** @var string */
+    /** @var int */
     private $limit;
 
-    /** @var string */
+    /** @var int */
     private $offset;
 
     private $logger;
@@ -36,17 +34,12 @@ class GetMyTransaction extends AbstractRequest
         $this->offset = (int) $request['offset'];
     }
 
-    /**
-     * @throws Exception
-     *
-     * @return array
-     */
     public function getResponse(): array
     {
         $db = Database::getInstance();
 
         $cursor = $db->getTransactionsCollection()->find(
-            ['public_key' => $this->public_key],
+            [],
             [
                 'sort' => ['timestamp' => MongoDb::DESC],
                 'limit' => $this->limit,
