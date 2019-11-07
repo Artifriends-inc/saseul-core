@@ -20,11 +20,15 @@
 
 ## Node 실행 순서
 
-* `docker-compose run --rm api sh -c "cd src; ./saseul_script Reset"`
+* `composer docker-build`
 
-* `docker-compose up -d`
-  * 실행하게되면 `saseuld.pid`가 생성된다. 항상 지워주도록 하자.
+* `composer local-install`
 
+* `composer make-env`
+
+* `composer make-genesis`
+
+genesis 블록 생성 및 validator 노드가 실행된다. 
 
 ## Release Note
 
