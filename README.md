@@ -62,6 +62,11 @@ scripts:
 
 * 추가한 명령을 확인하려면 `composer run -l` 명령을 이용한다.
 
+
+## License
+
+![](https://www.gnu.org/graphics/lgplv3-88x31.png)
+
 [maintainability-badges]: https://api.codeclimate.com/v1/badges/ab103c8f70fafe7ed3b6/maintainability
 [maintainability-repos]: https://codeclimate.com/repos/5d47e92991b75a019f001554/maintainability
 [cov-badges]: https://api.codeclimate.com/v1/badges/ab103c8f70fafe7ed3b6/test_coverage
