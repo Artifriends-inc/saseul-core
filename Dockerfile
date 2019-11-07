@@ -61,7 +61,15 @@ RUN docker-php-source extract \
 # User settings
 WORKDIR /app/saseul
 
-COPY . .
+COPY ./src ./src
+COPY ./sourcedata ./sourcedata
+COPY ./public ./public
+COPY ./blockdata ./blockdata
+COPY ./conf ./conf
+COPY ./bin ./bin
+COPY ./tmp ./tmp
+COPY ./LICENSE ./LICENSE
+
 COPY ./conf/php.ini $PHP_INI_DIR/php.ini
 COPY --from=vendor /app/vendor ./vendor
 COPY --from=vendor /usr/bin/composer /usr/bin/composer
