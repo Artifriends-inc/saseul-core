@@ -10,7 +10,7 @@
 env.example
 docker-compose.yml
 Dockerfile
-Readme.md
+README.md
 vendor
 .phan/
 .php_cs.dist
