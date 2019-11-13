@@ -13,7 +13,6 @@ use Saseul\Custom\Status\Fee;
 use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
-use Saseul\Util\Mongo;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
@@ -427,13 +426,18 @@ class CommitManager
         $this->db->getTransactionsCollection()->bulkWrite($operationList);
     }
 
-    public function commitBlock($expectBlock)
+    /**
+     * 블록 정보를 받아 저장한다.
+     *
+     * @param array $expectBlock 이번 commit 되는 블록 정보
+     */
+    public function commitBlock(array $expectBlock): void
     {
-        $this->db->bulk->insert($expectBlock);
-
-        if ($this->db->bulk->count() > 0) {
-            $this->db->BulkWrite(Mongo::DB_COMMITTED . '.blocks');
+        if (empty($expectBlock)) {
+            return;
         }
+
+        $this->db->getBlocksCollection()->insertOne($expectBlock);
     }
 
     public function makeTransactionChunk($expectBlock, $transactions)
