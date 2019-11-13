@@ -8,19 +8,36 @@ use Saseul\System\Database;
 
 class CommitManagerTest extends TestCase
 {
-    private $db;
+    protected static $db;
+    protected static $sut;
+
+    private $blockData;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$db = Database::getInstance();
+        self::$db->getTransactionsCollection()->drop();
+        self::$db->getBlocksCollection()->drop();
+
+        self::$sut = new CommitManager();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        self::$db->getTransactionsCollection()->drop();
+        self::$db->getBlocksCollection()->drop();
+    }
 
     protected function setUp(): void
     {
-        $this->db = Database::getInstance();
-
-        // Test DB cleanup
-        $this->db->getTransactionsCollection()->drop();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->db->getTransactionsCollection()->drop();
+        $this->blockData = [
+            'block_number' => 1,
+            'loast_blockhash' => '',
+            'blockhash' => 'b8e68a44aef46a3bbb5768057edea067c108768872ec1fea7aa33583ea862903',
+            'transaction_count' => 2,
+            's_timestamp' => 1571383244000000,
+            'timestamp' => 1571383245784173,
+        ];
     }
 
     /**
@@ -47,26 +64,28 @@ class CommitManagerTest extends TestCase
                 'signature' => 'fed50664687217c6bee3abb943335220d46971d6b9f77d40e955a68fc8e3f70a1706e38781b4cca16e6b679160eaca99a6a4294dd846fd4b4471cbc7ef6b5107'
             ]
         ];
-        $this->db->getTransactionsCollection()->insertMany($transactionDataList);
-
-        $blockData = [
-            'block_number' => 1,
-            'loast_blockhash' => '',
-            'blockhash' => 'b8e68a44aef46a3bbb5768057edea067c108768872ec1fea7aa33583ea862903',
-            'transaction_count' => 2,
-            's_timestamp' => 1571383244000000,
-            'timestamp' => 1571383245784173,
-        ];
-
-        $commitManager = new CommitManager();
+        self::$db->getTransactionsCollection()->insertMany($transactionDataList);
 
         // Act
-        $commitManager->commitTransaction($transactionDataList, $blockData);
+        self::$sut->commitTransaction($transactionDataList, $this->blockData);
 
         // Assert
-        $updateTransaction = $this->db->getTransactionsCollection()->findOne([
+        $updateTransaction = self::$db->getTransactionsCollection()->findOne([
             'thash' => '226be8bedbb953f382a8252d1190542c09f82f21c86d1c38260e40ed144b62c9'
         ]);
-        $this->assertSame($blockData['blockhash'], $updateTransaction['block']);
+        $this->assertSame($this->blockData['blockhash'], $updateTransaction['block']);
+    }
+
+    public function testGivenBlockDataThenCommitBlock(): void
+    {
+        // Act
+        self::$sut->commitBlock($this->blockData);
+
+        // Assert
+        $getBlockData = self::$db->getBlocksCollection()->findOne([
+            'block_number' => 1
+        ]);
+        $this->assertSame($this->blockData['blockhash'], $getBlockData['blockhash']);
+        $this->assertSame($this->blockData['transaction_count'], $getBlockData['transaction_count']);
     }
 }
