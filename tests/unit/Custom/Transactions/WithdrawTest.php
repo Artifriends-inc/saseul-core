@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\Tests\Unit\Custom\Transactions;
+namespace Saseul\Test\Unit\Custom\Transactions;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Core\Env;

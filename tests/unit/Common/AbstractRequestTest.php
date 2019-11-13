@@ -1,6 +1,9 @@
 <?php
 
+namespace Saseul\Test\Unit\Common;
+
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use Saseul\Custom\Request\AbstractRequest;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
@@ -13,7 +16,7 @@ class AbstractRequestTest extends TestCase
         $sut = $this->getMockForAbstractClass(
             AbstractRequest::class
         );
-        $sutName = (new \ReflectionClass(get_class($sut)))->getShortName();
+        $sutName = (new ReflectionClass(get_class($sut)))->getShortName();
         $request = [
             'type' => "{$sutName}",
             'from' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e20',
@@ -38,7 +41,7 @@ class AbstractRequestTest extends TestCase
         $sut = $this->getMockForAbstractClass(
             AbstractRequest::class
         );
-        $sutName = (new \ReflectionClass(get_class($sut)))->getShortName();
+        $sutName = (new ReflectionClass(get_class($sut)))->getShortName();
         $request = [
             'type' => "{$sutName}",
             'from' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e20',
@@ -63,7 +66,7 @@ class AbstractRequestTest extends TestCase
         $sut = $this->getMockForAbstractClass(
             AbstractRequest::class
         );
-        $sutName = (new \ReflectionClass(get_class($sut)))->getShortName();
+        $sutName = (new ReflectionClass(get_class($sut)))->getShortName();
         $request = [
             'type' => "{$sutName}",
             'from' => '0x000000000000000000000000000000000000000000000',
@@ -89,7 +92,7 @@ class AbstractRequestTest extends TestCase
         $sut = $this->getMockForAbstractClass(
             AbstractRequest::class
         );
-        $sutName = (new \ReflectionClass(get_class($sut)))->getShortName();
+        $sutName = (new ReflectionClass(get_class($sut)))->getShortName();
         $request = [
             'type' => "{$sutName}",
             'from' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e20',
@@ -115,7 +118,7 @@ class AbstractRequestTest extends TestCase
         $sut = $this->getMockForAbstractClass(
             AbstractRequest::class
         );
-        $sutName = (new \ReflectionClass(get_class($sut)))->getShortName();
+        $sutName = (new ReflectionClass(get_class($sut)))->getShortName();
         $request = [
             'type' => "{$sutName}",
             'from' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e20',

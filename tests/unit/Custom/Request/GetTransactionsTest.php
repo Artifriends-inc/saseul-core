@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\Tests\Unit\Custom\Request;
+namespace Saseul\Test\Unit\Custom\Request;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Core\Env;

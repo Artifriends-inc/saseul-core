@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\Tests\Unit\Consensus;
+namespace Saseul\Test\Unit\Consensus;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Consensus\CommitManager;

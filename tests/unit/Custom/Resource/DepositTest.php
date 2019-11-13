@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\tests\Custom\Resource;
+namespace Saseul\Test\Unit\Custom\Resource;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -9,6 +9,7 @@ use Saseul\Constant\Directory;
 use Saseul\Core\Chunk;
 use Saseul\Custom\Resource\Deposit;
 use Saseul\System\Key;
+use Saseul\Util\DateTime;
 
 class DepositTest extends TestCase
 {
@@ -20,7 +21,7 @@ class DepositTest extends TestCase
     {
         $this->sut = new Deposit();
         $this->sutName = (new ReflectionClass(get_class($this->sut)))->getShortName();
-        $this->timestamp = \Saseul\Util\DateTime::Microtime();
+        $this->timestamp = DateTime::Microtime();
     }
 
     public function testSutInheritsAbstractRequest(): void

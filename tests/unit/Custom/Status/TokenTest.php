@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\Tests\Unit\Custom\Status;
+namespace Saseul\Test\Unit\Custom\Status;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Custom\Status\Token;

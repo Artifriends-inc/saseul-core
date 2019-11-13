@@ -1,11 +1,14 @@
 <?php
 
+namespace Saseul\Test\Unit\Custom\Request;
+
 use PHPUnit\Framework\TestCase;
 use Saseul\Core\Env;
 use Saseul\Custom\Request\AbstractRequest;
 use Saseul\Custom\Request\GetTransaction;
 use Saseul\System\Database;
 use Saseul\System\Key;
+use Saseul\Util\DateTime;
 use Saseul\Version;
 
 class GetTransactionTest extends TestCase
@@ -27,7 +30,7 @@ class GetTransactionTest extends TestCase
         for ($i = 0; $i < 5; $i++) {
             $insertData[] = [
                 'thash' => "saseul_{$i}",
-                'timestamp' => \Saseul\Util\DateTime::Microtime(),
+                'timestamp' => DateTime::Microtime(),
                 'public_key' => self::$nodeInfo['public_key'],
             ];
         }
@@ -71,7 +74,7 @@ class GetTransactionTest extends TestCase
             'version' => Version::CURRENT,
             'from' => self::$nodeInfo['address'],
             'thash' => $thash,
-            'timestamp' => \Saseul\Util\DateTime::Microtime(),
+            'timestamp' => DateTime::Microtime(),
         ];
 
         $thash = hash('sha256', json_encode($request, JSON_THROW_ON_ERROR, 512));

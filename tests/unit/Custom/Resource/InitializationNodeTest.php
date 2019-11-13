@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\tests\Custom\Resource;
+namespace Saseul\Test\Unit\Custom\Resource;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;

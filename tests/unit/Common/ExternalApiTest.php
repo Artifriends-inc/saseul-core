@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\tests\Common\ExternalApi;
+namespace Saseul\Test\Unit\Common;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Common\ExternalApi;

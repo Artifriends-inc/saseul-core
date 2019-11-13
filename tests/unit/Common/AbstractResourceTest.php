@@ -1,6 +1,9 @@
 <?php
 
+namespace Saseul\Test\Unit\Common;
+
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use Saseul\Common\AbstractResource;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;

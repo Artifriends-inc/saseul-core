@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\Tests\Unit\Core;
+namespace Saseul\Test\Unit\Core;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\Directory;
