@@ -27,7 +27,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Saseul\\Tests\\Unit\\": "./tests/unit",
+            "Saseul\\Test\\Unit\\": "./tests/unit",
             "Cmd\\": "cmd/"
         }
     },

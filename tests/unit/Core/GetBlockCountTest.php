@@ -1,5 +1,7 @@
 <?php
 
+namespace Saseul\Test\Unit\Core;
+
 use PHPUnit\Framework\TestCase;
 use Saseul\Core\Block;
 use Saseul\System\Database;

@@ -1,6 +1,9 @@
 <?php
 
+namespace Saseul\Test\Unit\Core;
+
 use PHPUnit\Framework\TestCase;
+use Saseul\Constant\Directory;
 use Saseul\Core\Service;
 
 class ServiceTest extends TestCase
@@ -9,7 +12,7 @@ class ServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pidPath = \Saseul\Constant\Directory::PID_FILE;
+        $this->pidPath = Directory::PID_FILE;
     }
 
     protected function tearDown(): void

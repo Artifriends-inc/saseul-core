@@ -1,11 +1,14 @@
 <?php
 
+namespace Saseul\Test\Unit\Custom\Request;
+
 use PHPUnit\Framework\TestCase;
 use Saseul\Core\Env;
 use Saseul\Custom\Request\AbstractRequest;
 use Saseul\Custom\Request\GetMyTransaction;
 use Saseul\System\Database;
 use Saseul\System\Key;
+use Saseul\Util\DateTime;
 use Saseul\Version;
 
 class GetMyTransactionTest extends TestCase
@@ -27,14 +30,14 @@ class GetMyTransactionTest extends TestCase
         for ($i = 0; $i < 12; $i++) {
             $insertData[] = [
                 'thash' => $i,
-                'timestamp' => \Saseul\Util\DateTime::Microtime(),
+                'timestamp' => DateTime::Microtime(),
                 'public_key' => self::$nodeInfo['public_key'],
             ];
         }
         for ($i = 0; $i < 12; $i++) {
             $insertData[] = [
                 'thash' => $i,
-                'timestamp' => \Saseul\Util\DateTime::Microtime(),
+                'timestamp' => DateTime::Microtime(),
                 'public_key' => '52017bcb4caca8911b3830c281d10f79359ceb3fbe061c990e043ccb589fccc5',
             ];
         }
@@ -103,7 +106,7 @@ class GetMyTransactionTest extends TestCase
             'from' => self::$nodeInfo['address'],
             'limit' => (string) $limit,
             'offset' => (string) $offset,
-            'timestamp' => \Saseul\Util\DateTime::Microtime()
+            'timestamp' => DateTime::Microtime()
         ];
 
         $thash = hash('sha256', json_encode($request, JSON_THROW_ON_ERROR, 512));

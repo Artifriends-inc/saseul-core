@@ -1,5 +1,7 @@
 <?php
 
+namespace Saseul\Test\Unit\Custom\Request;
+
 use PHPUnit\Framework\TestCase;
 use Saseul\Custom\Request\AbstractRequest;
 use Saseul\Custom\Request\GetTokenBalance;

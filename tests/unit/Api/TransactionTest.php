@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\tests\Api;
+namespace Saseul\Test\Unit\Api;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Api\Transaction;
