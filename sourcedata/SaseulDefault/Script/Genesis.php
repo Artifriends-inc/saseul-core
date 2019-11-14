@@ -11,7 +11,6 @@ use Saseul\System\Cache;
 use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
-use Saseul\Util\Logger;
 use Saseul\Util\Mongo;
 use Saseul\Version;
 
@@ -45,12 +44,13 @@ class Genesis extends Script
         $this->CreateKey();
         $this->CreateGenesisTransaction();
 
-        Logger::EchoLog('Success ');
+        static::log()->info('Success');
     }
 
     public function CheckGenesis()
     {
-        Logger::EchoLog('CheckGenesis');
+        static::log()->info('Check genesis');
+
         $v = $this->cache->get('CheckGenesis');
 
         if ($v === false) {
@@ -76,7 +76,7 @@ class Genesis extends Script
 
     public function CreateKey()
     {
-        Logger::EchoLog('CreateKey');
+        static::log()->info('Create key');
 
         $this->data['node_key'] = [
             'private_key' => NodeInfo::getPrivateKey(),
@@ -87,7 +87,8 @@ class Genesis extends Script
 
     public function CreateGenesisTransaction()
     {
-        Logger::EchoLog('CreateGenesisTransaction');
+        static::log()->info('Create genesis transaction');
+
         $transaction_genesis = [
             'version' => Version::CURRENT,
             'type' => 'Genesis',

@@ -4,7 +4,6 @@ namespace Saseul\Script\Patch;
 
 use Saseul\Common\Script;
 use Saseul\System\Database;
-use Saseul\Util\Logger;
 use Saseul\Util\Mongo;
 
 class Contract extends Script
@@ -24,14 +23,14 @@ class Contract extends Script
 
     public function CreateDatabase()
     {
-        Logger::EchoLog('Create Database');
+        static::log()->info('Create database');
 
         $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_CONTRACT]);
     }
 
     public function CreateIndex()
     {
-        Logger::EchoLog('Create Index');
+        static::log()->info('Create index');
 
         $this->db->Command(Mongo::DB_COMMITTED, [
             'createIndexes' => Mongo::COLLECTION_CONTRACT,
