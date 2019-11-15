@@ -11,7 +11,6 @@ use Saseul\Core\Tracker;
 use Saseul\System\Cache;
 use Saseul\System\Database;
 use Saseul\Util\File;
-use Saseul\Util\Logger;
 use Saseul\Util\Mongo;
 
 class Reset extends Script
@@ -53,7 +52,7 @@ class Reset extends Script
                 if (Property::isRoundRunning() === false) {
                     break;
                 }
-                Logger::EchoLog("waiting round ... ({$i})");
+                static::log()->info('waiting round ...'[$i]);
                 sleep(1);
             }
         }
@@ -75,13 +74,13 @@ class Reset extends Script
         $this->RestoreOriginalSource();
         sleep(2);
 
-        Logger::EchoLog('Set property');
+        static::log()->info('Set property');
         Property::init();
 
-        Logger::EchoLog('Source archive');
+        static::log()->info('Source archive');
         Generation::archiveSource();
 
-        Logger::EchoLog('Success');
+        static::log()->info('Success');
     }
 
     /**
@@ -104,37 +103,37 @@ class Reset extends Script
      */
     public function DeleteFiles(): void
     {
-        Logger::EchoLog('Delete Files : API Chunk ');
+        static::log()->info('Delete files', ['API chunk']);
         File::rrmdir(Directory::API_CHUNKS);
         mkdir(Directory::API_CHUNKS);
         chmod(Directory::API_CHUNKS, 0775);
         file_put_contents(Directory::API_CHUNKS . '/.keep', '');
 
-        Logger::EchoLog('Delete Files : Broadcast Chunk ');
+        static::log()->info('Delete files', ['Broadcast chunk']);
         File::rrmdir(Directory::BROADCAST_CHUNKS);
         mkdir(Directory::BROADCAST_CHUNKS);
         chmod(Directory::BROADCAST_CHUNKS, 0775);
         file_put_contents(Directory::BROADCAST_CHUNKS . '/.keep', '');
 
-        Logger::EchoLog('Delete Files : Transactions ');
+        static::log()->info('Delete files', ['Transactions']);
         File::rrmdir(Directory::TRANSACTIONS);
         mkdir(Directory::TRANSACTIONS);
         chmod(Directory::TRANSACTIONS, 0775);
         file_put_contents(Directory::TRANSACTIONS . '/.keep', '');
 
-        Logger::EchoLog('Delete Files : Transaction Archive ');
+        static::log()->info('Delete files', ['Transaction archive']);
         File::rrmdir(Directory::TX_ARCHIVE);
         mkdir(Directory::TX_ARCHIVE);
         chmod(Directory::TX_ARCHIVE, 0775);
         file_put_contents(Directory::TX_ARCHIVE . '/.keep', '');
 
-        Logger::EchoLog('Delete Files : Generations ');
+        static::log()->info('Delete files', ['Generations']);
         File::rrmdir(Directory::GENERATIONS);
         mkdir(Directory::GENERATIONS);
         chmod(Directory::GENERATIONS, 0775);
         file_put_contents(Directory::GENERATIONS . '/.keep', '');
 
-        Logger::EchoLog('Delete Files : Temp folder ');
+        static::log()->info('Delete files', ['Temp folder']);
         File::rrmdir(Directory::TEMP);
         mkdir(Directory::TEMP);
         chmod(Directory::TEMP, 0775);
@@ -154,7 +153,7 @@ class Reset extends Script
      */
     public function DropDatabase(): void
     {
-        Logger::EchoLog('Drop Database');
+        static::log()->info('Drop database');
 
         $this->db->Command(Mongo::DB_COMMITTED, ['dropDatabase' => 1]);
         $this->db->Command(Mongo::DB_TRACKER, ['dropDatabase' => 1]);
@@ -165,7 +164,7 @@ class Reset extends Script
      */
     public function CreateDatabase(): void
     {
-        Logger::EchoLog('Create Database');
+        static::log()->info('Create database');
 
         $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_GENERATIONS]);
         $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_BLOCKS]);
@@ -182,7 +181,7 @@ class Reset extends Script
      */
     public function CreateIndex(): void
     {
-        Logger::EchoLog('Create Index');
+        static::log()->info('Create index');
 
         $this->db->Command(Mongo::DB_COMMITTED, [
             'createIndexes' => Mongo::COLLECTION_TRANSACTIONS,
@@ -237,7 +236,7 @@ class Reset extends Script
      */
     public function CreateGenesisTracker(): void
     {
-        Logger::EchoLog('Create Genesis Tracker');
+        static::log()->info('Create genesis tracker');
         Tracker::reset();
     }
 }

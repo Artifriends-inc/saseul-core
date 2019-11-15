@@ -3,7 +3,6 @@
 namespace Saseul\Script;
 
 use Saseul\Common\Script;
-use Saseul\Util\Logger;
 
 class T extends Script
 {
@@ -52,7 +51,7 @@ class T extends Script
         $d = array_unique(array_map(function ($obj) { return json_encode($obj); }, $d));
         $d = array_map(function ($obj) { return json_decode($obj, true); }, $d);
 
-        Logger::Log($d);
+        static::log()->info('message', [$d]);
     }
 
     public function GetNextIP(string $ip): string

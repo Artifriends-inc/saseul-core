@@ -41,21 +41,27 @@ class Script
 
     public function ask(string $msg): string
     {
-        Logger::EchoLog(PHP_EOL . $msg);
+        static::log()->info($msg);
 
         return trim(fgets(STDIN));
     }
 
     public function error($msg = 'Error')
     {
-        Logger::Log('Error : ');
-        Logger::Log($msg, true);
+        static::log()->error('Error', [$msg]);
+        exit();
     }
 
     protected function result()
     {
         if ($this->data !== []) {
-            Logger::Log($this->data, true);
+            static::log()->info('Result', [$this->data]);
+            exit();
         }
+    }
+
+    protected static function log()
+    {
+        return Logger::getLogger(Logger::SCRIPT);
     }
 }

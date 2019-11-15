@@ -7,7 +7,6 @@ use Saseul\Core\NodeInfo;
 use Saseul\Core\Tracker;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
-use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
 use Saseul\Version;
 
@@ -24,7 +23,7 @@ class ChangeRole extends Script
 
     public function _process()
     {
-        Logger::EchoLog('Type role to change to. (validator | supervisor | light) ');
+        static::log()->info('Type role to change to. (validator | supervisor | light)');
         $role = trim(fgets(STDIN));
 
         $validator = Tracker::GetRandomValidator();

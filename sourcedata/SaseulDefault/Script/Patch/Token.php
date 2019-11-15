@@ -4,7 +4,6 @@ namespace Saseul\Script\Patch;
 
 use Saseul\Common\Script;
 use Saseul\System\Database;
-use Saseul\Util\Logger;
 use Saseul\Util\Mongo;
 
 class Token extends Script
@@ -24,7 +23,7 @@ class Token extends Script
 
     public function CreateDatabase()
     {
-        Logger::EchoLog('Create Database');
+        static::log()->info('Create database');
 
         $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_TOKEN]);
         $this->db->Command(Mongo::DB_COMMITTED, ['create' => Mongo::COLLECTION_TOKEN_LIST]);
@@ -32,7 +31,7 @@ class Token extends Script
 
     public function CreateIndex()
     {
-        Logger::EchoLog('Create Index');
+        static::log()->info('Create Index');
 
         $this->db->Command(Mongo::DB_COMMITTED, [
             'createIndexes' => Mongo::COLLECTION_TOKEN,
