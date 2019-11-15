@@ -1,9 +1,12 @@
 <?php
 
-// Internal message log
-
 namespace Saseul\Core;
 
+/**
+ * Class IMLog.
+ *
+ * Internal message log
+ */
 class IMLog
 {
     public static function add($log)
@@ -27,47 +30,5 @@ class IMLog
     public static function reset()
     {
         Property::iMLog([]);
-    }
-
-    /**
-     * @return string
-     *
-     * @deprecated 사용하는 곳이 없다.
-     *
-     * @todo SC-230
-     */
-    public static function get()
-    {
-        $iMLogProperty = Property::iMLog();
-
-        if (empty($iMLogProperty)) {
-            return '';
-        }
-
-        return self::parse($iMLogProperty);
-    }
-
-    /**
-     * @param array $iMLogProperty
-     *
-     * @return string
-     *
-     * @deprecated 사용하는 곳이 바로 위다.
-     *
-     * @todo SC-230
-     */
-    public static function parse(array $iMLogProperty)
-    {
-        $str = '';
-
-        foreach ($iMLogProperty as $row) {
-            if (!is_string($row)) {
-                continue;
-            }
-
-            $str .= $row . PHP_EOL;
-        }
-
-        return $str;
     }
 }
