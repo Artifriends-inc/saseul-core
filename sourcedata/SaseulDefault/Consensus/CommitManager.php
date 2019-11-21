@@ -7,12 +7,12 @@ use Saseul\Constant\Decision;
 use Saseul\Constant\Directory;
 use Saseul\Constant\Structure;
 use Saseul\Core\Chunk;
-use Saseul\Core\IMLog;
 use Saseul\Core\NodeInfo;
 use Saseul\Custom\Status\Fee;
 use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
+use Saseul\Util\Logger;
 use Saseul\Util\RestCall;
 use Saseul\Util\TypeChecker;
 
@@ -25,11 +25,15 @@ class CommitManager
     private $rest;
     private $status_manager;
 
+    private $streamLog;
+
     public function __construct()
     {
         $this->db = Database::getInstance();
         $this->rest = RestCall::GetInstance();
         $this->status_manager = new StatusManager();
+
+        $this->streamLog = Logger::getStreamLogger(Logger::DAEMON);
     }
 
     public static function GetInstance()
@@ -186,8 +190,7 @@ class CommitManager
             }
         }
 
-//        Logger::Log($t);
-        IMLog::add('[Log] maximum_exec_time : ' . $max);
+        $this->streamLog->debug('Commit collect chunk', ['maximum_exec_time' => $max]);
 
         return $chunks;
     }

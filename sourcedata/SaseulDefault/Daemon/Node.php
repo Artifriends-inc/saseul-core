@@ -14,7 +14,6 @@ use Saseul\Constant\Rank;
 use Saseul\Constant\Structure;
 use Saseul\Core\Block;
 use Saseul\Core\Chunk;
-use Saseul\Core\IMLog;
 use Saseul\Core\Property;
 use Saseul\Core\Tracker;
 use Saseul\Util\Logger;
@@ -24,7 +23,8 @@ use Saseul\Util\TypeChecker;
 class Node
 {
     protected static $instance;
-    protected $logger;
+    protected $log;
+    protected $steramLog;
     protected $fail_count = 0;
 
     protected $round_manager;
@@ -52,7 +52,9 @@ class Node
         $this->tracker_manager = TrackerManager::GetInstance();
 
         $this->tracker_manager->GenerateTracker();
-        $this->logger = Logger::getLogger('Daemon');
+        $this->log = Logger::getLogger(Logger::DAEMON);
+        $this->steramLog = Logger::getStreamLogger(Logger::DAEMON);
+
         Tracker::setMyHost();
     }
 
@@ -68,8 +70,7 @@ class Node
 
     public function round()
     {
-        IMLog::add('[Log] Nothing; ');
-        $this->logger->debug('Nothiong');
+        $this->log->debug('Nothiong');
         sleep(1);
     }
 
@@ -261,7 +262,7 @@ class Node
         $nextBlockNumber = $myRoundNumber;
 
         $netGenerationInfo = $this->source_manager->netGenerationInfo($aliveArbiters, $nextBlockNumber, $originBlockhash);
-        $this->logger->debug('network generation info', [$netGenerationInfo]);
+        $this->log->debug('network generation info', [$netGenerationInfo]);
 
         if (count($netGenerationInfo) === 0) {
             return;
@@ -287,7 +288,7 @@ class Node
         // collect source hashs
         $sourcehashs = $this->source_manager->collectSourcehashs($netGenerationInfo, $targetInfo);
 
-        $this->logger->debug(
+        $this->log->debug(
             'source hash',
             [
                 'target source hash' => ['target info' => $target, 'source hash' => $sourcehashs],
@@ -303,7 +304,7 @@ class Node
 
         // source change
         $sourceArchive = $this->source_manager->getSource($host, $myRoundNumber);
-        $this->logger->debug('Source archive', ['host' => $host, 'my round number' => $myRoundNumber, 'archive' => $sourceArchive]);
+        $this->log->debug('Source archive', ['host' => $host, 'my round number' => $myRoundNumber, 'archive' => $sourceArchive]);
 
         if ($sourceArchive === '') {
             // TODO: source 다른 놈한테 받아야 함.
@@ -324,13 +325,13 @@ class Node
         $myBunch = Block::bunchFinalNumber($myRoundNumber);
 
         if ($netBunch !== $myBunch) {
-            IMLog::add('[Sync] syncBunch');
+            $this->log->debug('Node sync message', ['type' => 'sync', 'data' => 'bunch']);
             $syncResult = $this->syncBunch($aliveNodes, $myRoundNumber);
         } else {
-            IMLog::add('[Sync] syncBlock');
+            $this->log->debug('Node sync message', ['type' => 'sync', 'data' => 'block']);
             $syncResult = $this->syncBlock($aliveNodes, $lastBlock, $myRoundNumber);
         }
-        $this->logger->debug('sync', ['result' => $syncResult]);
+        $this->log->debug('Node sync message', ['type' => 'sync', 'result' => $syncResult]);
 
         return $syncResult;
     }
@@ -341,7 +342,7 @@ class Node
         $netBlockInfo = $this->sync_manager->netBlockInfo($aliveNodes, $myRoundNumber);
 
         if (count($netBlockInfo) === 0) {
-            IMLog::add('[Sync] netBlockInfo false ');
+            $this->log->debug('Network block info', ['type' => 'sync', 'result' => false, 'data' => $netBlockInfo]);
 
             return Event::NOTHING;
         }
@@ -373,13 +374,13 @@ class Node
         $netBunchInfo = $this->sync_manager->netBunchInfo($aliveNodes, $myRoundNumber);
 
         if (count($netBunchInfo) === 0) {
-            IMLog::add('[Sync] netBunchInfo false ');
+            $this->log->debug('Network branch info', ['type' => 'sync', 'result' => false, 'data' => $netBunchInfo]);
 
             return Event::NOTHING;
         }
 
         $target = $this->sync_manager->selectBunchInfo($netBunchInfo);
-        $this->logger->debug('bunch target', [$target]);
+        $this->log->debug('bunch target', [$target]);
         $bunchInfo = $target['item'];
         // $unique = $target['unique'];
         //
@@ -393,11 +394,11 @@ class Node
 
         $nextBlockhash = $bunchInfo['blockhash'];
         $bunch = $this->sync_manager->getBunchFile($host, $myRoundNumber);
-        $this->logger->debug('bunch', [$bunch]);
+        $this->log->debug('bunch', [$bunch]);
 
         if ($bunch === '') {
             // Todo: 해당 부분에서는 따로 값을 가져오지 않아도 되는가?
-            IMLog::add('[Sync] getBunchFile false ');
+            $this->log->debug('Get bunch file', ['type' => 'sync', 'result' => false]);
 
             return Event::NO_RESULT;
         }
@@ -461,9 +462,7 @@ class Node
         }
 
         // banish
-        IMLog::add('[Sync] myBlockhash : ' . $myBlockhash);
-        IMLog::add('[Sync] expectBlockhash : ' . $expectBlockhash);
-        IMLog::add('[Sync] syncCommit false ');
+        $this->log->debug('Sync commit', ['type' => 'sync', 'myBlockhash' => $myBlockhash, 'expectBlockhash' => $expectBlockhash, 'result' => false]);
 
         return Event::DIFFERENT;
     }
