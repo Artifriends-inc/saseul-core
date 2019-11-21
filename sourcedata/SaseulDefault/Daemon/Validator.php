@@ -5,7 +5,6 @@ namespace Saseul\Daemon;
 use Saseul\Constant\Event;
 use Saseul\Constant\Rule;
 use Saseul\Core\Block;
-use Saseul\Core\IMLog;
 use Saseul\Core\Property;
 use Saseul\Core\Tracker;
 use Saseul\Util\DateTime;
@@ -30,7 +29,7 @@ class Validator extends Node
 
         // start
         $this->stime = DateTime::Microtime();
-        IMLog::add('[Log] round start : 0 s');
+        $this->log->debug('Round start', ['type' => 'round', 'sec' => 0]);
 
         $result = Event::NOTHING;
         Property::excludedHost($this->excludedHosts);
@@ -41,7 +40,7 @@ class Validator extends Node
         $nodes = $this->mergedNode($nodes);
         $nodes = $this->validators($nodes);
 
-        IMLog::add('[CPU] check block & tracker : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');
+        $this->log->debug('Check block & tracker', ['type' => 'cpu', 'sec' => $this->nowTime()]);
 
         $myRound = $this->round_manager->myRound($lastBlock);
         $registOption = false;
@@ -50,15 +49,16 @@ class Validator extends Node
             $registOption = true;
         }
         $netRound = $this->round_manager->netRound($nodes, $registOption);
-        $this->heartbeat = ((DateTime::Microtime() - $this->stime) / 1000000);
-        IMLog::add('[Net] check round : ' . $this->heartbeat . ' s');
+        $this->heartbeat = $this->nowTime();
+
+        $this->log->debug('Check round', ['type' => 'net', 'sec' => $this->heartbeat]);
 
         $this->tracker_manager->register($nodes, array_keys($netRound));
         $nodes = Tracker::getAccessibleNodes();
         $aliveNodes = $this->aliveNodes($nodes, array_keys($netRound));
         $this->tracker_manager->collect($aliveNodes, array_keys($netRound));
 
-        IMLog::add('[Net] check tracker : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');
+        $this->log->debug('Check tracker', ['type' => 'net', 'sec' => $this->nowTime()]);
 
         Property::aliveNode($aliveNodes);
 
@@ -70,19 +70,18 @@ class Validator extends Node
         $netRoundNumber = $roundInfo['net_round_number'];
         $this->netLastRoundNumber = $netRoundNumber;
 
-        IMLog::add('[CPU] ready consensus : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');
+        $this->log->debug('Ready consensus', ['type' => 'cpu', 'sec' => $this->nowTime()]);
 
         if ($myRoundNumber === $netRoundNumber) {
             $result = $this->consensus($aliveValidators, $lastBlock, $myRound, $roundInfo);
-            $completeTime = ((DateTime::Microtime() - $this->stime) / 1000000);
+            $completeTime = $this->nowTime();
             $this->setLength($completeTime);
-            IMLog::add('[All] consensus : ' . $completeTime . ' s');
-            IMLog::add('[All] length : ' . $this->length);
-            IMLog::add('#############################################');
+
+            $this->log->debug('Consensus', ['type' => 'all', 'consensus complete time' => $completeTime, 'length' => $this->length]);
         } elseif ($myRoundNumber < $netRoundNumber) {
             $result = $this->sync($aliveNodes, $lastBlock, $myRoundNumber, $netRoundNumber);
-            IMLog::add('[All] sync : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');
-            IMLog::add('#############################################');
+
+            $this->log->debug('Sync', ['type' => 'all', 'sync time' => $this->nowTime()]);
         }
 
         $this->finishingWork($result);
@@ -103,12 +102,10 @@ class Validator extends Node
         $this->commit_manager->init();
 
         $chunks = $this->commit_manager->collectApiChunk($aliveValidators, ['keys' => [], 'txs' => []], $lastStandardTimestamp, $expectStandardTimestamp);
-        IMLog::add('[Log] transaction count : ' . count($chunks['txs']));
-        IMLog::add('[Net] collectApiChunk : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');
+        $this->log->debug('Collect api chunk', ['type' => 'log', 'count' => count($chunks['txs']), 'sec' => $this->nowTime()]);
 
         $chunks = $this->commit_manager->collectBroadcastChunk($aliveValidators, $chunks, $lastStandardTimestamp, $expectStandardTimestamp);
-        IMLog::add('[Log] transaction count : ' . count($chunks['txs']));
-        IMLog::add('[Net] collectBroadcastChunk : ' . ((DateTime::Microtime() - $this->stime) / 1000000) . ' s');
+        $this->log->debug('Collect broadcast chunk', ['type' => 'log', 'count' => count($chunks['txs']), 'sec' => $this->nowTime()]);
 
         $keys = $chunks['keys'];
         $transactions = $chunks['txs'];
@@ -147,7 +144,7 @@ class Validator extends Node
             $this->commit_manager->commit($completedTransactions, $lastBlock, $expectBlock);
             $this->commit_manager->makeTransactionChunk($expectBlock, $transactions);
 
-            IMLog::add(json_encode($expectBlock));
+            $this->log->debug('Block data', [json_encode($expectBlock, JSON_THROW_ON_ERROR, 512)]);
 
             // tracker
             $this->tracker_manager->GenerateTracker();
@@ -157,5 +154,10 @@ class Validator extends Node
 
         // banish
         return Event::DIFFERENT;
+    }
+
+    private function nowTime(): float
+    {
+        return (float) (DateTime::Microtime() - $this->stime) / 1000000;
     }
 }
