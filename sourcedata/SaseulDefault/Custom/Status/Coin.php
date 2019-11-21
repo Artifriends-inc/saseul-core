@@ -7,7 +7,7 @@ use Saseul\Common\Status;
 use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
-class Coin extends Status
+class Coin implements Status
 {
     protected static $addresses = [];
     protected static $balances = [];
@@ -51,14 +51,20 @@ class Coin extends Status
         self::$deposits[$address] = $value;
     }
 
-    public static function _Reset()
+    /**
+     * Status 값을 초기화한다.
+     */
+    public static function _reset(): void
     {
         self::$addresses = [];
         self::$balances = [];
         self::$deposits = [];
     }
 
-    public static function _Load()
+    /**
+     * 저장되어 있는 Status 값을 읽어온다.
+     */
+    public static function _load(): void
     {
         self::$addresses = array_values(array_unique(self::$addresses));
 
@@ -82,11 +88,18 @@ class Coin extends Status
     }
 
     /**
+     * Status 값을 전처리한다.
+     */
+    public static function _preprocess(): void
+    {
+    }
+
+    /**
      * Coin 값을 DB에 저장한다.
      *
      * @throws Exception
      */
-    public static function _Save(): void
+    public static function _save(): void
     {
         $db = Database::getInstance();
 
@@ -101,7 +114,14 @@ class Coin extends Status
 
         $db->getCoinCollection()->bulkWrite($operations);
 
-        self::_Reset();
+        self::_reset();
+    }
+
+    /**
+     * Status 값을 후처리한다.
+     */
+    public static function _postprocess(): void
+    {
     }
 
     private static function upsertCoinDB(string $type, array $memData): array

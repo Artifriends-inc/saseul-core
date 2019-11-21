@@ -37,7 +37,7 @@ class AttributesTest extends TestCase
         Attributes::setRole($address, Role::VALIDATOR);
 
         // Act
-        Attributes::_Save();
+        Attributes::_save();
 
         // Assert
         $actual = $this->db->getAttributesCollection()->findOne(['address' => $address]);

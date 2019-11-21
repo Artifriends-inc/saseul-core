@@ -17,7 +17,7 @@ class StatusManager
     {
         foreach ($this->status_interfaces as $status_interface) {
             $class = 'Saseul\\Custom\\Status\\' . $status_interface;
-            $class::_Reset();
+            $class::_reset();
         }
     }
 
@@ -25,7 +25,7 @@ class StatusManager
     {
         foreach ($this->status_interfaces as $status_interface) {
             $class = 'Saseul\\Custom\\Status\\' . $status_interface;
-            $class::_Preprocess();
+            $class::_preprocess();
         }
     }
 
@@ -33,7 +33,7 @@ class StatusManager
     {
         foreach ($this->status_interfaces as $status_interface) {
             $class = 'Saseul\\Custom\\Status\\' . $status_interface;
-            $class::_Load();
+            $class::_load();
         }
     }
 
@@ -44,7 +44,7 @@ class StatusManager
     {
         foreach ($this->status_interfaces as $status_interface) {
             $class = 'Saseul\\Custom\\Status\\' . $status_interface;
-            $class::_Save();
+            $class::_save();
         }
     }
 
@@ -52,7 +52,7 @@ class StatusManager
     {
         foreach ($this->status_interfaces as $status_interface) {
             $class = 'Saseul\\Custom\\Status\\' . $status_interface;
-            $class::_Postprocess();
+            $class::_postprocess();
         }
     }
 }

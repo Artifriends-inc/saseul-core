@@ -30,7 +30,7 @@ class CoinTest extends TestCase
         Coin::SetDeposit($address, 10);
 
         // Act
-        Coin::_Save();
+        Coin::_save();
 
         // Assert
         $actual = $this->db->getCoinCollection()->findOne(['address' => $address]);
