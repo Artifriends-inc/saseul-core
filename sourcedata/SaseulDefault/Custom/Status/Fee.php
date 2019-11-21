@@ -11,7 +11,7 @@ use Saseul\System\Database;
  *
  * 사용하고 있지 않다.
  */
-class Fee extends Status
+class Fee implements Status
 {
     protected static $validators = [];
     protected static $fee = 0;
@@ -38,7 +38,10 @@ class Fee extends Status
         self::$validators[] = $address;
     }
 
-    public static function _Reset()
+    /**
+     * Status 값을 초기화한다.
+     */
+    public static function _reset(): void
     {
         self::$validators = [];
         self::$fee = 0;
@@ -56,7 +59,17 @@ class Fee extends Status
         self::$s_timestamp = $s_timestamp;
     }
 
-    public static function _Preprocess()
+    /**
+     * 저장되어있는 Status 값을 읽어온다.
+     */
+    public static function _load(): void
+    {
+    }
+
+    /**
+     * Status 값을 전처리한다.
+     */
+    public static function _preprocess(): void
     {
 //        if ((int) self::$fee === 0) {
 //            self::_Reset();
@@ -118,10 +131,22 @@ class Fee extends Status
 //        self::_Reset();
     }
 
-    public static function _Postprocess()
+    /**
+     * Status 값을 저장한다.
+     */
+    public static function _save(): void
+    {
+    }
+
+    /**
+     * Status 값을 후처리한다.
+     *
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
+    public static function _postprocess(): void
     {
         if ((int) self::$fee === 0) {
-            self::_Reset();
+            self::_reset();
 
             return;
         }
@@ -168,7 +193,7 @@ class Fee extends Status
 
         static::setBalance($validators);
 
-        self::_Reset();
+        self::_reset();
     }
 
     /**

@@ -36,7 +36,7 @@ class TokenTest extends TestCase
         Token::SetBalance($address, $tokenName, 1010);
 
         // Act
-        Token::_Save();
+        Token::_save();
 
         // Assert
         $actual = $this->db->getTokenCollection()->findOne(['address' => $address, 'token_name' => $tokenName]);

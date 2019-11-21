@@ -8,7 +8,7 @@ use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
 
-class Attributes extends Status
+class Attributes implements Status
 {
     protected static $addresses_role = [];
     protected static $roles = [];
@@ -32,13 +32,21 @@ class Attributes extends Status
         self::$roles[$address] = $value;
     }
 
-    public static function _Reset()
+    /**
+     * Status 값을 초기화한다.
+     */
+    public static function _reset(): void
     {
         self::$addresses_role = [];
         self::$roles = [];
     }
 
-    public static function _Load()
+    /**
+     * 저장되어 있는 Status 값을 읽어온다.
+     *
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
+    public static function _load(): void
     {
         self::$addresses_role = array_values(array_unique(self::$addresses_role));
 
@@ -58,11 +66,18 @@ class Attributes extends Status
     }
 
     /**
-     * Memory 에 저장해둔 정보를 DB에 저장한다.
+     * Status 값을 전처리한다.
+     */
+    public static function _preprocess(): void
+    {
+    }
+
+    /**
+     * Status 값을 저장한다.
      *
      * @throws Exception
      */
-    public static function _Save(): void
+    public static function _save(): void
     {
         $db = Database::getInstance();
 
@@ -83,6 +98,13 @@ class Attributes extends Status
 
         $db->getAttributesCollection()->bulkWrite($operations);
 
-        self::_Reset();
+        self::_reset();
+    }
+
+    /**
+     * Status 값을 후처리한다.
+     */
+    public static function _postprocess(): void
+    {
     }
 }

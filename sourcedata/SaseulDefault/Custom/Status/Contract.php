@@ -13,7 +13,7 @@ use Saseul\Util\Parser;
  *
  * 사용하지 않고 있다.
  */
-class Contract extends Status
+class Contract implements Status
 {
     protected static $cids = [];
     protected static $contracts = [];
@@ -51,14 +51,20 @@ class Contract extends Status
         return $chash . $s_timestamp;
     }
 
-    public static function _Reset()
+    /**
+     * Status 값을 초기화한다.
+     */
+    public static function _reset(): void
     {
         self::$cids = [];
         self::$contracts = [];
         self::$burn_cids = [];
     }
 
-    public static function _Load()
+    /**
+     * 저장되어 있는 Status 값을 읽어온다.
+     */
+    public static function _load(): void
     {
         self::$cids = array_values(array_unique(self::$cids));
 
@@ -78,11 +84,18 @@ class Contract extends Status
     }
 
     /**
+     * Status 값을 전처리한다.
+     */
+    public static function _preprocess(): void
+    {
+    }
+
+    /**
      * Contract 정보를 저장한다.
      *
      * @throws Exception
      */
-    public static function _Save(): void
+    public static function _save(): void
     {
         $db = Database::getInstance();
 
@@ -116,6 +129,13 @@ class Contract extends Status
 
         $db->getContractCollection()->bulkWrite($operations);
 
-        self::_Reset();
+        self::_reset();
+    }
+
+    /**
+     * Status 값을 후처리한다.
+     */
+    public static function _postprocess(): void
+    {
     }
 }

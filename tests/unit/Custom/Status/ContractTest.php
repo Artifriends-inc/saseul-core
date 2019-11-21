@@ -40,7 +40,7 @@ class ContractTest extends TestCase
         Contract::BurnContract($burnCid);
 
         // Act
-        Contract::_Save();
+        Contract::_save();
 
         // Assert
         $actualCid = $this->db->getContractCollection()->findOne(['cid' => $cid]);

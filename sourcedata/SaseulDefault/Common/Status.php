@@ -2,25 +2,30 @@
 
 namespace Saseul\Common;
 
-class Status
+interface Status
 {
-    public static function _Reset()
-    {
-    }
+    /**
+     * Status 값을 초기화한다.
+     */
+    public static function _reset(): void;
 
-    public static function _Load()
-    {
-    }
+    /**
+     * 저장되어 있는 Status 값을 읽어온다.
+     */
+    public static function _load(): void;
 
-    public static function _Preprocess()
-    {
-    }
+    /**
+     * Status 값을 전처리한다.
+     */
+    public static function _preprocess(): void;
 
-    public static function _Save(): void
-    {
-    }
+    /**
+     * Status 값을 저장한다.
+     */
+    public static function _save(): void;
 
-    public static function _Postprocess()
-    {
-    }
+    /**
+     * Status 값을 후처리한다.
+     */
+    public static function _postprocess(): void;
 }

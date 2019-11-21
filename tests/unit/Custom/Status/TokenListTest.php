@@ -35,7 +35,7 @@ class TokenListTest extends TestCase
         TokenList::SetInfo($tokenName, 'test');
 
         // Act
-        TokenList::_Save();
+        TokenList::_save();
 
         // Assert
         $actual = $this->db->getTokenListCollection()->findOne(['token_name' => $tokenName]);

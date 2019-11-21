@@ -2,12 +2,13 @@
 
 namespace Saseul\Custom\Status;
 
+use Exception;
 use Saseul\Common\Status;
 use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
-class TokenList extends Status
+class TokenList implements Status
 {
     protected static $token_names = [];
     protected static $token_info = [];
@@ -31,13 +32,21 @@ class TokenList extends Status
         self::$token_info[$token_name] = $info;
     }
 
-    public static function _Reset()
+    /**
+     * Status 값을 초기화한다.
+     */
+    public static function _reset(): void
     {
         self::$token_names = [];
         self::$token_info = [];
     }
 
-    public static function _Load()
+    /**
+     * 저장되어 있는 Status 값을 읽어온다.
+     *
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
+    public static function _load(): void
     {
         self::$token_names = array_values(array_unique(self::$token_names));
 
@@ -57,11 +66,18 @@ class TokenList extends Status
     }
 
     /**
-     * Token List 정보를 업데이트 한다.
-     *
-     * @throws \Exception
+     * Status 값을 전처리한다.
      */
-    public static function _Save(): void
+    public static function _preprocess(): void
+    {
+    }
+
+    /**
+     * Status 값을 저장한다.
+     *
+     * @throws Exception
+     */
+    public static function _save(): void
     {
         $db = Database::getInstance();
 
@@ -82,6 +98,13 @@ class TokenList extends Status
 
         $db->getTokenListCollection()->bulkWrite($operations);
 
-        self::_Reset();
+        self::_reset();
+    }
+
+    /**
+     * Status 값을 후처리한다.
+     */
+    public static function _postprocess(): void
+    {
     }
 }
