@@ -3,7 +3,6 @@
 namespace Saseul\Test\Unit\Core;
 
 use PHPUnit\Framework\TestCase;
-use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
 use Saseul\Core\Env;
 use Saseul\Core\NodeInfo;
@@ -34,7 +33,7 @@ class TrackerTest extends TestCase
         $actual = Tracker::addTrackerOnDb();
 
         // Assert
-        $this->assertSame(Rank::VALIDATOR, $actual);
+        $this->assertSame(Role::VALIDATOR, $actual);
     }
 
     public function testGivenLightNodeAddressThenAddTrackerOnDbReturnLightNode(): void
@@ -46,7 +45,7 @@ class TrackerTest extends TestCase
         $actual = Tracker::addTrackerOnDb();
 
         // Assert
-        $this->assertSame(Rank::LIGHT, $actual);
+        $this->assertSame(Role::LIGHT, $actual);
     }
 
     public function testGivenNotValidatorNodeAddressThenIsValidatorReturnFalse(): void
@@ -69,7 +68,7 @@ class TrackerTest extends TestCase
         $this->db->getTrackerCollection()->insertOne([
             'host' => '',
             'address' => $address,
-            'rank' => Role::VALIDATOR,
+            'role' => Role::VALIDATOR,
             'status' => 'admitted',
         ]);
 
@@ -130,18 +129,18 @@ class TrackerTest extends TestCase
         $this->assertSame('ban', $actual['status']);
     }
 
-    public function testGivenFakeValidatorAddressThenSetRank(): void
+    public function testGivenFakeValidatorAddressThenSetRole(): void
     {
         // Arrange
         $address = '0x6f258c97ad7848aef661465018dc48e55131eff91c4e48';
 
         // Act
-        Tracker::setRank($address, Role::VALIDATOR);
+        Tracker::setRole($address, Role::VALIDATOR);
 
         // Assert
         $actual = $this->db->getTrackerCollection()->findOne(['address' => $address]);
         $this->assertSame($address, $actual['address']);
-        $this->assertSame(Role::VALIDATOR, $actual['rank']);
+        $this->assertSame(Role::VALIDATOR, $actual['role']);
     }
 
     public function testGivenNodeListThenSetHost(): void
@@ -151,13 +150,13 @@ class TrackerTest extends TestCase
             [
                 'host' => NodeInfo::getHost(),
                 'address' => NodeInfo::getAddress(),
-                'rank' => Role::LIGHT,
+                'role' => Role::LIGHT,
                 'status' => 'admitted',
             ],
             [
                 'host' => '192.168.13.30',
                 'address' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e49',
-                'rank' => Role::VALIDATOR,
+                'role' => Role::VALIDATOR,
                 'status' => 'admitted',
             ]
         ];

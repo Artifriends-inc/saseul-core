@@ -4,7 +4,6 @@ namespace Saseul\Core;
 
 use Exception;
 use Saseul\Constant\MongoDb;
-use Saseul\Constant\Rank;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
 use Saseul\Util\Logger;
@@ -46,7 +45,7 @@ class Tracker
             $node = [
                 'host' => $item->host ?? '',
                 'address' => $item->address ?? '',
-                'rank' => $item->rank ?? Rank::LIGHT,
+                'role' => $item->role ?? Role::LIGHT,
                 'status' => $item->status ?? 'none',
                 'my_observed_status' => $item->my_observed_status ?? 'none'
             ];
@@ -79,27 +78,27 @@ class Tracker
 
     public static function getAccessibleValidators()
     {
-        return self::GetNode(['rank' => Rank::VALIDATOR, 'host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']]);
+        return self::GetNode(['role' => Role::VALIDATOR, 'host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']]);
     }
 
     public static function GetValidatorAddress()
     {
-        return self::GetNodeAddress(['rank' => Rank::VALIDATOR]);
+        return self::GetNodeAddress(['role' => Role::VALIDATOR]);
     }
 
     public static function GetSupervisorAddress()
     {
-        return self::GetNodeAddress(['rank' => Rank::SUPERVISOR]);
+        return self::GetNodeAddress(['role' => Role::SUPERVISOR]);
     }
 
     public static function GetArbiterAddress()
     {
-        return self::GetNodeAddress(['rank' => Rank::ARBITER]);
+        return self::GetNodeAddress(['role' => Role::ARBITER]);
     }
 
     public static function GetFullNodeAddress()
     {
-        return self::GetNodeAddress(['rank' => ['$in' => Rank::FULL_NODES]]);
+        return self::GetNodeAddress(['role' => ['$in' => Role::FULL_NODES]]);
     }
 
     /**
@@ -117,7 +116,7 @@ class Tracker
 
         $filter = [
             'address' => $address,
-            'rank' => Role::VALIDATOR,
+            'role' => Role::VALIDATOR,
         ];
         $count = $db->getTrackerCollection()->countDocuments($filter);
 
@@ -126,39 +125,39 @@ class Tracker
 
     public static function SetValidator($address)
     {
-        self::setRank($address, Rank::VALIDATOR);
+        self::setRole($address, Role::VALIDATOR);
     }
 
     public static function SetSupervisor($address)
     {
-        self::setRank($address, Rank::SUPERVISOR);
+        self::setRole($address, Role::SUPERVISOR);
     }
 
     public static function SetArbiter($address)
     {
-        self::setRank($address, Rank::ARBITER);
+        self::setRole($address, Role::ARBITER);
     }
 
     public static function SetLightNode($address)
     {
-        self::setRank($address, Rank::LIGHT);
+        self::setRole($address, Role::LIGHT);
     }
 
     /**
      * Role을 설정한다.
      *
      * @param string $address Node Account address
-     * @param string $rank    설정한 Role
+     * @param string $role    설정한 Role
      *
      * @throws Exception
      */
-    public static function setRank(string $address, string $rank): void
+    public static function setRole(string $address, string $role): void
     {
         $db = Database::getInstance();
 
         $db->getTrackerCollection()->updateOne(
             ['address' => $address],
-            ['$set' => ['rank' => $rank, 'status' => 'none']],
+            ['$set' => ['role' => $role, 'status' => 'none']],
             ['upsert' => true]
         );
     }
@@ -172,7 +171,7 @@ class Tracker
         $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
 
         foreach ($rs as $item) {
-            $role = $item->rank ?? Role::LIGHT;
+            $role = $item->role ?? Role::LIGHT;
 
             break;
         }
@@ -300,21 +299,21 @@ class Tracker
             $db->bulk->insert([
                 'host' => NodeInfo::getHost(),
                 'address' => Env::$genesis['address'],
-                'rank' => Rank::VALIDATOR,
+                'role' => Role::VALIDATOR,
                 'status' => 'admitted',
             ]);
         } else {
             $db->bulk->insert([
                 'host' => '',
                 'address' => Env::$genesis['address'],
-                'rank' => Rank::VALIDATOR,
+                'role' => Role::VALIDATOR,
                 'status' => 'admitted',
             ]);
 
             $db->bulk->insert([
                 'host' => NodeInfo::getHost(),
                 'address' => NodeInfo::getAddress(),
-                'rank' => Rank::LIGHT,
+                'role' => Role::LIGHT,
                 'status' => 'admitted',
             ]);
         }
@@ -334,11 +333,11 @@ class Tracker
     public static function addTrackerOnDb(): string
     {
         $db = Database::getInstance();
-        $role = Rank::LIGHT;
+        $role = Role::LIGHT;
         $dbData = [];
 
         if (Env::$nodeInfo['address'] === Env::$genesis['address']) {
-            $role = Rank::VALIDATOR;
+            $role = Role::VALIDATOR;
         }
 
         if (Env::$nodeInfo['address'] !== Env::$genesis['address']) {
@@ -346,13 +345,13 @@ class Tracker
                 'updateOne' => [
                     [
                         'address' => Env::$genesis['address'],
-                        'rank' => Rank::VALIDATOR,
+                        'role' => Role::VALIDATOR,
                     ],
                     [
                         '$set' => [
                             'host' => Env::$genesis['host'],
                             'address' => Env::$genesis['address'],
-                            'rank' => Rank::VALIDATOR,
+                            'role' => Role::VALIDATOR,
                             'status' => 'admitted',
                         ]
                     ],
@@ -372,7 +371,7 @@ class Tracker
                     '$set' => [
                         'host' => Env::$nodeInfo['host'],
                         'address' => Env::$nodeInfo['address'],
-                        'rank' => $role,
+                        'role' => $role,
                         'status' => 'admitted',
                     ]
                 ],

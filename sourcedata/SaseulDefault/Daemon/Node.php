@@ -10,7 +10,7 @@ use Saseul\Consensus\SourceManager;
 use Saseul\Consensus\SyncManager;
 use Saseul\Consensus\TrackerManager;
 use Saseul\Constant\Event;
-use Saseul\Constant\Rank;
+use Saseul\Constant\Role;
 use Saseul\Constant\Structure;
 use Saseul\Core\Block;
 use Saseul\Core\Chunk;
@@ -232,7 +232,7 @@ class Node
         $aliveArbiters = [];
 
         foreach ($nodes as $node) {
-            if ($node['rank'] === Rank::ARBITER) {
+            if ($node['role'] === Role::ARBITER) {
                 $aliveArbiters[] = $node;
             }
         }
