@@ -47,7 +47,7 @@ class CommitManager
 
     public function init()
     {
-        $this->status_manager->Reset();
+        $this->status_manager->reset();
     }
 
     public function nextBlock($lastBlock, $blockhash, int $txCount, $standardTimestamp)
@@ -74,9 +74,9 @@ class CommitManager
         Fee::SetBlockhash($blockhash);
         Fee::SetStandardTimestamp($s_timestamp);
 
-        $this->status_manager->Preprocess();
-        $this->status_manager->Save();
-        $this->status_manager->Postprocess();
+        $this->status_manager->preprocess();
+        $this->status_manager->save();
+        $this->status_manager->postprocess();
 
         $this->commitTransaction($transactions, $expectBlock);
         $this->commitBlock($expectBlock);
@@ -90,7 +90,7 @@ class CommitManager
         $orderKey = [];
         $txs = [];
 
-        $this->status_manager->Reset();
+        $this->status_manager->reset();
 
         foreach ($transactions as $key => $item) {
             if (TypeChecker::StructureCheck(Structure::TX_ITEM, $item) === false) {
@@ -363,7 +363,7 @@ class CommitManager
     public function completeTransactions($transactions)
     {
         // load status
-        $this->status_manager->Load();
+        $this->status_manager->load();
 
         foreach ($transactions as $key => $item) {
             $transaction = $item['transaction'];
