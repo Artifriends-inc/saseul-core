@@ -11,8 +11,8 @@ class Role
     public const ROLES = [self::VALIDATOR, self::SUPERVISOR, self::ARBITER, self::LIGHT];
     public const FULL_NODES = [self::VALIDATOR, self::SUPERVISOR, self::ARBITER];
 
-    public static function isExist($role)
+    public static function isExist($role): bool
     {
-        return in_array($role, self::ROLES);
+        return in_array($role, self::ROLES, true);
     }
 }

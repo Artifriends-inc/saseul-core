@@ -5,7 +5,7 @@ namespace Saseul\Test\Unit\Custom\Resource;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Saseul\Common\AbstractResource;
-use Saseul\Constant\Rank;
+use Saseul\Constant\Role;
 use Saseul\Core\Env;
 use Saseul\Custom\Resource\InitializationNode;
 use Saseul\System\Database;
@@ -68,7 +68,7 @@ class InitializationNodeTest extends TestCase
 
         // Assert
         $actual = $this->sut->getResponse();
-        $this->assertSame(Rank::VALIDATOR, $actual['role']);
+        $this->assertSame(Role::VALIDATOR, $actual['role']);
     }
 
     public function testGivenLightNodeAddressThenRoleIsLight(): void
@@ -81,6 +81,6 @@ class InitializationNodeTest extends TestCase
 
         // Assert
         $actual = $this->sut->getResponse();
-        $this->assertSame(Rank::LIGHT, $actual['role']);
+        $this->assertSame(Role::LIGHT, $actual['role']);
     }
 }
