@@ -11,6 +11,20 @@ session_start();
 header('Access-Control-Allow-Origin: *');
 
 use Saseul\Common\HandlerLoader;
+use Saseul\Core\Service;
+use Saseul\System\Terminator;
+use Saseul\Util\Logger;
 
-$handlerLoader = new HandlerLoader();
-$handlerLoader->run();
+// Todo: SC-270 해당 내용은 다른 부분에서 구현되어 사용이 가능해야한다.
+$service = new Service();
+if (!$service->isInit()) {
+    Terminator::exit(1);
+}
+
+// Todo: SC-269 API 분리 및 내부 프로토콜이 정해지면 뺀다.
+if (!$service->isRunDaemon()) {
+    Logger::getLogger(Logger::DAEMON)->err('SASEUL is not running.');
+    Terminator::exit(1);
+}
+
+(new HandlerLoader())->run();

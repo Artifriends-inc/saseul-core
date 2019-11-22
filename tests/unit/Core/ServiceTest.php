@@ -23,13 +23,13 @@ class ServiceTest extends TestCase
         putenv('NODE_PRIVATE_KEY=a745fbb3860f243293a66a5fcadf70efc1fa5fa5f0254b3100057e753ef0d9bb');
     }
 
-    public function testGivenEmptyEnvThenInitApiRaisesException(): void
+    public function testGivenEmptyEnvThenIsInitRaisesException(): void
     {
         // Arrange
         $this->prepareEnv();
 
         // Act
-        $act = Service::initApi();
+        $act = Service::isInit();
 
         // Assert
         $this->assertFalse($act);

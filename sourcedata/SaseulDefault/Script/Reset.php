@@ -45,7 +45,7 @@ class Reset extends Script
         }
 
         // Round 가 끝나길 기다린다.
-        if (Service::isRunDaemon() === true) {
+        if ((new Service())->isRunDaemon() === true) {
             Property::isReady(false);
 
             for ($i = 1; $i <= 20; $i++) {

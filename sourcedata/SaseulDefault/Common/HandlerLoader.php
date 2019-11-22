@@ -3,7 +3,6 @@
 namespace Saseul\Common;
 
 use ReflectionClass;
-use Saseul\Core\Service;
 use Saseul\System\HttpRequest;
 use Saseul\System\HttpResponse;
 use Saseul\System\HttpStatus;
@@ -17,10 +16,6 @@ class HandlerLoader
         if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'json') > -1) {
             $_POST = json_decode(file_get_contents('php://input'), true);
             $_REQUEST = empty($_POST) ? $_REQUEST : array_merge($_REQUEST, $_POST);
-        }
-
-        if (!Service::initApi()) {
-            Terminator::exit(1);
         }
     }
 
