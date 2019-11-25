@@ -23,10 +23,6 @@ class DaemonLoader
         Daemon::start();
 
         $this->logger = Logger::getLogger(Logger::DAEMON);
-
-        if (!Service::initDaemon()) {
-            Daemon::stop();
-        }
     }
 
     public function main(): void

@@ -9,8 +9,21 @@ define('ROOT_DIR', __DIR__);
 // autoload
 require_once(SASEUL_DIR . '/vendor/autoload.php');
 
+use Saseul\Common\Daemon;
 use Saseul\Common\DaemonLoader;
+use Saseul\Core\Generation;
+use Saseul\Core\Property;
+use Saseul\Core\Service;
+use Saseul\Core\Tracker;
 
-// run daemon;
-$daemonLoader = new DaemonLoader();
-$daemonLoader->main();
+// Todo: SC-270 해당 내용은 다른 부분에서 구현되어 사용이 가능해야한다.
+if (!(new Service())->isInit()) {
+    Daemon::stop();
+}
+
+// Daemon Preprocess
+Property::init();
+Tracker::init();
+Generation::archiveSource();
+
+(new DaemonLoader())->main();
