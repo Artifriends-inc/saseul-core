@@ -3,7 +3,6 @@
 namespace Saseul\Core;
 
 use Exception;
-use Monolog;
 use Saseul\Constant\Directory;
 use Saseul\Constant\Role;
 use Saseul\Daemon\Arbiter;
@@ -22,44 +21,23 @@ class Service
      *
      * @return bool
      */
-    public static function isRunDaemon(): bool
+    public function isRunDaemon(): bool
     {
-        return !(!is_file(Directory::PID_FILE) || !Property::isReady());
+        return is_file(Directory::PID_FILE) && Property::isReady();
     }
 
     /**
-     * API 클래스 생성시 초기값을 설정한다.
+     * 각 loader를 실행하기전 초기값을 체크한다.
      *
      * @throws Exception
      *
      * @return bool
-     *
-     * @todo SC-143
      */
-    public static function initApi(): bool
+    public function isInit(): bool
     {
-        if (!self::isSetEnv()) {
-            return false;
-        }
+        Env::load();
 
-        $logger = Logger::getLogger(Logger::API);
-
-        if (!self::isConnetDatabase($logger)) {
-            return false;
-        }
-
-        if (!self::isConnectCache($logger)) {
-            return false;
-        }
-
-        // Todo: API 분리시 해당 부분은 제외될 수 있다.
-        if (!self::isRunDaemon()) {
-            $logger->err('SASEUL is not running');
-
-            return false;
-        }
-
-        return true;
+        return static::isSetEnv() && static::isConnectDatabase() && static::isConnectCache();
     }
 
     /**
@@ -73,17 +51,19 @@ class Service
      */
     public static function initDaemon(): bool
     {
+        Env::load();
+
         if (!self::isSetEnv()) {
             return false;
         }
 
         $logger = Logger::getLogger(Logger::DAEMON);
 
-        if (!self::isConnetDatabase($logger)) {
+        if (!self::isConnectDatabase()) {
             return false;
         }
 
-        if (!self::isConnectCache($logger)) {
+        if (!self::isConnectCache()) {
             return false;
         }
 
@@ -105,17 +85,19 @@ class Service
      */
     public static function initScript(): bool
     {
+        Env::load();
+
         if (!self::isSetEnv()) {
             return false;
         }
 
         $logger = Logger::getLogger(Logger::SCRIPT);
 
-        if (!self::isConnetDatabase($logger)) {
+        if (!self::isConnectDatabase()) {
             return false;
         }
 
-        if (!self::isConnectCache($logger)) {
+        if (!self::isConnectCache()) {
             return false;
         }
 
@@ -151,19 +133,17 @@ class Service
     /**
      * Database 연결을 확인한다.
      *
-     * @param Monolog\Logger $logger
-     *
      * @throws Exception
      *
      * @return bool
      */
-    private static function isConnetDatabase(Monolog\Logger $logger): bool
+    private static function isConnectDatabase(): bool
     {
         if (Database::getInstance()->IsConnect()) {
             return true;
         }
 
-        $logger->err('DB is not running.');
+        Logger::getLogger(Logger::DAEMON)->err('DB is not running.');
 
         return false;
     }
@@ -171,19 +151,17 @@ class Service
     /**
      * Cache 연결을 확인한다.
      *
-     * @param Monolog\Logger $logger
-     *
      * @throws Exception
      *
      * @return bool
      */
-    private static function isConnectCache(Monolog\Logger $logger): bool
+    private static function isConnectCache(): bool
     {
         if (Cache::GetInstance()->isConnect()) {
             return true;
         }
 
-        $logger->err('Cache is not running.');
+        Logger::getLogger(Logger::DAEMON)->err('Cache is not running.');
 
         return false;
     }
@@ -197,24 +175,12 @@ class Service
      */
     private static function isSetEnv(): bool
     {
-        Env::load();
-
-        if (self::isEnv()) {
-            echo 'Env is not settings.';
-
+        if (NodeInfo::isExist()) {
             return true;
         }
 
-        return false;
-    }
+        echo 'Env is not settings.';
 
-    /**
-     * Env 환경을 불러오고 node 정보가 없으면 false.
-     *
-     * @return bool
-     */
-    private static function isEnv(): bool
-    {
-        return NodeInfo::isExist();
+        return false;
     }
 }
