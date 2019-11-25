@@ -4,7 +4,6 @@ namespace Saseul\Custom\Status;
 
 use Exception;
 use Saseul\Common\Status;
-use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
@@ -18,13 +17,33 @@ class TokenList implements Status
         self::$token_names[] = $token_name;
     }
 
-    public static function GetInfo($token_name)
+    public static function getInfo($token_name)
     {
         if (isset(self::$token_info[$token_name])) {
             return self::$token_info[$token_name];
         }
 
         return [];
+    }
+
+    /**
+     * 불러오기 위해서 입력된 모든 Token name 을 반환한다.
+     *
+     * @return array
+     */
+    public function getAllTokenNameList(): array
+    {
+        return self::$token_names;
+    }
+
+    /**
+     * Token 정보가 있는 모든 Token 정보를 반환한다.
+     *
+     * @return array
+     */
+    public function getAllTokenInfoList(): array
+    {
+        return self::$token_info;
     }
 
     public static function SetInfo($token_name, $info)
@@ -43,8 +62,6 @@ class TokenList implements Status
 
     /**
      * 저장되어 있는 Status 값을 읽어온다.
-     *
-     * @throws \MongoDB\Driver\Exception\Exception
      */
     public static function _load(): void
     {
@@ -56,9 +73,9 @@ class TokenList implements Status
 
         $db = Database::getInstance();
         $filter = ['token_name' => ['$in' => self::$token_names]];
-        $rs = $db->Query(MongoDb::NAMESPACE_TOKEN_LIST, $filter);
+        $cursor = $db->getTokenListCollection()->find($filter);
 
-        foreach ($rs as $item) {
+        foreach ($cursor as $item) {
             if (isset($item->info)) {
                 self::$token_info[$item->token_name] = Parser::objectToArray($item->info);
             }
