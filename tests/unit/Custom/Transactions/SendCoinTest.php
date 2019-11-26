@@ -449,6 +449,6 @@ class SendCoinTest extends TestCase
         $this->sut->setStatus();
 
         // Assert
-        $this->assertSame(Coin::GetBalance($transaction['from']), Coin::GetBalance($transaction['to']));
+        $this->assertSame(Coin::getBalance($transaction['from']), Coin::getBalance($transaction['to']));
     }
 }

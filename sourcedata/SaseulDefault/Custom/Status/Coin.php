@@ -4,7 +4,6 @@ namespace Saseul\Custom\Status;
 
 use Exception;
 use Saseul\Common\Status;
-use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 
 class Coin implements Status
@@ -13,42 +12,112 @@ class Coin implements Status
     protected static $balances = [];
     protected static $deposits = [];
 
-    public static function LoadBalance($address)
+    /**
+     * Coin 정보를 불러올 Address를 추가한다.
+     *
+     * @param string $address Account Address
+     */
+    public static function loadCoin(string $address): void
     {
         self::$addresses[] = $address;
     }
 
-    public static function LoadDeposit($address)
+    /**
+     * @param string $address
+     *
+     * @deprecated loadCoin 으로 변경한다.
+     *
+     * @todo SC-282
+     */
+    public static function loadBalance(string $address): void
     {
         self::$addresses[] = $address;
     }
 
-    public static function GetBalance($address)
+    /**
+     * @param string $address
+     *
+     * @deprecated loadCoin 으로 변경한다.
+     *
+     * @todo SC-282
+     */
+    public static function loadDeposit(string $address): void
     {
-        if (isset(self::$balances[$address])) {
-            return self::$balances[$address];
-        }
-
-        return 0;
+        self::$addresses[] = $address;
     }
 
-    public static function GetDeposit($address)
+    /**
+     * 불러온 address 에 대한 Coin balance 정보를 반환한다.
+     *
+     * @param string $address Account address
+     *
+     * @return int
+     */
+    public static function getBalance(string $address): int
     {
-        if (isset(self::$deposits[$address])) {
-            return self::$deposits[$address];
-        }
-
-        return 0;
+        return self::$balances[$address] ?? 0;
     }
 
-    public static function SetBalance($address, int $value)
+    /**
+     * 불러온 address 에 대한 Coin deposit 정보를 반환한다.
+     *
+     * @param string $address Account address
+     *
+     * @return int
+     */
+    public static function getDeposit(string $address): int
+    {
+        return self::$deposits[$address] ?? 0;
+    }
+
+    /**
+     * Balance 정보를 설정한다.
+     *
+     * @param string $address Account address
+     * @param int    $value   Account coin balance
+     */
+    public static function setBalance(string $address, int $value): void
     {
         self::$balances[$address] = $value;
     }
 
-    public static function SetDeposit($address, int $value)
+    /**
+     * Deposit 정보를 설정한다.
+     *
+     * @param string $address Account address
+     * @param int    $value   Account coin deposit
+     */
+    public static function setDeposit(string $address, int $value): void
     {
         self::$deposits[$address] = $value;
+    }
+
+    /**
+     * 불러오거나 저장될 Account address 전체 목록을 반환한다.
+     *
+     * @return array
+     */
+    public function getAllAddressList(): array
+    {
+        return self::$addresses;
+    }
+
+    /**
+     * 불러오거나 저장될 Account 별 coin balance 전체 목록을 반환한다.
+     *
+     * @return array
+     */
+    public function getAllBalanceList(): array
+    {
+        return self::$balances;
+    }
+
+    /**
+     * 불러오거나 저장될 Account 별 coin deposit 전체 목록을 반환한다.
+     */
+    public function getAllDepositList(): array
+    {
+        return self::$deposits;
     }
 
     /**
@@ -68,22 +137,17 @@ class Coin implements Status
     {
         self::$addresses = array_values(array_unique(self::$addresses));
 
-        if (count(self::$addresses) === 0) {
+        if (empty(self::$addresses)) {
             return;
         }
 
         $db = Database::getInstance();
         $filter = ['address' => ['$in' => self::$addresses]];
-        $rs = $db->Query(MongoDb::NAMESPACE_COIN, $filter);
+        $cursor = $db->getCoinCollection()->find($filter);
 
-        foreach ($rs as $item) {
-            if (isset($item->balance)) {
-                self::$balances[$item->address] = $item->balance;
-            }
-
-            if (isset($item->deposit)) {
-                self::$deposits[$item->address] = $item->deposit;
-            }
+        foreach ($cursor as $item) {
+            self::$balances[$item->address] = $item->balance ?? 0;
+            self::$deposits[$item->address] = $item->deposit ?? 0;
         }
     }
 
