@@ -49,7 +49,7 @@ class CreateToken extends AbstractTransaction
     public function getStatus(): void
     {
         $this->from_token_balance = Token::GetBalance($this->from, $this->token_name);
-        $this->publish_token_info = TokenList::GetInfo($this->token_name);
+        $this->publish_token_info = TokenList::getInfo($this->token_name);
         $this->from_role = Attributes::GetRole($this->from);
     }
 
