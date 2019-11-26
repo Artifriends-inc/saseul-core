@@ -12,15 +12,18 @@ class HandlerLoader
 {
     public function __construct()
     {
-        // TODO: POST, GET 요청 분리
         if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'json') > -1) {
             $_POST = json_decode(file_get_contents('php://input'), true);
             $_REQUEST = empty($_POST) ? $_REQUEST : array_merge($_REQUEST, $_POST);
         }
     }
 
-    // TODO: 단위 테스트 작성 및 if 문 리팩터링 필요
-    public function run(): void
+    /*
+     * 요청에 대한 handler(request or transaction, etc..) 를 찾아 실행 시킨다.
+     * handler 가 존재하면 인스턴스화하여 해당 handler 를 실행시킨다.
+     * 존재하지 않을 경우 NotFound(400)을 반환한다.
+     */
+    public function run(): HttpResponse
     {
         $request = new HttpRequest($_REQUEST, $_SERVER, $_GET, $_POST);
 
@@ -34,7 +37,30 @@ class HandlerLoader
             $response = new HttpResponse(HttpStatus::NOT_FOUND);
         }
 
-        $this->response($response);
+        return $response;
+    }
+
+    /*
+     * HTTP 요청에 대한 처리가 완료되면 만들어진 HttpResponse 를 통해 응답 헤더 및 data 를
+     * 만들고 스크립트를 종료한다.
+     */
+    public function finish(HttpResponse $resp): void
+    {
+        http_response_code($resp->getCode());
+        if (!headers_sent()) {
+            $header = $resp->getHeader();
+            foreach ($header as $key => $value) {
+                header("{$key}: {$value}");
+            }
+        }
+
+        if ($resp->isHtmlBody()) {
+            echo $resp->getHtmlBody();
+        } else {
+            echo json_encode($resp->getData());
+        }
+
+        Terminator::exit(0);
     }
 
     private function getHandlerName(HttpRequest $request): string
@@ -115,25 +141,6 @@ class HandlerLoader
 
     private function instantiateHandler($handlerPath)
     {
-        return $this->api = (new ReflectionClass($handlerPath))->newInstance();
-    }
-
-    private function response(HttpResponse $resp): void
-    {
-        http_response_code($resp->getCode());
-        if (!headers_sent()) {
-            $header = $resp->getHeader();
-            foreach ($header as $key => $value) {
-                header("{$key}: {$value}");
-            }
-        }
-
-        if ($resp->isHtmlBody()) {
-            echo $resp->getHtmlBody();
-        } else {
-            echo json_encode($resp->getData());
-        }
-
-        Terminator::exit(0);
+        return (new ReflectionClass($handlerPath))->newInstance();
     }
 }

@@ -27,4 +27,6 @@ if (!$service->isRunDaemon()) {
     Terminator::exit(1);
 }
 
-(new HandlerLoader())->run();
+$handlerLoader = new HandlerLoader();
+$response = $handlerLoader->run();
+$handlerLoader->finish($response);
