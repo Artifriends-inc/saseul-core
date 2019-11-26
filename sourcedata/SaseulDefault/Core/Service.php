@@ -41,40 +41,6 @@ class Service
     }
 
     /**
-     * Daemon 클래스 생성시 초기값을 설정한다.
-     *
-     * @throws Exception
-     *
-     * @return bool
-     *
-     * @todo SC-144
-     */
-    public static function initDaemon(): bool
-    {
-        Env::load();
-
-        if (!self::isSetEnv()) {
-            return false;
-        }
-
-        $logger = Logger::getLogger(Logger::DAEMON);
-
-        if (!self::isConnectDatabase()) {
-            return false;
-        }
-
-        if (!self::isConnectCache()) {
-            return false;
-        }
-
-        Property::init();
-        Tracker::init();
-        Generation::archiveSource();
-
-        return true;
-    }
-
-    /**
      * Script 클래스 생성시 초기값을 설정한다.
      *
      * @throws Exception

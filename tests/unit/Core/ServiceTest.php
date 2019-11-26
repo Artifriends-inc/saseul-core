@@ -35,18 +35,6 @@ class ServiceTest extends TestCase
         $this->assertFalse($act);
     }
 
-    public function testGivenEmptyEnvThenInitDaemonRaisesException(): void
-    {
-        // Arrange
-        $this->prepareEnv();
-
-        // Act
-        $act = Service::initDaemon();
-
-        // Assert
-        $this->assertFalse($act);
-    }
-
     private function prepareEnv(): void
     {
         putenv('NODE_HOST=');
