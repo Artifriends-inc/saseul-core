@@ -32,13 +32,13 @@ class SendToken extends AbstractTransaction
 
     public function loadStatus(): void
     {
-        Token::LoadToken($this->from, $this->token_name);
-        Token::LoadToken($this->to, $this->token_name);
+        Token::loadToken($this->from, $this->token_name);
+        Token::loadToken($this->to, $this->token_name);
     }
 
     public function getStatus(): void
     {
-        $this->from_token_balance = Token::GetBalance($this->from, $this->token_name);
+        $this->from_token_balance = Token::getBalance($this->from, $this->token_name);
     }
 
     public function makeDecision(): string
@@ -53,11 +53,11 @@ class SendToken extends AbstractTransaction
     public function setStatus(): void
     {
         $this->from_token_balance = (int) $this->from_token_balance - (int) $this->amount;
-        Token::SetBalance($this->from, $this->token_name, $this->from_token_balance);
+        Token::setBalance($this->from, $this->token_name, $this->from_token_balance);
 
-        $this->to_token_balance = Token::GetBalance($this->to, $this->token_name);
+        $this->to_token_balance = Token::getBalance($this->to, $this->token_name);
         $this->to_token_balance = (int) $this->to_token_balance + (int) $this->amount;
-        Token::SetBalance($this->to, $this->token_name, $this->to_token_balance);
+        Token::setBalance($this->to, $this->token_name, $this->to_token_balance);
     }
 
     private function isValidTo(): bool

@@ -279,8 +279,8 @@ class SendTokenTest extends TestCase
 
         // Assert
         $this->assertSame(
-            Token::GetBalance($transaction['from'], 'SendTokenTest'),
-            Token::GetBalance($transaction['to'], 'SendTokenTest')
+            Token::getBalance($transaction['from'], 'SendTokenTest'),
+            Token::getBalance($transaction['to'], 'SendTokenTest')
         );
     }
 }

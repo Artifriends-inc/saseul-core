@@ -41,14 +41,14 @@ class CreateToken extends AbstractTransaction
 
     public function loadStatus(): void
     {
-        Token::LoadToken($this->from, $this->token_name);
+        Token::loadToken($this->from, $this->token_name);
         TokenList::LoadTokenList($this->token_name);
         Attributes::LoadRole($this->from);
     }
 
     public function getStatus(): void
     {
-        $this->from_token_balance = Token::GetBalance($this->from, $this->token_name);
+        $this->from_token_balance = Token::getBalance($this->from, $this->token_name);
         $this->publish_token_info = TokenList::getInfo($this->token_name);
         $this->from_role = Attributes::GetRole($this->from);
     }
@@ -82,7 +82,7 @@ class CreateToken extends AbstractTransaction
             'total_amount' => $total_amount,
         ];
 
-        Token::SetBalance($this->from, $this->token_name, $this->from_token_balance);
+        Token::setBalance($this->from, $this->token_name, $this->from_token_balance);
         TokenList::SetInfo($this->token_name, $this->publish_token_info);
     }
 
