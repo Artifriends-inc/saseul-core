@@ -3,8 +3,6 @@
 namespace Saseul\Common;
 
 use Saseul\Core\ScriptFinder;
-use Saseul\Core\Service;
-use Saseul\System\Terminator;
 
 class ScriptLoader
 {
@@ -18,10 +16,6 @@ class ScriptLoader
 
         if (!isset($this->argv[1])) {
             $this->argv[1] = '';
-        }
-
-        if (!Service::initScript()) {
-            Terminator::exit(1);
         }
     }
 

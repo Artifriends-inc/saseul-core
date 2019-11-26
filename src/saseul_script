@@ -15,7 +15,11 @@ posix_setgid(getmygid());
 posix_setuid(getmyuid());
 
 use Saseul\Common\ScriptLoader;
+use Saseul\Core\Service;
+use Saseul\System\Terminator;
 
-// execute script
-$scriptLoader = new ScriptLoader($argv);
-$scriptLoader->main();
+if (!(new Service())->isInit()) {
+    Terminator::exit(1);
+}
+
+(new ScriptLoader($argv))->main();
