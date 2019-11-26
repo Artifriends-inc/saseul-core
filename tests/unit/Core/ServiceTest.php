@@ -35,18 +35,6 @@ class ServiceTest extends TestCase
         $this->assertFalse($act);
     }
 
-    public function testGivenEmptyEnvThenInitScriptRaisesException(): void
-    {
-        // Arrange
-        $this->prepareEnv();
-
-        // Act
-        $act = Service::initScript();
-
-        // Assert
-        $this->assertFalse($act);
-    }
-
     public function testGivenEmptyEnvThenInitDaemonRaisesException(): void
     {
         // Arrange
