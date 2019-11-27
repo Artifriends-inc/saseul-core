@@ -62,7 +62,7 @@ class ChangeRole extends AbstractTransaction
 
     public function setStatus(): void
     {
-        Attributes::SetRole($this->from, $this->role);
+        Attributes::setRole($this->from, $this->role);
     }
 
     private function isValidRole(): bool
