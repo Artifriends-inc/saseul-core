@@ -19,7 +19,7 @@ class GetTokenBalance extends AbstractRequest
     public function getResponse(): array
     {
         $from = $this->from;
-        $all = Token::GetAll([$from]);
+        $all = Token::getAll([$from]);
 
         return $all[$from];
     }
