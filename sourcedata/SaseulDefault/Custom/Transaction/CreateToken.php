@@ -43,14 +43,14 @@ class CreateToken extends AbstractTransaction
     {
         Token::loadToken($this->from, $this->token_name);
         TokenList::LoadTokenList($this->token_name);
-        Attributes::LoadRole($this->from);
+        Attributes::loadRole($this->from);
     }
 
     public function getStatus(): void
     {
         $this->from_token_balance = Token::getBalance($this->from, $this->token_name);
         $this->publish_token_info = TokenList::getInfo($this->token_name);
-        $this->from_role = Attributes::GetRole($this->from);
+        $this->from_role = Attributes::getRole($this->from);
     }
 
     public function makeDecision(): string

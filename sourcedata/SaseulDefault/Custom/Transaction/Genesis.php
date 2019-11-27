@@ -32,13 +32,13 @@ class Genesis extends AbstractTransaction
     public function loadStatus(): void
     {
         Coin::loadBalance($this->from);
-        Attributes::LoadRole($this->from);
+        Attributes::loadRole($this->from);
     }
 
     public function getStatus(): void
     {
         $this->from_balance = Coin::getBalance($this->from);
-        $this->from_role = Attributes::GetRole($this->from);
+        $this->from_role = Attributes::getRole($this->from);
         $this->block_count = Block::getCount();
     }
 
@@ -57,7 +57,7 @@ class Genesis extends AbstractTransaction
         $this->from_role = Role::VALIDATOR;
 
         Coin::setBalance($this->from, $this->from_balance);
-        Attributes::SetRole($this->from, $this->from_role);
+        Attributes::setRole($this->from, $this->from_role);
     }
 
     private function isValidCoinAmount(): bool
