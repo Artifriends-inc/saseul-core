@@ -31,12 +31,12 @@ class ChangeRole extends AbstractTransaction
 
     public function loadStatus(): void
     {
-        Coin::LoadDeposit($this->from);
+        Coin::loadDeposit($this->from);
     }
 
     public function getStatus(): void
     {
-        $this->from_deposit = Coin::GetDeposit($this->from);
+        $this->from_deposit = Coin::getDeposit($this->from);
     }
 
     public function makeDecision(): string

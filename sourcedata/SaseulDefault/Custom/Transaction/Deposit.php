@@ -33,14 +33,14 @@ class Deposit extends AbstractTransaction
 
     public function loadStatus(): void
     {
-        Coin::LoadBalance($this->from);
-        Coin::LoadDeposit($this->from);
+        Coin::loadBalance($this->from);
+        Coin::loadDeposit($this->from);
     }
 
     public function getStatus(): void
     {
-        $this->from_balance = Coin::GetBalance($this->from);
-        $this->from_deposit = Coin::GetDeposit($this->from);
+        $this->from_balance = Coin::getBalance($this->from);
+        $this->from_deposit = Coin::getDeposit($this->from);
         $this->coin_fee = Fee::GetFee();
     }
 
@@ -60,8 +60,8 @@ class Deposit extends AbstractTransaction
         $this->from_deposit = (int) $this->from_deposit + (int) $this->coin_amount;
         $this->coin_fee = (int) $this->coin_fee + (int) $this->fee;
 
-        Coin::SetBalance($this->from, $this->from_balance);
-        Coin::SetDeposit($this->from, $this->from_deposit);
+        Coin::setBalance($this->from, $this->from_balance);
+        Coin::setDeposit($this->from, $this->from_deposit);
         Fee::SetFee($this->coin_fee);
     }
 
