@@ -4,7 +4,6 @@ namespace Saseul\Custom\Status;
 
 use Exception;
 use Saseul\Common\Status;
-use Saseul\Constant\MongoDb;
 use Saseul\System\Database;
 use Saseul\Util\Parser;
 
@@ -19,36 +18,93 @@ class Contract implements Status
     protected static $contracts = [];
     protected static $burn_cids = [];
 
-    public static function LoadContract(string $cid)
+    /**
+     * 불러올 Contract를 저장한다.
+     *
+     * @param string $cid 불러올 contract id
+     */
+    public static function loadContract(string $cid): void
     {
         self::$cids[] = $cid;
     }
 
-    public static function GetContract(string $cid)
+    /**
+     * Contract id를 이용하여 contract 정보를 가져온다.
+     *
+     * @param string $cid 불러올 contract id
+     *
+     * @return null|string
+     */
+    public static function getContract(string $cid): ?string
     {
-        if (isset(self::$contracts[$cid])) {
-            return self::$contracts[$cid];
-        }
-
-        return null;
+        return self::$contracts[$cid] ?? null;
     }
 
-    public static function SetContract(string $cid, array $contract)
+    /**
+     * Contract를 설정한다.
+     *
+     * @param string $cid      Contract id
+     * @param array  $contract Contract 내용
+     */
+    public static function setContract(string $cid, array $contract): void
     {
         self::$contracts[$cid] = $contract;
     }
 
-    public static function BurnContract(string $cid)
+    /**
+     * Burn 할 Contract 를 설정한다.
+     *
+     * @param string $cid Burn 할 Contract id
+     */
+    public static function burnContract(string $cid): void
     {
         self::$burn_cids[] = $cid;
         unset(self::$contracts[$cid]);
     }
 
-    public static function MakeCID(array $contract, int $s_timestamp)
+    /**
+     * Contract id 만든다.
+     *
+     * @param array $contract    Contract 내용
+     * @param int   $s_timestamp Standard timestamp
+     *
+     * @return string
+     */
+    public static function makeCID(array $contract, int $s_timestamp): string
     {
-        $chash = hash('sha256', json_encode($contract));
+        $chash = hash('sha256', json_encode($contract, JSON_THROW_ON_ERROR, 512));
 
         return $chash . $s_timestamp;
+    }
+
+    /**
+     * 불러올 cid 목록을 반환한다.
+     *
+     * @return array
+     */
+    public function getAllCidList(): array
+    {
+        return self::$cids;
+    }
+
+    /**
+     * 불로왔거나 추가한 Contract 목록을 반환한다.
+     *
+     * @return array
+     */
+    public function getAllContractList(): array
+    {
+        return self::$contracts;
+    }
+
+    /**
+     * Burn 할 Contract 목록을 반환한다.
+     *
+     * @return array
+     */
+    public function getAllBurnCidList(): array
+    {
+        return self::$burn_cids;
     }
 
     /**
@@ -68,15 +124,15 @@ class Contract implements Status
     {
         self::$cids = array_values(array_unique(self::$cids));
 
-        if (count(self::$cids) === 0) {
+        if (empty(self::$cids)) {
             return;
         }
 
         $db = Database::getInstance();
         $filter = ['cid' => ['$in' => self::$cids]];
-        $rs = $db->Query(MongoDb::NAMESPACE_CONTRACT, $filter);
+        $cursor = $db->getContractCollection()->find($filter);
 
-        foreach ($rs as $item) {
+        foreach ($cursor as $item) {
             if (isset($item->contract)) {
                 self::$contracts[$item->cid] = Parser::objectToArray($item->contract);
             }
