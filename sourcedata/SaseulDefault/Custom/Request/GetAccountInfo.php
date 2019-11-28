@@ -25,7 +25,7 @@ class GetAccountInfo extends AbstractRequest
         $balance = $all[$from]['balance'];
         $deposit = $all[$from]['deposit'];
 
-        $token = Token::GetAll([$from]);
+        $token = Token::getAll([$from]);
         $token = $token[$from];
 
         return [
