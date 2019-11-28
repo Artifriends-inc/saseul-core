@@ -72,7 +72,7 @@ class Service
 
     public static function selectRole(): ?Node
     {
-        switch (Tracker::GetRole(NodeInfo::getAddress())) {
+        switch (Tracker::getRole(NodeInfo::getAddress())) {
             case Role::LIGHT:
                 return Light::GetInstance();
 

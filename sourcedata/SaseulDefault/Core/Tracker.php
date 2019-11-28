@@ -20,7 +20,7 @@ class Tracker
         self::resetBanList();
     }
 
-    public static function resetBanList()
+    public static function resetBanList(): void
     {
         self::updateData(['status' => 'ban'], ['status' => 'admitted']);
     }
@@ -162,21 +162,22 @@ class Tracker
         );
     }
 
-    public static function GetRole($address): string
+    /**
+     * Node Account address 로 해당 Node에 대한 role을 반환한다.
+     *
+     * @param string $address Node Account address
+     *
+     * @throws Exception
+     *
+     * @return string
+     */
+    public static function getRole(string $address): string
     {
         $db = Database::getInstance();
-        $role = Role::LIGHT;
-        $query = ['address' => $address];
+        $filter = ['address' => $address];
+        $cursor = $db->getTrackerCollection()->findOne($filter);
 
-        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
-
-        foreach ($rs as $item) {
-            $role = $item->role ?? Role::LIGHT;
-
-            break;
-        }
-
-        return $role;
+        return $cursor->role ?? Role::LIGHT;
     }
 
     public static function GetRandomValidator()
