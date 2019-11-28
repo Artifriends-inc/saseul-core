@@ -2,6 +2,7 @@
 
 namespace Saseul\Custom\Method;
 
+use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
@@ -11,6 +12,13 @@ use Saseul\System\Database;
  */
 class Attributes
 {
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
+    }
+
     public static function GetRole($address)
     {
         $db = Database::getInstance();
@@ -30,33 +38,74 @@ class Attributes
         return $node;
     }
 
-    public static function GetFullNode($query = ['key' => 'role', 'value' => ['$in' => Role::FULL_NODES]])
+    /**
+     * Attribute DB에 저장되어있는 Validator, Supervisor, Arbiter 들의 address를 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getFullNode(): array
     {
-        $db = Database::getInstance();
-        $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $query);
-        $nodes = [];
+        return (new self())->getAddressList(Role::FULL_NODES);
+    }
 
-        foreach ($rs as $item) {
-            if (isset($item->address)) {
-                $nodes[] = $item->address;
-            }
+    /**
+     * Attribute DB에 저장되어있는 Validator 들의 address를 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getValidator(): array
+    {
+        return (new self())->getAddressList([Role::VALIDATOR]);
+    }
+
+    /**
+     * Attribute DB에 저장되어있는 Supervisor 들의 address를 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getSupervisor(): array
+    {
+        return (new self())->getAddressList([Role::SUPERVISOR]);
+    }
+
+    /**
+     * Attribute DB에 저장되어있는 Arbiter 들의 address를 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getArbiter(): array
+    {
+        return (new self())->getAddressList([Role::ARBITER]);
+    }
+
+    /**
+     * @param array $valueList
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    private function getAddressList(array $valueList): array
+    {
+        $filter = [
+            'key' => 'role',
+            'value' => ['$in' => $valueList],
+        ];
+        $cursor = $this->db->getAttributesCollection()->find($filter);
+
+        $nodeAddressList = [];
+        foreach ($cursor as $item) {
+            $nodeAddressList[] = $item->address;
         }
 
-        return $nodes;
-    }
-
-    public static function GetValidator()
-    {
-        return self::GetFullNode(['key' => 'role', 'value' => Role::VALIDATOR]);
-    }
-
-    public static function GetSupervisor()
-    {
-        return self::GetFullNode(['key' => 'role', 'value' => Role::SUPERVISOR]);
-    }
-
-    public static function GetArbiter()
-    {
-        return self::GetFullNode(['key' => 'role', 'value' => Role::ARBITER]);
+        return $nodeAddressList;
     }
 }
