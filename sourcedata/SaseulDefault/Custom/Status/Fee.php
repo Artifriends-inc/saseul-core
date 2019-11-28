@@ -152,7 +152,7 @@ class Fee implements Status
         }
 
         $validators = \Saseul\Custom\Method\Attributes::getValidator();
-        $all = \Saseul\Custom\Method\Coin::GetAll($validators);
+        $all = \Saseul\Custom\Method\Coin::getAll($validators);
 
         $sum = 0;
         $remain = self::$fee;

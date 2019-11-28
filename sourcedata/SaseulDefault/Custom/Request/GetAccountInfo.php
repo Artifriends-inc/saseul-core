@@ -21,7 +21,7 @@ class GetAccountInfo extends AbstractRequest
     public function getResponse(): array
     {
         $from = $this->from;
-        $all = Coin::GetAll([$from]);
+        $all = Coin::getAll([$from]);
         $balance = $all[$from]['balance'];
         $deposit = $all[$from]['deposit'];
 
