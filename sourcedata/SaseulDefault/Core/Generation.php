@@ -4,7 +4,6 @@ namespace Saseul\Core;
 
 use Exception;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
 use Saseul\System\Database;
@@ -17,6 +16,13 @@ use Saseul\Version;
 
 class Generation
 {
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
+    }
+
     /**
      * @param string $originBlockhash
      * @param int    $originBlockNumber
@@ -87,50 +93,34 @@ class Generation
         );
     }
 
-    public static function getItem($query = [])
-    {
-        $db = Database::getInstance();
-
-        $opt = ['sort' => ['origin_block_number' => -1]];
-        $rs = $db->Query(MongoDb::NAMESPACE_GENERATION, $query, $opt);
-
-        $generation = [];
-
-        foreach ($rs as $item) {
-            $item = Parser::objectToArray($item);
-
-            $generation = [
-                'origin_blockhash' => $item['origin_blockhash'] ?? '',
-                'origin_block_number' => $item['origin_block_number'] ?? 0,
-                'final_blockhash' => $item['final_blockhash'] ?? '',
-                'final_block_number' => $item['final_block_number'] ?? 0,
-                'source_hash' => $item['source_hash'] ?? '',
-                'source_version' => $item['source_version'] ?? '',
-            ];
-
-            break;
-        }
-
-        return $generation;
-    }
-
     /**
      * 현재 generation 값을 가져온다.
+     *
+     * @throws Exception
      *
      * @return array
      */
     public static function current(): array
     {
-        if (self::getItem([]) === []) {
+        if ((new self())->getInfo() === null) {
             self::add('', 0, (Rule::GENERATION - 1), Property::sourceHash(), Property::sourceVersion());
         }
 
-        return self::getItem([]);
+        return (new self())->getInfo();
     }
 
-    public static function generationByNumber(int $originBlockNumber)
+    /**
+     * origin block number를 이용하여 generation 정보를 반환한다.
+     *
+     * @param int $originBlockNumber 찾고자하는 block number
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function generationByNumber(int $originBlockNumber): array
     {
-        return self::getItem(['origin_block_number' => $originBlockNumber]);
+        return (new self())->getInfo($originBlockNumber);
     }
 
     /**
@@ -171,5 +161,39 @@ class Generation
     private static function log(): \Monolog\Logger
     {
         return Logger::getLogger(Logger::DAEMON);
+    }
+
+    /**
+     * Generation 데이터를 가져온다.
+     *
+     * @param null|int $originBlockNumber
+     *
+     * @throws Exception
+     *
+     * @return null|array
+     */
+    private function getInfo(int $originBlockNumber = null): ?array
+    {
+        $filter = [];
+        if ($originBlockNumber !== null) {
+            $filter += ['origin_block_number' => $originBlockNumber];
+        }
+
+        $option = ['sort' => ['origin_block_number' => -1]];
+        $cursor = $this->db->getGenerationsCollection()->findOne($filter, $option);
+        if ($cursor === null) {
+            return null;
+        }
+
+        $item = Parser::objectToArray($cursor);
+
+        return [
+            'origin_blockhash' => $item['origin_blockhash'] ?? '',
+            'origin_block_number' => $item['origin_block_number'] ?? 0,
+            'final_blockhash' => $item['final_blockhash'] ?? '',
+            'final_block_number' => $item['final_block_number'] ?? 0,
+            'source_hash' => $item['source_hash'] ?? '',
+            'source_version' => $item['source_version'] ?? ''
+        ];
     }
 }
