@@ -11,12 +11,21 @@ use Saseul\System\Database;
 
 class TrackerTest extends TestCase
 {
-    private $db;
+    protected static $db;
+
+    public static function setUpBeforeClass(): void
+    {
+        self::$db = Database::getInstance();
+        self::$db->getTrackerCollection()->drop();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        self::$db->getTrackerCollection()->drop();
+    }
 
     protected function setUp(): void
     {
-        $this->db = Database::getInstance();
-
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
         Env::$genesis['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
     }
@@ -24,7 +33,7 @@ class TrackerTest extends TestCase
     protected function tearDown(): void
     {
         Env::$nodeInfo['address'] = '0x6f1b0f1ae759165a92d2e7d0b4cae328a1403aa5e35a85';
-        $this->db->getTrackerCollection()->drop();
+        self::$db->getTrackerCollection()->drop();
     }
 
     public function testGivenGenesisAddressThenAddTrackerOnDbReturnGenesisNode(): void
@@ -65,7 +74,7 @@ class TrackerTest extends TestCase
         // Arrange
         $address = NodeInfo::getAddress();
 
-        $this->db->getTrackerCollection()->insertOne([
+        self::$db->getTrackerCollection()->insertOne([
             'host' => '',
             'address' => $address,
             'role' => Role::VALIDATOR,
@@ -96,16 +105,16 @@ class TrackerTest extends TestCase
                 'status' => 'admitted',
             ]
         ];
-        $this->db->getTrackerCollection()->insertMany($hostList);
+        self::$db->getTrackerCollection()->insertMany($hostList);
 
         // Act
         Tracker::resetBanList();
 
         // Assert
-        $hostOneActual = $this->db->getTrackerCollection()->findOne(
+        $hostOneActual = self::$db->getTrackerCollection()->findOne(
             ['host' => $hostList[0]['host']]
         );
-        $hostTwoActual = $this->db->getTrackerCollection()->findOne(
+        $hostTwoActual = self::$db->getTrackerCollection()->findOne(
             ['host' => $hostList[1]['host']]
         );
         $this->assertSame('admitted', $hostOneActual['status']);
@@ -119,13 +128,13 @@ class TrackerTest extends TestCase
             'host' => '192.168.10.41',
             'status' => 'admitted'
         ];
-        $this->db->getTrackerCollection()->insertOne($hostData);
+        self::$db->getTrackerCollection()->insertOne($hostData);
 
         // Act
         Tracker::banHost($hostData['host']);
 
         // Assert
-        $actual = $this->db->getTrackerCollection()->findOne(['host' => $hostData['host']]);
+        $actual = self::$db->getTrackerCollection()->findOne(['host' => $hostData['host']]);
         $this->assertSame('ban', $actual['status']);
     }
 
@@ -138,7 +147,7 @@ class TrackerTest extends TestCase
         Tracker::setRole($address, Role::VALIDATOR);
 
         // Assert
-        $actual = $this->db->getTrackerCollection()->findOne(['address' => $address]);
+        $actual = self::$db->getTrackerCollection()->findOne(['address' => $address]);
         $this->assertSame($address, $actual['address']);
         $this->assertSame(Role::VALIDATOR, $actual['role']);
     }
@@ -160,7 +169,7 @@ class TrackerTest extends TestCase
                 'status' => 'admitted',
             ]
         ];
-        $this->db->getTrackerCollection()->insertMany($nodeListData);
+        self::$db->getTrackerCollection()->insertMany($nodeListData);
 
         $assertData = [
             [
@@ -177,11 +186,11 @@ class TrackerTest extends TestCase
         Tracker::setHosts($assertData);
 
         // Assert
-        $noChangeActural = $this->db->getTrackerCollection()->findOne(['address' => NodeInfo::getAddress()]);
+        $noChangeActural = self::$db->getTrackerCollection()->findOne(['address' => NodeInfo::getAddress()]);
         $this->assertSame($nodeListData[0]['host'], $noChangeActural['host']);
         $this->assertSame($nodeListData[0]['address'], $noChangeActural['address']);
 
-        $changeActural = $this->db->getTrackerCollection()->findOne(['address' => $assertData[1]['address']]);
+        $changeActural = self::$db->getTrackerCollection()->findOne(['address' => $assertData[1]['address']]);
         $this->assertSame($assertData[1]['host'], $changeActural['host']);
         $this->assertSame($assertData[1]['address'], $changeActural['address']);
     }
@@ -199,16 +208,16 @@ class TrackerTest extends TestCase
                 'address' => '0x6f258c97ad7848aef661465018dc48e55131eff91c4e49'
             ]
         ];
-        $this->db->getTrackerCollection()->insertMany($nodeListData);
+        self::$db->getTrackerCollection()->insertMany($nodeListData);
 
         // Act
         Tracker::setMyHost();
 
         // Assert
-        $emptyHostActual = $this->db->getTrackerCollection()->findOne([
+        $emptyHostActual = self::$db->getTrackerCollection()->findOne([
             'address' => $nodeListData[1]['address'],
         ]);
-        $myHostActual = $this->db->getTrackerCollection()->findOne([
+        $myHostActual = self::$db->getTrackerCollection()->findOne([
             'address' => NodeInfo::getAddress(),
         ]);
 
@@ -216,5 +225,56 @@ class TrackerTest extends TestCase
 
         $this->assertSame('', $emptyHostActual['host']);
         $this->assertSame($nodeListData[1]['address'], $emptyHostActual['address']);
+    }
+
+    public function testGivenNodeInfoDataThenGetRole(): void
+    {
+        // Arrange
+        $firstNode = NodeInfo::getAddress();
+        $secondNode = '0x6f258c97ad7848aef661465018dc48e55131eff91c4e49';
+        $saveData = [
+            [
+                'host' => NodeInfo::getHost(),
+                'address' => $firstNode,
+                'role' => Role::LIGHT,
+            ],
+            [
+                'host' => '192.168.13.30',
+                'address' => $secondNode,
+                'role' => Role::VALIDATOR,
+            ]
+        ];
+        self::$db->getTrackerCollection()->insertMany($saveData);
+
+        // Act
+        $firstNodeRole = Tracker::getRole($firstNode);
+        $secondNodeRole = Tracker::getRole($secondNode);
+
+        // Assert
+        $this->assertIsString($firstNodeRole);
+        $this->assertIsString($secondNodeRole);
+
+        $this->assertSame(Role::LIGHT, $firstNodeRole);
+        $this->assertSame(Role::VALIDATOR, $secondNodeRole);
+    }
+
+    public function testGivenNodeInfoThenGetRoleReturnLightNode(): void
+    {
+        // Arrange
+        $address = NodeInfo::getAddress();
+        $saveData = [
+            [
+                'host' => NodeInfo::getHost(),
+                'address' => $address,
+            ]
+        ];
+        self::$db->getTrackerCollection()->insertOne($saveData);
+
+        // Act
+        $actual = Tracker::getRole($address);
+
+        // Assert
+        $this->assertIsString($actual);
+        $this->assertSame(Role::LIGHT, $actual);
     }
 }
