@@ -32,7 +32,7 @@ class Light extends Node
         $generation = Generation::current();
         $nodes = Tracker::getAccessibleNodes();
         $nodes = $this->mergedNode($nodes);
-        $lastBlock = Block::GetLastBlock();
+        $lastBlock = Block::getLastBlock();
 
         $myRound = $this->round_manager->myRound($lastBlock);
         $this->log->debug('round data', ['my' => $myRound, 'this net' => $this->netLastRoundNumber]);
@@ -82,7 +82,7 @@ class Light extends Node
 
     public function changeGeneration($aliveArbiter, $generation)
     {
-        $lastBlock = Block::GetLastBlock();
+        $lastBlock = Block::getLastBlock();
 
         if ($lastBlock['block_number'] >= $generation['final_block_number']) {
             $sourceHash = Property::sourceHash();

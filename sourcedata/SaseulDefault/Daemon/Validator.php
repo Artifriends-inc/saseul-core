@@ -35,7 +35,7 @@ class Validator extends Node
         Property::excludedHost($this->excludedHosts);
 
         // check round
-        $lastBlock = Block::GetLastBlock();
+        $lastBlock = Block::getLastBlock();
         $nodes = Tracker::getAccessibleNodes();
         $nodes = $this->mergedNode($nodes);
         $nodes = $this->validators($nodes);

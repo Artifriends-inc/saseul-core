@@ -409,7 +409,7 @@ class Node
         $first = true;
 
         foreach ($chunks as $chunk) {
-            $lastBlock = Block::GetLastBlock();
+            $lastBlock = Block::getLastBlock();
             $transactions = Chunk::getChunk("{$tempBunch}/{$chunk}");
             unlink("{$tempBunch}/{$chunk}");
 

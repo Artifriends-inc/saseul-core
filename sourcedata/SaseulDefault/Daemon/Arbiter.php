@@ -30,7 +30,7 @@ class Arbiter extends Node
         $generation = Generation::current();
         $nodes = Tracker::getAccessibleNodes();
         $nodes = $this->mergedNode($nodes);
-        $lastBlock = Block::GetLastBlock();
+        $lastBlock = Block::getLastBlock();
 
         $myRound = $this->round_manager->myRound($lastBlock);
         $registOption = false;
@@ -67,7 +67,7 @@ class Arbiter extends Node
 
     public function changeGeneration($generation)
     {
-        $lastBlock = Block::GetLastBlock();
+        $lastBlock = Block::getLastBlock();
 
         if ($lastBlock['block_number'] >= $generation['final_block_number']) {
             $sourceHash = Property::sourceHash();
