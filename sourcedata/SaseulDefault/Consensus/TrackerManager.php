@@ -56,10 +56,10 @@ class TrackerManager
             ]
         );
 
-        $validators_in_tracker = Tracker::GetValidatorAddress();
-        $supervisors_in_tracker = Tracker::GetSupervisorAddress();
-        $arbiters_in_tracker = Tracker::GetArbiterAddress();
-        $fullnodes_in_tracker = Tracker::GetFullNodeAddress();
+        $validators_in_tracker = Tracker::getValidatorAddress();
+        $supervisors_in_tracker = Tracker::getSupervisorAddress();
+        $arbiters_in_tracker = Tracker::getArbiterAddress();
+        $fullnodes_in_tracker = Tracker::getFullNodeAddress();
         $this->logger->debug(
             'in_tracker',
             [

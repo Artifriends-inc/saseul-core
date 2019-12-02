@@ -82,7 +82,7 @@ class Chunk
 
     public static function broadcastCode(int $timestamp)
     {
-        $validatorAddress = Tracker::GetValidatorAddress();
+        $validatorAddress = Tracker::getValidatorAddress();
         $collectedAddress = [];
         $broadcastCode = '';
 

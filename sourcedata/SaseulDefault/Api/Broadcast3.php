@@ -52,7 +52,7 @@ class Broadcast3 extends Api
     {
         $items = [];
         $needles = [];
-        $validators = Tracker::GetValidatorAddress();
+        $validators = Tracker::getValidatorAddress();
         sort($validators);
 
         if (count($validators) !== mb_strlen($this->broadcast_code)) {
@@ -94,7 +94,7 @@ class Broadcast3 extends Api
             $this->error('Invalid public key & signature.');
         }
 
-        if (!in_array(Key::makeAddress($this->public_key), Tracker::GetValidatorAddress())) {
+        if (!in_array(Key::makeAddress($this->public_key), Tracker::getValidatorAddress())) {
             $this->error('You are not validator. ');
         }
 
