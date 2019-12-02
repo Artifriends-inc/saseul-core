@@ -72,7 +72,7 @@ class Broadcast2 extends Api
             $this->error('Invalid public key & signature.');
         }
 
-        if (!in_array(Key::makeAddress($this->public_key), Tracker::GetValidatorAddress())) {
+        if (!in_array(Key::makeAddress($this->public_key), Tracker::getValidatorAddress())) {
             $this->error('You are not validator. ');
         }
 

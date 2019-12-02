@@ -277,4 +277,84 @@ class TrackerTest extends TestCase
         $this->assertIsString($actual);
         $this->assertSame(Role::LIGHT, $actual);
     }
+
+    public function testGivenNodeInfoThenGetValidatorAddress(): void
+    {
+        // Arrange
+        $this->makeNodeData();
+
+        // Act
+        $actual = Tracker::getValidatorAddress();
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertContains('0x6f0001', $actual);
+    }
+
+    public function testGivenNodeInfoThenGetSupervisorAddress(): void
+    {
+        // Arrange
+        $this->makeNodeData();
+
+        // Act
+        $actual = Tracker::getSupervisorAddress();
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertContains('0x6f0002', $actual);
+    }
+
+    public function testGivenNodeInfoThenGetArbiterAddress(): void
+    {
+        // Arrange
+        $this->makeNodeData();
+
+        // Act
+        $actual = Tracker::getArbiterAddress();
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertContains('0x6f0003', $actual);
+    }
+
+    public function testGivenNodeInfoThenGetFullNode(): void
+    {
+        // Arrange
+        $this->makeNodeData();
+
+        // Act
+        $actual = Tracker::getFullNodeAddress();
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertContains('0x6f0003', $actual);
+        $this->assertNotContains('0x6f0004', $actual);
+    }
+
+    private function makeNodeData(): void
+    {
+        $insertData = [
+            [
+                'host' => '10.10.10.2',
+                'address' => '0x6f0001',
+                'role' => Role::VALIDATOR,
+            ],
+            [
+                'host' => '10.10.10.3',
+                'address' => '0x6f0002',
+                'role' => Role::SUPERVISOR,
+            ],
+            [
+                'host' => '10.10.10.4',
+                'address' => '0x6f0003',
+                'role' => Role::ARBITER,
+            ],
+            [
+                'host' => '10.10.10.5',
+                'address' => '0x6f0004',
+                'role' => Role::LIGHT,
+            ]
+        ];
+        self::$db->getTrackerCollection()->insertMany($insertData);
+    }
 }

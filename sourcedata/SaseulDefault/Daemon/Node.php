@@ -243,7 +243,7 @@ class Node
     // TODO: 접근 지정자를 public 에서 protected 으로 변경
     public function validators(array $nodes)
     {
-        $allValidators = Tracker::GetValidatorAddress();
+        $allValidators = Tracker::getValidatorAddress();
         $validators = [];
 
         foreach ($nodes as $node) {

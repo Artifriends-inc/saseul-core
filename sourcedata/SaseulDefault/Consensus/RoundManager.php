@@ -131,7 +131,7 @@ class RoundManager
 
     public function roundInfo(array $myRound, array $netRound): array
     {
-        $validatorAddress = Tracker::GetValidatorAddress();
+        $validatorAddress = Tracker::getValidatorAddress();
         $myRoundNumber = $myRound['decision']['round_number'];
         $netRoundNumber = $myRoundNumber;
         $netStandardTimestamp = 0;

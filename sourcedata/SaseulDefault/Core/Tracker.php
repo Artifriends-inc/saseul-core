@@ -6,11 +6,16 @@ use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
-use Saseul\Util\Logger;
-use Saseul\Util\Parser;
 
 class Tracker
 {
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
+    }
+
     /**
      * Tracker 를 초기화한다.
      * Daemon 을 실행할때만 사용한다.
@@ -56,21 +61,6 @@ class Tracker
         return $nodes;
     }
 
-    public static function GetNodeAddress($query)
-    {
-        $db = Database::getInstance();
-        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
-        $nodes = [];
-
-        foreach ($rs as $item) {
-            $node = Parser::objectToArray($item);
-            unset($node['_id']);
-            $nodes[] = $node['address'];
-        }
-
-        return $nodes;
-    }
-
     public static function getAccessibleNodes()
     {
         return self::GetNode(['host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']]);
@@ -78,27 +68,57 @@ class Tracker
 
     public static function getAccessibleValidators()
     {
-        return self::GetNode(['role' => Role::VALIDATOR, 'host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']]);
+        return self::GetNode(
+            ['role' => Role::VALIDATOR, 'host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']]
+        );
     }
 
-    public static function GetValidatorAddress()
+    /**
+     * Validator tracker address 목록을 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getValidatorAddress(): array
     {
-        return self::GetNodeAddress(['role' => Role::VALIDATOR]);
+        return (new self())->getAddressByRole([Role::VALIDATOR]);
     }
 
-    public static function GetSupervisorAddress()
+    /**
+     * Supervisor tracker address 목록을 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getSupervisorAddress(): array
     {
-        return self::GetNodeAddress(['role' => Role::SUPERVISOR]);
+        return (new self())->getAddressByRole([Role::SUPERVISOR]);
     }
 
-    public static function GetArbiterAddress()
+    /**
+     * Arbiter tracker address 목록을 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getArbiterAddress(): array
     {
-        return self::GetNodeAddress(['role' => Role::ARBITER]);
+        return (new self())->getAddressByRole([Role::ARBITER]);
     }
 
-    public static function GetFullNodeAddress()
+    /**
+     * Light 노드를 제외한 tracker address 목록을 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getFullNodeAddress(): array
     {
-        return self::GetNodeAddress(['role' => ['$in' => Role::FULL_NODES]]);
+        return (new self())->getAddressByRole(Role::FULL_NODES);
     }
 
     /**
@@ -255,33 +275,43 @@ class Tracker
         $host = NodeInfo::getHost();
         $address = NodeInfo::getAddress();
 
-        $db->getTrackerCollection()->bulkWrite([
+        $db->getTrackerCollection()->bulkWrite(
             [
-                'updateMany' => [
-                    ['host' => $host, 'address' => ['$nin' => [null, '']]],
-                    ['$set' => ['host' => '']],
-                ]
-            ],
-            [
-                'updateOne' => [
-                    ['address' => $address],
-                    ['$set' => ['host' => $host]],
-                    ['upsert' => true],
-                ]
-            ],
-        ]);
+                [
+                    'updateMany' => [
+                        ['host' => $host, 'address' => ['$nin' => [null, '']]],
+                        ['$set' => ['host' => '']],
+                    ]
+                ],
+                [
+                    'updateOne' => [
+                        ['address' => $address],
+                        ['$set' => ['host' => $host]],
+                        ['upsert' => true],
+                    ]
+                ],
+            ]
+        );
     }
 
     public static function registerRequest($infos): void
     {
         // Todo: 변수명에 대해서 리팩토링이 필요하다.
         $newRequest = array_merge(Property::registerRequest(), $infos);
-        $newRequest = array_unique(array_map(function ($obj) {
-            return json_encode($obj);
-        }, $newRequest));
-        $newRequest = array_map(function ($obj) {
-            return json_decode($obj, true);
-        }, $newRequest);
+        $newRequest = array_unique(
+            array_map(
+                function ($obj) {
+                    return json_encode($obj);
+                },
+                $newRequest
+            )
+        );
+        $newRequest = array_map(
+            function ($obj) {
+                return json_decode($obj, true);
+            },
+            $newRequest
+        );
 
         Property::registerRequest($newRequest);
     }
@@ -297,26 +327,32 @@ class Tracker
 
         // Todo: 해당 부분을 basmith 에서 추가할 수 있도록 해야한다.
         if (NodeInfo::getAddress() === Env::$genesis['address']) {
-            $db->bulk->insert([
-                'host' => NodeInfo::getHost(),
-                'address' => Env::$genesis['address'],
-                'role' => Role::VALIDATOR,
-                'status' => 'admitted',
-            ]);
+            $db->bulk->insert(
+                [
+                    'host' => NodeInfo::getHost(),
+                    'address' => Env::$genesis['address'],
+                    'role' => Role::VALIDATOR,
+                    'status' => 'admitted',
+                ]
+            );
         } else {
-            $db->bulk->insert([
-                'host' => '',
-                'address' => Env::$genesis['address'],
-                'role' => Role::VALIDATOR,
-                'status' => 'admitted',
-            ]);
+            $db->bulk->insert(
+                [
+                    'host' => '',
+                    'address' => Env::$genesis['address'],
+                    'role' => Role::VALIDATOR,
+                    'status' => 'admitted',
+                ]
+            );
 
-            $db->bulk->insert([
-                'host' => NodeInfo::getHost(),
-                'address' => NodeInfo::getAddress(),
-                'role' => Role::LIGHT,
-                'status' => 'admitted',
-            ]);
+            $db->bulk->insert(
+                [
+                    'host' => NodeInfo::getHost(),
+                    'address' => NodeInfo::getAddress(),
+                    'role' => Role::LIGHT,
+                    'status' => 'admitted',
+                ]
+            );
         }
 
         if ($db->bulk->count() > 0) {
@@ -388,6 +424,26 @@ class Tracker
     }
 
     /**
+     * Role 에 맞는 Tracker 들의 Address를 반환한다.
+     *
+     * @param array $role Tracker Role
+     *
+     * @return array
+     */
+    private function getAddressByRole(array $role): array
+    {
+        $filter = ['role' => ['$in' => $role]];
+        $cursor = $this->db->getTrackerCollection()->find($filter);
+
+        $nodeList = [];
+        foreach ($cursor as $item) {
+            $nodeList[] = $item->address;
+        }
+
+        return $nodeList;
+    }
+
+    /**
      * 입력받은 데이터를 업데이트한다.
      *
      * @param array $filter DB 쿼리문
@@ -403,10 +459,5 @@ class Tracker
             $filter,
             ['$set' => $update],
         );
-    }
-
-    private static function logger()
-    {
-        return Logger::getLogger('Daemon');
     }
 }
