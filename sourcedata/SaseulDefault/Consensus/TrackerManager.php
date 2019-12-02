@@ -42,10 +42,10 @@ class TrackerManager
      */
     public function GenerateTracker()
     {
-        $validators = Attributes::GetValidator();
-        $supervisors = Attributes::GetSupervisor();
-        $arbiters = Attributes::GetArbiter();
-        $fullnodes = Attributes::GetFullNode();
+        $validators = Attributes::getValidator();
+        $supervisors = Attributes::getSupervisor();
+        $arbiters = Attributes::getArbiter();
+        $fullnodes = Attributes::getFullNode();
         $this->logger->debug(
             'nodes',
             [
