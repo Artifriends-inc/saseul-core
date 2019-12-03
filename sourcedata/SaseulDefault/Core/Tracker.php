@@ -370,14 +370,14 @@ class Tracker
      */
     public static function addTrackerOnDb(): string
     {
-        $role = Role::LIGHT;
-        if (self::isGenesisNode()) {
-            $role = Role::VALIDATOR;
+        $role = Role::VALIDATOR;
+        if (self::isNotGenesisNode()) {
+            $role = Role::LIGHT;
         }
 
         $db = Database::getInstance();
-        $trackerDocument = self::assembleTrackerDocument();
-        $db->getTrackerCollection()->bulkWrite($trackerDocument);
+        $trackerDocuments = self::assembleTrackerDocuments($role);
+        $db->getTrackerCollection()->bulkWrite($trackerDocuments);
 
         return $role;
     }
@@ -385,38 +385,20 @@ class Tracker
     /**
      * Tracker 정보를 저장하기 위한 Document 를 생성한다.
      *
+     * @param string $role
+     *
      * @return array
      */
-    private static function assembleTrackerDocument(): array
+    private static function assembleTrackerDocuments(string $role): array
     {
-        $filter = ['address' => ''];
-        $update = ['$set' => ''];
-        $role = Role::VALIDATOR;
-        $status = 'admitted';
-
-        if (self::isGenesisNode()) {
-            $filter['address'] = NodeInfo::getAddress();
-            $update['$set'] = new TrackerModel(
-                NodeInfo::getHost(),
-                NodeInfo::getAddress(),
-                $role,
-                $status
-            );
-        } else {
-            $filter = [
-                'address' => Env::$genesis['address'],
-                'role' => Role::VALIDATOR,
-            ];
-            $update['$set'] = new TrackerModel(
-                Env::$genesis['host'],
-                Env::$genesis['address'],
-                $role,
-                $status
-            );
+        $documents = [];
+        if (self::isNotGenesisNode()) {
+            $documents[] = self::createGenesisTrackerDocument();
         }
 
-        $options = ['upsert' => true];
-        return [['updateOne' => [$filter, $update, $options]]];
+        $documents[] = self::createNodeTrackerDocument($role);
+
+        return $documents;
     }
 
     /**
@@ -424,9 +406,54 @@ class Tracker
      *
      * @return bool
      */
-    private static function isGenesisNode(): bool
+    private static function isNotGenesisNode(): bool
     {
-        return NodeInfo::getAddress() === Env::$genesis['address'];
+        return NodeInfo::getAddress() !== Env::$genesis['address'];
+    }
+
+    /**
+     * Genesis Tracker Document 를 생성한다.
+     *
+     * @return array
+     */
+    private static function createGenesisTrackerDocument(): array
+    {
+        $filter = [
+            'address' => Env::$genesis['address'],
+            'role' => Role::VALIDATOR,
+        ];
+        $update['$set'] = new TrackerModel(
+            Env::$genesis['host'],
+            Env::$genesis['address'],
+            Role::VALIDATOR,
+            'admitted'
+        );
+
+        $options = ['upsert' => true];
+
+        return ['updateOne' => [$filter, $update, $options]];
+    }
+
+    /**
+     * 일반 Node Tracker Document 를 생성한다.
+     *
+     * @param string $role
+     *
+     * @return array
+     */
+    private static function createNodeTrackerDocument(string $role): array
+    {
+        $filter['address'] = NodeInfo::getAddress();
+        $update['$set'] = new TrackerModel(
+            NodeInfo::getHost(),
+            NodeInfo::getAddress(),
+            $role,
+            'admitted'
+        );
+
+        $options = ['upsert' => true];
+
+        return ['updateOne' => [$filter, $update, $options]];
     }
 
     /**
