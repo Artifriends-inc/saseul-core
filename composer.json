@@ -19,6 +19,7 @@
             "Saseul\\Constant\\": "src/Saseul/Constant/",
             "Saseul\\Core\\": "src/Saseul/Core/",
             "Saseul\\Custom\\": "src/Saseul/Custom/",
+            "Saseul\\Models\\": "src/Saseul/Models/",
             "Saseul\\Daemon\\": "src/Saseul/Daemon/",
             "Saseul\\System\\": "src/Saseul/System/",
             "Saseul\\Util\\": "src/Saseul/Util/",
