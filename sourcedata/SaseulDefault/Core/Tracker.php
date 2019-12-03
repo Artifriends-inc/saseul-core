@@ -5,6 +5,7 @@ namespace Saseul\Core;
 use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
+use Saseul\Models\Tracker as TrackerModel;
 use Saseul\System\Database;
 
 class Tracker
@@ -369,58 +370,63 @@ class Tracker
      */
     public static function addTrackerOnDb(): string
     {
-        $db = Database::getInstance();
         $role = Role::LIGHT;
-        $dbData = [];
-
-        if (Env::$nodeInfo['address'] === Env::$genesis['address']) {
+        if (self::isGenesisNode()) {
             $role = Role::VALIDATOR;
         }
 
-        if (Env::$nodeInfo['address'] !== Env::$genesis['address']) {
-            $dbData[] = [
-                'updateOne' => [
-                    [
-                        'address' => Env::$genesis['address'],
-                        'role' => Role::VALIDATOR,
-                    ],
-                    [
-                        '$set' => [
-                            'host' => Env::$genesis['host'],
-                            'address' => Env::$genesis['address'],
-                            'role' => Role::VALIDATOR,
-                            'status' => 'admitted',
-                        ]
-                    ],
-                    [
-                        'upsert' => true,
-                    ]
-                ]
-            ];
-        }
-
-        $dbData[] = [
-            'updateOne' => [
-                [
-                    'address' => Env::$nodeInfo['address'],
-                ],
-                [
-                    '$set' => [
-                        'host' => Env::$nodeInfo['host'],
-                        'address' => Env::$nodeInfo['address'],
-                        'role' => $role,
-                        'status' => 'admitted',
-                    ]
-                ],
-                [
-                    'upsert' => true,
-                ]
-            ]
-        ];
-
-        $db->getTrackerCollection()->bulkWrite($dbData);
+        $db = Database::getInstance();
+        $trackerDocument = self::assembleTrackerDocument();
+        $db->getTrackerCollection()->bulkWrite($trackerDocument);
 
         return $role;
+    }
+
+    /**
+     * Tracker 정보를 저장하기 위한 Document 를 생성한다.
+     *
+     * @return array
+     */
+    private static function assembleTrackerDocument(): array
+    {
+        $filter = ['address' => ''];
+        $update = ['$set' => ''];
+        $role = Role::VALIDATOR;
+        $status = 'admitted';
+
+        if (self::isGenesisNode()) {
+            $filter['address'] = NodeInfo::getAddress();
+            $update['$set'] = new TrackerModel(
+                NodeInfo::getHost(),
+                NodeInfo::getAddress(),
+                $role,
+                $status
+            );
+        } else {
+            $filter = [
+                'address' => Env::$genesis['address'],
+                'role' => Role::VALIDATOR,
+            ];
+            $update['$set'] = new TrackerModel(
+                Env::$genesis['host'],
+                Env::$genesis['address'],
+                $role,
+                $status
+            );
+        }
+
+        $options = ['upsert' => true];
+        return [['updateOne' => [$filter, $update, $options]]];
+    }
+
+    /**
+     * 현재 노드가 genesis 노드인지 확인한다.
+     *
+     * @return bool
+     */
+    private static function isGenesisNode(): bool
+    {
+        return NodeInfo::getAddress() === Env::$genesis['address'];
     }
 
     /**
