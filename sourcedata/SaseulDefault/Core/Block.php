@@ -2,6 +2,7 @@
 
 namespace Saseul\Core;
 
+use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
@@ -11,6 +12,13 @@ use Saseul\Util\Parser;
 
 class Block
 {
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
+    }
+
     public static function genesisHash(): string
     {
         return hash('sha256', json_encode(Env::$genesis['key']));
@@ -162,63 +170,37 @@ class Block
         return Structure::BLOCK;
     }
 
-    public static function GetLastBlock()
+    /**
+     * 마지막 블록에 대한 정보를 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public static function getLastBlock(): array
     {
-        $db = Database::getInstance();
+        $option = ['sort' => ['timestamp' => -1]];
+        $cursor = (new self())->db->getBlocksCollection()->findOne([], $option);
 
-        $ret = [
-            'block_number' => 0,
-            'last_blockhash' => '',
-            'blockhash' => '',
-            'transaction_count' => 0,
-            's_timestamp' => 0,
-            'timestamp' => 0,
+        return [
+            'block_number' => $cursor->block_number ?? 0,
+            'last_blockhash' => $cursor->last_blockhash ?? '',
+            'blockhash' => $cursor->blockhash ?? '',
+            'transaction_count' => $cursor->transaction_count ?? 0,
+            's_timestamp' => $cursor->s_timestamp ?? 0,
+            'timestamp' => $cursor->timestamp ?? 0,
         ];
-
-        $query = [];
-        $opt = ['sort' => ['timestamp' => -1]];
-        $rs = $db->Query(MongoDb::NAMESPACE_BLOCK, $query, $opt);
-
-        // Todo: 코드 정리하자.
-        foreach ($rs as $item) {
-            $item = Parser::objectToArray($item);
-
-            if (isset($item['block_number'])) {
-                $ret['block_number'] = $item['block_number'];
-            }
-            if (isset($item['last_blockhash'])) {
-                $ret['last_blockhash'] = $item['last_blockhash'];
-            }
-            if (isset($item['blockhash'])) {
-                $ret['blockhash'] = $item['blockhash'];
-            }
-            if (isset($item['transaction_count'])) {
-                $ret['transaction_count'] = $item['transaction_count'];
-            }
-            if (isset($item['s_timestamp'])) {
-                $ret['s_timestamp'] = $item['s_timestamp'];
-            }
-            if (isset($item['timestamp'])) {
-                $ret['timestamp'] = $item['timestamp'];
-            }
-
-            break;
-        }
-
-        return $ret;
     }
 
     /**
      * Block 총수를 가져온다.
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @return int
      */
     public static function getCount(): int
     {
-        $db = Database::getInstance();
-
-        return $db->getBlocksCollection()->countDocuments();
+        return (new self())->db->getBlocksCollection()->countDocuments();
     }
 }
