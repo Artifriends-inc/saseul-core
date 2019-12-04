@@ -2,10 +2,17 @@
 
 namespace Saseul\Common;
 
+use Exception;
 use Saseul\Constant\Directory;
+use Saseul\Constant\Role;
+use Saseul\Core\NodeInfo;
 use Saseul\Core\Property;
-use Saseul\Core\Service;
 use Saseul\Core\Tracker;
+use Saseul\Daemon\Arbiter;
+use Saseul\Daemon\Light;
+use Saseul\Daemon\Node;
+use Saseul\Daemon\Supervisor;
+use Saseul\Daemon\Validator;
 use Saseul\Util\Logger;
 
 class DaemonLoader
@@ -46,7 +53,7 @@ class DaemonLoader
 
         Property::banList(Tracker::banList());
 
-        $node = Service::selectRole();
+        $node = $this->getNodeInstance();
 
         if ($node === null) {
             $this->logger->err('Invalid role. Please check node info');
@@ -62,5 +69,35 @@ class DaemonLoader
     {
         Daemon::$isDying = true;
         Daemon::info(PHP_EOL . 'end');
+    }
+
+    /**
+     * 정해진 Role 에 대한 Instance를 반환한다.
+     *
+     * @throws Exception
+     *
+     * @return null|Node
+     */
+    private function getNodeInstance(): ?Node
+    {
+        $role = Tracker::getRole(NodeInfo::getAddress());
+
+        if ($role === Role::LIGHT) {
+            return Light::GetInstance();
+        }
+
+        if ($role === Role::VALIDATOR) {
+            return Validator::GetInstance();
+        }
+
+        if ($role === Role::ARBITER) {
+            return Arbiter::GetInstance();
+        }
+
+        if ($role === Role::SUPERVISOR) {
+            return Supervisor::GetInstance();
+        }
+
+        return null;
     }
 }
