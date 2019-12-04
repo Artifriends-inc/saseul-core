@@ -36,7 +36,7 @@ class Validator extends Node
 
         // check round
         $lastBlock = Block::getLastBlock();
-        $nodes = Tracker::getAccessibleNodes();
+        $nodes = Tracker::getAccessibleNodeList();
         $nodes = $this->mergedNode($nodes);
         $nodes = $this->validators($nodes);
 
@@ -54,7 +54,7 @@ class Validator extends Node
         $this->log->debug('Check round', ['type' => 'net', 'sec' => $this->heartbeat]);
 
         $this->tracker_manager->register($nodes, array_keys($netRound));
-        $nodes = Tracker::getAccessibleNodes();
+        $nodes = Tracker::getAccessibleNodeList();
         $aliveNodes = $this->aliveNodes($nodes, array_keys($netRound));
         $this->tracker_manager->collect($aliveNodes, array_keys($netRound));
 
@@ -62,7 +62,7 @@ class Validator extends Node
 
         Property::aliveNode($aliveNodes);
 
-        $fullValidators = Tracker::getAccessibleValidators();
+        $fullValidators = Tracker::getAccessibleValidatorList();
         $aliveValidators = $this->aliveNodes($fullValidators, array_keys($netRound));
 
         $roundInfo = $this->round_manager->roundInfo($myRound, $netRound);

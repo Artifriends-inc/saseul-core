@@ -28,50 +28,51 @@ class Tracker
 
     public static function resetBanList(): void
     {
-        self::updateData(['status' => 'ban'], ['status' => 'admitted']);
+        (new self())->updateData(['status' => 'ban'], ['status' => 'admitted']);
     }
 
-    public static function banList()
+    /**
+     * Ban 할 node 목록을 반환한다.
+     *
+     * @return array
+     */
+    public static function getBanList(): array
     {
-        return self::GetNode(['status' => 'ban']);
+        $filter = ['status' => 'ban'];
+
+        return (new self())->getNodeList($filter);
     }
 
-    public static function banHost($host)
+    public static function setBanHost($host): void
     {
-        self::updateData(['host' => $host], ['status' => 'ban']);
+        (new self())->updateData(['host' => $host], ['status' => 'ban']);
     }
 
-    public static function GetNode($query)
+    /**
+     * 요청 가능한 node 목록을 불러온다.
+     *
+     * @param null|string $role
+     *
+     * @return array
+     */
+    public static function getAccessibleNodeList(string $role = null): array
     {
-        $db = Database::getInstance();
-        $rs = $db->Query(MongoDb::NAMESPACE_TRACKER, $query);
-        $nodes = [];
-
-        foreach ($rs as $item) {
-            $node = [
-                'host' => $item->host ?? '',
-                'address' => $item->address ?? '',
-                'role' => $item->role ?? Role::LIGHT,
-                'status' => $item->status ?? 'none',
-                'my_observed_status' => $item->my_observed_status ?? 'none'
-            ];
-
-            $nodes[] = $node;
+        $filter = ['host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']];
+        if ($role !== null) {
+            $filter += ['role' => $role];
         }
 
-        return $nodes;
+        return (new self())->getNodeList($filter);
     }
 
-    public static function getAccessibleNodes()
+    /**
+     * 요청 가능한 validator 목록을 반환한다.
+     *
+     * @return array
+     */
+    public static function getAccessibleValidatorList(): array
     {
-        return self::GetNode(['host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']]);
-    }
-
-    public static function getAccessibleValidators()
-    {
-        return self::GetNode(
-            ['role' => Role::VALIDATOR, 'host' => ['$nin' => [null, '']], 'status' => ['$ne' => 'ban']]
-        );
+        return static::getAccessibleNodeList(Role::VALIDATOR);
     }
 
     /**
@@ -203,7 +204,7 @@ class Tracker
 
     public static function GetRandomValidator()
     {
-        $validators = self::getAccessibleValidators();
+        $validators = self::getAccessibleValidatorList();
         $count = count($validators);
         $pick = rand(0, $count - 1);
 
@@ -457,6 +458,31 @@ class Tracker
     }
 
     /**
+     * Node 목록을 반환한다.
+     *
+     * @param array $filter 검색에 필요한 filter 추가
+     *
+     * @return array
+     */
+    private function getNodeList(array $filter): array
+    {
+        $cursor = $this->db->getTrackerCollection()->find($filter);
+
+        $nodeList = [];
+        foreach ($cursor as $item) {
+            $nodeList[] = [
+                'host' => $item->host ?? '',
+                'address' => $item->address ?? '',
+                'role' => $item->role ?? Role::LIGHT,
+                'status' => $item->status ?? 'none',
+                'my_observed_status' => $item->my_observed_status ?? 'none'
+            ];
+        }
+
+        return $nodeList;
+    }
+
+    /**
      * Role 에 맞는 Tracker 들의 Address를 반환한다.
      *
      * @param array $role Tracker Role
@@ -484,11 +510,9 @@ class Tracker
      *
      * @throws Exception
      */
-    private static function updateData(array $filter, array $update)
+    private function updateData(array $filter, array $update): void
     {
-        $db = Database::getInstance();
-
-        $db->getTrackerCollection()->updateMany(
+        $this->db->getTrackerCollection()->updateMany(
             $filter,
             ['$set' => $update],
         );

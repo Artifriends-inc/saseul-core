@@ -131,7 +131,7 @@ class TrackerTest extends TestCase
         self::$db->getTrackerCollection()->insertOne($hostData);
 
         // Act
-        Tracker::banHost($hostData['host']);
+        Tracker::setBanHost($hostData['host']);
 
         // Assert
         $actual = self::$db->getTrackerCollection()->findOne(['host' => $hostData['host']]);
@@ -317,7 +317,7 @@ class TrackerTest extends TestCase
         $this->assertContains('0x6f0003', $actual);
     }
 
-    public function testGivenNodeInfoThenGetFullNode(): void
+    public function testGivenNodeInfoThenGetsFullNode(): void
     {
         // Arrange
         $this->makeNodeData();
@@ -329,6 +329,110 @@ class TrackerTest extends TestCase
         $this->assertIsArray($actual);
         $this->assertContains('0x6f0003', $actual);
         $this->assertNotContains('0x6f0004', $actual);
+    }
+
+    public function testGivenNodeListThenGetsAccessibleNodeList(): void
+    {
+        // Arrange
+        $insertData = [
+            [
+                'host' => '10.0.0.1',
+                'address' => '0x6f0001',
+                'role' => Role::VALIDATOR,
+                'status' => 'admitted',
+            ],
+            [
+                'host' => '',
+                'address' => '0x6f002',
+                'role' => Role::VALIDATOR,
+                'status' => 'admitted',
+            ],
+            [
+                'host' => '10.0.0.2',
+                'address' => '0x6f0003',
+                'role' => Role::ARBITER,
+                'status' => 'ban'
+            ]
+        ];
+        self::$db->getTrackerCollection()->insertMany($insertData);
+
+        // Act
+        $actual = Tracker::getAccessibleNodeList();
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertCount(1, $actual);
+        $this->assertSame('0x6f0001', $actual[0]['address']);
+        $this->assertNotSame('0x6f0002', $actual[0]['address']);
+    }
+
+    public function testGivenNodeListThenGetsAccessibleValidatorList(): void
+    {
+        // Arrange
+        $insertData = [
+            [
+                'host' => '10.0.0.1',
+                'address' => '0x6f0001',
+                'role' => Role::VALIDATOR,
+                'status' => 'admitted',
+            ],
+            [
+                'host' => '',
+                'address' => '0x6f002',
+                'role' => Role::VALIDATOR,
+                'status' => 'admitted',
+            ],
+            [
+                'host' => '10.0.0.2',
+                'address' => '0x6f0002',
+                'role' => Role::ARBITER,
+                'status' => 'ban'
+            ]
+        ];
+        self::$db->getTrackerCollection()->insertMany($insertData);
+
+        // Act
+        $actual = Tracker::getAccessibleValidatorList();
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertCount(1, $actual);
+        $this->assertSame('0x6f0001', $actual[0]['address']);
+        $this->assertSame(Role::VALIDATOR, $actual[0]['role']);
+    }
+
+    public function testGivenBanHostListThenGetsBanList(): void
+    {
+        // Arrange
+        $insertData = [
+            [
+                'host' => '10.0.0.1',
+                'address' => '0x6f0001',
+                'role' => Role::VALIDATOR,
+                'status' => 'ban',
+            ],
+            [
+                'host' => '',
+                'address' => '0x6f0002',
+                'role' => Role::VALIDATOR,
+                'status' => 'admitted',
+            ],
+            [
+                'host' => '10.0.0.3',
+                'address' => '0x6f0003',
+                'role' => Role::VALIDATOR,
+                'status' => 'admitted',
+            ]
+        ];
+        self::$db->getTrackerCollection()->insertMany($insertData);
+
+        // Act
+        $actual = Tracker::getBanList();
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertSame('0x6f0001', $actual[0]['address']);
+        $this->assertSame('ban', $actual[0]['status']);
     }
 
     private function makeNodeData(): void

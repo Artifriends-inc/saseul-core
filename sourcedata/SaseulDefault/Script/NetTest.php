@@ -23,7 +23,7 @@ class NetTest extends Script
     public function _process()
     {
         $accounts = $this->accounts();
-        $validators = Tracker::getAccessibleValidators();
+        $validators = Tracker::getAccessibleValidatorList();
         $round = 1;
 
         if (isset($this->arg[0]) && is_numeric($this->arg[0])) {
