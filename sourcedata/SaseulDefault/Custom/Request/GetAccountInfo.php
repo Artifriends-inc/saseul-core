@@ -33,7 +33,7 @@ class GetAccountInfo extends AbstractRequest
                 'balance' => $balance,
                 'deposit' => $deposit,
             ],
-            'role' => Attributes::GetRole($from),
+            'role' => Attributes::getRole($from),
             'token' => $token,
         ];
     }

@@ -3,7 +3,6 @@
 namespace Saseul\Custom\Method;
 
 use Exception;
-use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
 use Saseul\System\Database;
 
@@ -19,23 +18,22 @@ class Attributes
         $this->db = Database::getInstance();
     }
 
-    public static function GetRole($address)
+    /**
+     * Account address로 noed role 반환한다.
+     *
+     * @param string $address Account address
+     *
+     * @return array
+     */
+    public static function getRole(string $address): array
     {
-        $db = Database::getInstance();
-        $query = ['address' => $address, 'key' => 'role'];
-        $rs = $db->Query(MongoDb::NAMESPACE_ATTRIBUTE, $query);
-        $node = [
+        $filter = ['address' => $address, 'key' => 'role'];
+        $cursor = (new self())->db->getAttributesCollection()->findOne($filter);
+
+        return [
             'address' => $address,
-            'role' => Role::LIGHT,
+            'role' => $cursor->value ?? Role::LIGHT,
         ];
-
-        foreach ($rs as $item) {
-            if (isset($item->address)) {
-                $node['role'] = $item->value;
-            }
-        }
-
-        return $node;
     }
 
     /**

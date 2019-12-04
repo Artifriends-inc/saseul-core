@@ -100,4 +100,26 @@ class AttributesTest extends TestCase
         $this->assertNotContains('0x0001', $actual);
         $this->assertNotContains('0x0004', $actual);
     }
+
+    public function testGivneValidatorAddressThenGetRole(): void
+    {
+        // Act
+        $actual = Attributes::getRole('0x0001');
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertArrayHasKey('address', $actual);
+        $this->assertSame(Role::VALIDATOR, $actual['role']);
+    }
+
+    public function testGivenNoSaveAddressThenGetRole(): void
+    {
+        // Act
+        $actual = Attributes::getRole('0x0005');
+
+        // Assert
+        $this->assertIsArray($actual);
+        $this->assertArrayHasKey('role', $actual);
+        $this->assertSame(Role::LIGHT, $actual['role']);
+    }
 }

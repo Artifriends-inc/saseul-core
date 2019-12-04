@@ -20,6 +20,6 @@ class GetRole extends AbstractRequest
     {
         $from = $this->from;
 
-        return Attributes::GetRole($from);
+        return Attributes::getRole($from);
     }
 }
