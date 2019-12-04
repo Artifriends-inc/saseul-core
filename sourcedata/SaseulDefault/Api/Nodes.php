@@ -9,6 +9,6 @@ class Nodes extends Api
 {
     public function _process()
     {
-        $this->data = Tracker::getAccessibleNodes();
+        $this->data = Tracker::getAccessibleNodeList();
     }
 }

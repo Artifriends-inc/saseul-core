@@ -28,7 +28,7 @@ class Arbiter extends Node
         Property::excludedHost($this->excludedHosts);
 
         $generation = Generation::current();
-        $nodes = Tracker::getAccessibleNodes();
+        $nodes = Tracker::getAccessibleNodeList();
         $nodes = $this->mergedNode($nodes);
         $lastBlock = Block::getLastBlock();
 
@@ -41,7 +41,7 @@ class Arbiter extends Node
         $netRound = $this->round_manager->netRound($nodes, $registOption);
 
         $this->tracker_manager->register($nodes, array_keys($netRound));
-        $nodes = Tracker::getAccessibleNodes();
+        $nodes = Tracker::getAccessibleNodeList();
         $aliveNodes = $this->aliveNodes($nodes, array_keys($netRound));
         $this->tracker_manager->collect($aliveNodes, array_keys($netRound));
 

@@ -11,6 +11,6 @@ class Ban extends Script
     {
         $host = $this->ask('host? ');
 
-        Tracker::banHost($host);
+        Tracker::setBanHost($host);
     }
 }

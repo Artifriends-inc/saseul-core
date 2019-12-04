@@ -44,7 +44,7 @@ class DaemonLoader
 
         Property::isRoundRunning(true);
 
-        Property::banList(Tracker::banList());
+        Property::banList(Tracker::getBanList());
 
         $node = Service::selectRole();
 

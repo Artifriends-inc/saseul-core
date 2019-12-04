@@ -473,7 +473,7 @@ class Node
         if ($this->isTimeToSeparation()) {
             // ban;
             $subjectNode = Property::subjectNode();
-            Tracker::banHost($subjectNode['host']);
+            Tracker::setBanHost($subjectNode['host']);
             $this->resetFailCount();
 
             return;
