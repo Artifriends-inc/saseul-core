@@ -40,13 +40,6 @@ class Block
         return $roundNumber - ($roundNumber % Rule::BUNCH) + Rule::BUNCH - 1;
     }
 
-    public static function lastBlock(): array
-    {
-        $opt = ['sort' => ['timestamp' => -1]];
-
-        return self::data(MongoDb::NAMESPACE_BLOCK, [], $opt);
-    }
-
     public static function nextBlock(array $lastBlock, string $blockhash, int $txCount, int $standardTimestamp): array
     {
         return [
