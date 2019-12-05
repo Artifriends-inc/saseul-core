@@ -4,12 +4,6 @@ namespace Saseul\Core;
 
 use Exception;
 use Saseul\Constant\Directory;
-use Saseul\Constant\Role;
-use Saseul\Daemon\Arbiter;
-use Saseul\Daemon\Light;
-use Saseul\Daemon\Node;
-use Saseul\Daemon\Supervisor;
-use Saseul\Daemon\Validator;
 use Saseul\System\Cache;
 use Saseul\System\Database;
 use Saseul\Util\Logger;
@@ -38,62 +32,6 @@ class Service
         Env::load();
 
         return static::isSetEnv() && static::isConnectDatabase() && static::isConnectCache();
-    }
-
-    /**
-     * Script 클래스 생성시 초기값을 설정한다.
-     *
-     * @throws Exception
-     *
-     * @return bool
-     *
-     * @todo SC-145
-     */
-    public static function initScript(): bool
-    {
-        Env::load();
-
-        if (!self::isSetEnv()) {
-            return false;
-        }
-
-        $logger = Logger::getLogger(Logger::SCRIPT);
-
-        if (!self::isConnectDatabase()) {
-            return false;
-        }
-
-        if (!self::isConnectCache()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static function selectRole(): ?Node
-    {
-        switch (Tracker::getRole(NodeInfo::getAddress())) {
-            case Role::LIGHT:
-                return Light::GetInstance();
-
-                break;
-            case Role::VALIDATOR:
-                return Validator::GetInstance();
-
-                break;
-            case Role::SUPERVISOR:
-                return Supervisor::GetInstance();
-
-                break;
-            case Role::ARBITER:
-                return Arbiter::GetInstance();
-
-                break;
-            default:
-                return null;
-
-                break;
-        }
     }
 
     /**
