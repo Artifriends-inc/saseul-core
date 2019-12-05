@@ -9,6 +9,6 @@ class GetBlocks extends Api
 {
     public function _process()
     {
-        $this->data['committed'] = Block::GetLastBlocks();
+        $this->data['committed'] = Block::getLatestBlockList();
     }
 }

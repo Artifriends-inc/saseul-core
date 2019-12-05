@@ -9,6 +9,6 @@ class GetTransactions extends Api
 {
     public function _process()
     {
-        $this->data = Block::GetLastTransactions(50);
+        $this->data = Block::getLatestTransactionList(50);
     }
 }

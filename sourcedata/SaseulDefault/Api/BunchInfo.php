@@ -19,8 +19,8 @@ class BunchInfo extends Api
     {
         $fileExists = is_file(Chunk::txArchive($this->block_number));
         $bunchFinalNumber = Block::bunchFinalNumber($this->block_number);
-        $block = Block::GetBlockByNumber($this->block_number);
-        $finalBlock = Block::GetBlockByNumber($bunchFinalNumber);
+        $block = Block::getBlockInfoByNumber($this->block_number);
+        $finalBlock = Block::getBlockInfoByNumber($bunchFinalNumber);
 
         $this->data = [
             'file_exists' => $fileExists,

@@ -16,7 +16,7 @@ class BlockInfo extends Api
 
     public function _process()
     {
-        $block = Block::GetBlockByNumber($this->block_number);
+        $block = Block::getBlockInfoByNumber($this->block_number);
         $lastBlock = Block::getLastBlock();
 
         $this->data = [

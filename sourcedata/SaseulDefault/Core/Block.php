@@ -6,6 +6,8 @@ use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\Constant\Structure;
+use Saseul\Models\Block as BlockModel;
+use Saseul\Models\Transaction as TransactionModel;
 use Saseul\System\Database;
 use Saseul\Util\DateTime;
 use Saseul\Util\Parser;
@@ -112,44 +114,45 @@ class Block
         return $datas;
     }
 
-    public static function GetLastBlocks(int $max_count = 100): array
+    /**
+     * 최근 Block 목록을 반환한다.
+     *
+     * @param int $max_count Get block max count (default: 100)
+     *
+     * @return array
+     */
+    public static function getLatestBlockList(int $max_count = 100): array
     {
-        $query = [];
-        $opt = ['sort' => ['timestamp' => -1]];
+        $filter = [];
+        $option = [
+            'sort' => ['timestamp' => MongoDb::DESC],
+            'limit' => $max_count,
+        ];
 
-        return self::GetDatas(MongoDb::NAMESPACE_BLOCK, $max_count, $query, $opt);
+        return (new BlockModel())->find($filter, $option);
     }
 
-    public static function GetLastTransactions(int $max_count = 100): array
+    /**
+     * 최근 Transaction 을 반환한다.
+     *
+     * @param int $max_count Get transaction max count (default: 100)
+     *
+     * @return array
+     */
+    public static function getLatestTransactionList(int $max_count = 100): array
     {
-        $query = [];
-        $opt = ['sort' => ['timestamp' => -1]];
+        $filter = [];
+        $option = [
+            'sort' => ['timestamp' => MongoDb::DESC],
+            'limit' => $max_count,
+        ];
 
-        return self::GetDatas(MongoDb::NAMESPACE_TRANSACTION, $max_count, $query, $opt);
-    }
-
-    public static function GetDatas(string $namespace, int $max_count, array $query = [], array $opt = []): array
-    {
-        $db = Database::getInstance();
-        $rs = $db->Query($namespace, $query, $opt);
-        $datas = [];
-
-        foreach ($rs as $item) {
-            $data = Parser::objectToArray($item);
-            unset($data['_id']);
-            $datas[] = $data;
-
-            if (count($datas) >= $max_count) {
-                break;
-            }
-        }
-
-        return $datas;
+        return (new TransactionModel())->find($filter, $option);
     }
 
     public static function txFileName(int $block_number)
     {
-        $block = self::GetBlockByNumber($block_number);
+        $block = self::getBlockInfoByNumber($block_number);
 
         if (isset($block['blockhash'], $block['s_timestamp'])) {
             return $block['blockhash'] . $block['s_timestamp'];
@@ -158,16 +161,18 @@ class Block
         return '';
     }
 
-    public static function GetBlockByNumber(int $block_number)
+    /**
+     * 입력한 Block number 를 가진 Block 정보를 반환한다.
+     *
+     * @param int $block_number Block number
+     *
+     * @return array
+     */
+    public static function getBlockInfoByNumber(int $block_number): array
     {
-        $query = ['block_number' => $block_number];
-        $blocks = self::GetDatas(MongoDb::NAMESPACE_BLOCK, 1, $query);
+        $filter = ['block_number' => $block_number];
 
-        if (isset($blocks[0])) {
-            return $blocks[0];
-        }
-
-        return Structure::BLOCK;
+        return (new BlockModel())->findOne($filter);
     }
 
     /**
@@ -179,17 +184,9 @@ class Block
      */
     public static function getLastBlock(): array
     {
-        $option = ['sort' => ['timestamp' => -1]];
-        $cursor = (new self())->db->getBlocksCollection()->findOne([], $option);
+        $option = ['sort' => ['timestamp' => MongoDb::DESC]];
 
-        return [
-            'block_number' => $cursor->block_number ?? 0,
-            'last_blockhash' => $cursor->last_blockhash ?? '',
-            'blockhash' => $cursor->blockhash ?? '',
-            'transaction_count' => $cursor->transaction_count ?? 0,
-            's_timestamp' => $cursor->s_timestamp ?? 0,
-            'timestamp' => $cursor->timestamp ?? 0,
-        ];
+        return (new BlockModel())->findOne([], $option);
     }
 
     /**
