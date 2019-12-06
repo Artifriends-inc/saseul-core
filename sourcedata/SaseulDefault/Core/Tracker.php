@@ -319,50 +319,6 @@ class Tracker
     }
 
     /**
-     * Reset 스크립트에서 Genesis Tracker 정보를 저장한다.
-     *
-     * @deprecated Script에서만 사용하고 있기에 Script 항목 삭제시 같이 삭제될 예정.
-     */
-    public static function reset(): void
-    {
-        $db = Database::getInstance();
-
-        // Todo: 해당 부분을 basmith 에서 추가할 수 있도록 해야한다.
-        if (NodeInfo::getAddress() === Env::$genesis['address']) {
-            $db->bulk->insert(
-                [
-                    'host' => NodeInfo::getHost(),
-                    'address' => Env::$genesis['address'],
-                    'role' => Role::VALIDATOR,
-                    'status' => 'admitted',
-                ]
-            );
-        } else {
-            $db->bulk->insert(
-                [
-                    'host' => '',
-                    'address' => Env::$genesis['address'],
-                    'role' => Role::VALIDATOR,
-                    'status' => 'admitted',
-                ]
-            );
-
-            $db->bulk->insert(
-                [
-                    'host' => NodeInfo::getHost(),
-                    'address' => NodeInfo::getAddress(),
-                    'role' => Role::LIGHT,
-                    'status' => 'admitted',
-                ]
-            );
-        }
-
-        if ($db->bulk->count() > 0) {
-            $db->BulkWrite(MongoDb::NAMESPACE_TRACKER);
-        }
-    }
-
-    /**
      * Tracker 등록시 Genesis 노드인지를 확인하여 아니라면 Genesis Address 를 명시해준다.
      *
      * @throws Exception

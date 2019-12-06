@@ -90,9 +90,4 @@ class Memcached
     {
         return $this->mem->getStats();
     }
-
-    public function flush()
-    {
-        $this->mem->flush();
-    }
 }
