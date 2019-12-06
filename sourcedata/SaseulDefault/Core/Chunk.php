@@ -2,12 +2,9 @@
 
 namespace Saseul\Core;
 
-use MongoDB\Driver\Exception\Exception;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDb;
 use Saseul\Constant\Rule;
 use Saseul\System\Cache;
-use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
 use Saseul\Util\File;
@@ -443,51 +440,5 @@ class Chunk
             + Rule::MICROINTERVAL_OF_CHUNK;
 
         return preg_replace('/0{6}$/', '', $tid);
-    }
-
-    /**
-     * Script 에서 명령으로 오래돈 블록을 삭제할 수 있다.
-     *
-     * @param int $lastBlockNumber
-     *
-     * @throws Exception
-     *
-     * @deprecated Script 에서 사용중인 것은 사용하지 않도록 한다.
-     */
-    public static function removeOldBlock(int $lastBlockNumber)
-    {
-        $db = Database::getInstance();
-        $lastGenerationNumber = Block::generationOriginNumber($lastBlockNumber);
-        $lastBunchNumber = Block::generationOriginNumber($lastGenerationNumber) + Rule::BUNCH;
-
-        do {
-            $lastBunchNumber = Block::bunchFinalNumber($lastBunchNumber - Rule::BUNCH);
-            File::rrmdir(self::txFullDir($lastBunchNumber));
-
-            if (is_file(self::txArchive($lastBunchNumber))) {
-                unlink(self::txArchive($lastBunchNumber));
-            }
-        } while ($lastBunchNumber > Rule::BUNCH);
-
-        do {
-            // 바로 이전 세대를 남기기 위해 한번 더 라스트로 이동
-            $lastGenerationNumber = Block::generationOriginNumber($lastGenerationNumber);
-            $query = ['block_number' => ['$lt' => $lastGenerationNumber]];
-            $blocks = Block::datas(MongoDb::NAMESPACE_BLOCK, Rule::GENERATION, $query);
-
-            $blockhashs = [];
-
-            foreach ($blocks as $block) {
-                $blockhashs[] = $block['blockhash'];
-            }
-
-            if (count($blockhashs) > 0) {
-                $db->bulk->delete(['block' => ['$in' => $blockhashs]]);
-                $db->BulkWrite(MongoDb::NAMESPACE_TRANSACTION);
-
-                $db->bulk->delete(['blockhash' => ['$in' => $blockhashs]]);
-                $db->BulkWrite(MongoDb::NAMESPACE_BLOCK);
-            }
-        } while ($lastGenerationNumber > Rule::GENERATION);
     }
 }
