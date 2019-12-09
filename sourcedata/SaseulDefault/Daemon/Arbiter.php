@@ -75,7 +75,7 @@ class Arbiter extends Node
 
             $finalBlockNumber = $generation['final_block_number'];
 
-            $finalBlock = Block::blockByNumber($finalBlockNumber);
+            $finalBlock = Block::getBlockInfoByNumber($finalBlockNumber);
             $finalBlockhash = $finalBlock['blockhash'];
 
             $originBlockhash = $generation['origin_blockhash'];
