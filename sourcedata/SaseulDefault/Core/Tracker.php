@@ -5,7 +5,7 @@ namespace Saseul\Core;
 use Exception;
 use Saseul\Constant\MongoDb;
 use Saseul\Constant\Role;
-use Saseul\Models\Tracker as TrackerModel;
+use Saseul\DataAccess\TrackerDocument;
 use Saseul\System\Database;
 
 class Tracker
@@ -379,7 +379,7 @@ class Tracker
             'address' => Env::$genesis['address'],
             'role' => Role::VALIDATOR,
         ];
-        $update['$set'] = new TrackerModel(
+        $update['$set'] = new TrackerDocument(
             Env::$genesis['host'],
             Env::$genesis['address'],
             Role::VALIDATOR,
@@ -401,7 +401,7 @@ class Tracker
     private static function createNodeTrackerDocument(string $role): array
     {
         $filter['address'] = NodeInfo::getAddress();
-        $update['$set'] = new TrackerModel(
+        $update['$set'] = new TrackerDocument(
             NodeInfo::getHost(),
             NodeInfo::getAddress(),
             $role,

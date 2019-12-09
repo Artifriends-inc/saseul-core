@@ -4,7 +4,7 @@ namespace Saseul\Test\Unit\Models;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\MongoDb;
-use Saseul\Models\Block;
+use Saseul\DataAccess\Models\Block;
 use Saseul\System\Database;
 
 class BlockTest extends TestCase
