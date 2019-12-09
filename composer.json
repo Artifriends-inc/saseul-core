@@ -22,8 +22,7 @@
             "Saseul\\DataAccess\\": "src/Saseul/DataAccess/",
             "Saseul\\Daemon\\": "src/Saseul/Daemon/",
             "Saseul\\System\\": "src/Saseul/System/",
-            "Saseul\\Util\\": "src/Saseul/Util/",
-            "Saseul\\Script\\": "src/Saseul/Script/"
+            "Saseul\\Util\\": "src/Saseul/Util/"
         }
     },
     "autoload-dev": {

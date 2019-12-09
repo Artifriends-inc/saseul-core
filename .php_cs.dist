@@ -10,7 +10,6 @@ $finder = PhpCsFixer\Finder::create()
         'sourcedata/SaseulDefault/Core',
         'sourcedata/SaseulDefault/Custom',
         'sourcedata/SaseulDefault/Daemon',
-        'sourcedata/SaseulDefault/Script',
         'sourcedata/SaseulDefault/System',
         'sourcedata/SaseulDefault/Util',
         'tests'

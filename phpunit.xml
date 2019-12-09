@@ -26,7 +26,6 @@
             <directory suffix=".php">./src/Saseul/Custom</directory>
             <directory suffix=".php">./src/Saseul/Daemon</directory>
             <directory suffix=".php">./src/Saseul/Models</directory>
-            <directory suffix=".php">./src/Saseul/Script</directory>
             <directory suffix=".php">./src/Saseul/System</directory>
             <directory suffix=".php">./src/Saseul/Util</directory>
         </whitelist>
