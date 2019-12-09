@@ -4,7 +4,7 @@ namespace Saseul\Test\Unit\Models;
 
 use PHPUnit\Framework\TestCase;
 use Saseul\Constant\MongoDb;
-use Saseul\Models\Transaction;
+use Saseul\DataAccess\Models\Transaction;
 use Saseul\System\Database;
 
 class TransactionTest extends TestCase

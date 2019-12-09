@@ -3,15 +3,15 @@
 namespace Saseul\Test\Unit\Models;
 
 use PHPUnit\Framework\TestCase;
-use Saseul\Models\Tracker;
+use Saseul\DataAccess\TrackerDocument;
 
-class TrackerTest extends TestCase
+class TrackerDocumentTest extends TestCase
 {
     public function testTrackerHasHostProperty(): void
     {
         $this->assertClassHasAttribute(
             'host',
-            Tracker::class,
+            TrackerDocument::class,
             'Tracker model class does not have host property'
         );
     }
@@ -20,7 +20,7 @@ class TrackerTest extends TestCase
     {
         $this->assertClassHasAttribute(
             'address',
-            Tracker::class,
+            TrackerDocument::class,
             'Tracker model class does not have address property'
         );
     }
@@ -29,7 +29,7 @@ class TrackerTest extends TestCase
     {
         $this->assertClassHasAttribute(
             'role',
-            Tracker::class,
+            TrackerDocument::class,
             'Tracker model class does not have role property'
         );
     }
@@ -38,7 +38,7 @@ class TrackerTest extends TestCase
     {
         $this->assertClassHasAttribute(
             'status',
-            Tracker::class,
+            TrackerDocument::class,
             'Tracker model class does not have status property'
         );
     }
@@ -53,7 +53,7 @@ class TrackerTest extends TestCase
         string $status
     ): void {
         // Act
-        $sut = new Tracker($host, $address, $role, $status);
+        $sut = new TrackerDocument($host, $address, $role, $status);
 
         // Assert
         $this->assertSame($host, $sut->host);

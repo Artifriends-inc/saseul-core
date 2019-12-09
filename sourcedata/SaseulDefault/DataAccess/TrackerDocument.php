@@ -1,7 +1,7 @@
 <?php
-namespace Saseul\Models;
+namespace Saseul\DataAccess;
 
-class Tracker
+class TrackerDocument
 {
     public $host;
     public $address;

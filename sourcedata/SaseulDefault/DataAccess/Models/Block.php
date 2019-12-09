@@ -1,6 +1,6 @@
 <?php
 
-namespace Saseul\Models;
+namespace Saseul\DataAccess\Models;
 
 use Saseul\System\Database;
 
