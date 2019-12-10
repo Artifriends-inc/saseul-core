@@ -2,21 +2,19 @@
 
 namespace Saseul\Test\Unit\Custom\Resource;
 
-use MongoDB\Driver\BulkWrite;
-use MongoDB\Driver\Manager;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Saseul\Common\AbstractResource;
 use Saseul\Constant\Directory;
-use Saseul\Constant\MongoDb;
 use Saseul\Core\Chunk;
 use Saseul\Custom\Resource\Genesis;
+use Saseul\System\Database;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
 
 class GenesisTest extends TestCase
 {
-    private $manager;
+    private $db;
     private $blockData;
     private $sut;
     private $sutName;
@@ -24,7 +22,7 @@ class GenesisTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->manager = new Manager('mongodb://mongo');
+        $this->db = Database::getInstance();
 
         $this->blockData = [
             'block_number' => 1,
@@ -42,10 +40,7 @@ class GenesisTest extends TestCase
 
     protected function tearDown(): void
     {
-        $bulk = new BulkWrite();
-        $bulk->delete([]);
-
-        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bulk);
+        $this->db->getBlocksCollection()->drop();
     }
 
     public function testSutInheritsAbstractRequest(): void
@@ -63,16 +58,13 @@ class GenesisTest extends TestCase
             'timestamp' => $this->timestamp
         ];
 
-        $thash = hash('sha256', json_encode($request));
+        $thash = hash('sha256', json_encode($request, JSON_THROW_ON_ERROR, 512));
         $privateKey = 'a745fbb3860f243293a66a5fcadf70efc1fa5fa5f0254b3100057e753ef0d9bb';
         $publicKey = '52017bcb4caca8911b3830c281d10f79359ceb3fbe061c990e043ccb589fccc3';
         $signature = Key::makeSignature($thash, $privateKey, $publicKey);
 
         $this->sut->initialize($request, $thash, $publicKey, $signature);
-
-        $bulk = new BulkWrite();
-        $bulk->insert($this->blockData);
-        $this->manager->executeBulkWrite(MongoDb::NAMESPACE_BLOCK, $bulk);
+        $this->db->getBlocksCollection()->insertOne($this->blockData);
 
         // Act
         $actual = $this->sut->getValidity();

@@ -2,6 +2,7 @@
 
 rm -rf ./blockdata/*
 rm -rf ./data/db/*
+rm -rf ./data/core/*.tar.gz
 
 block_dir=("apichunks" "broadcastchunks" "transactions" "txarchives")
 
