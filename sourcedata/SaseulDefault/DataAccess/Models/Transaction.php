@@ -2,13 +2,8 @@
 
 namespace Saseul\DataAccess\Models;
 
-use Saseul\System\Database;
-
 class Transaction
 {
-    /** @var Database */
-    private $db;
-
     /** @var string */
     private $transactionHash;
 
@@ -32,8 +27,6 @@ class Transaction
 
     public function __construct()
     {
-        $this->db = Database::getInstance();
-
         $this->transactionHash = '';
         $this->timestamp = 0;
         $this->blockHash = '';
@@ -75,44 +68,7 @@ class Transaction
 
     public function getTransactionData(): array
     {
-        return $this->transactionData;
-    }
-
-    /**
-     * Transaction 하나의 데이터를 찾아서 반환한다.
-     *
-     * @param array $filter
-     * @param array $option
-     *
-     * @return array
-     */
-    public function find(array $filter, array $option = []): array
-    {
-        $cursor = $this->db->getTransactionsCollection()->find($filter, $option);
-
-        $list = [];
-        foreach ($cursor as $item) {
-            $this->setAttributeUseObject($item);
-            $list[] = $this->getArray();
-        }
-
-        return $list;
-    }
-
-    /**
-     * Filter로 select한 데이터들의 목록을 반환한다.
-     *
-     * @param array $filter
-     * @param array $option
-     *
-     * @return array
-     */
-    public function findOne(array $filter, array $option = []): array
-    {
-        $cursor = $this->db->getTransactionsCollection()->findOne($filter, $option);
-
-        $this->setAttributeUseObject($cursor);
-        return $this->getArray();
+        return (array) $this->transactionData;
     }
 
     /**
@@ -120,15 +76,15 @@ class Transaction
      *
      * @param object $attribute
      */
-    private function setAttributeUseObject(object $attribute): void
+    public function setAttributeUseObject(object $attribute): void
     {
-        $this->transactionHash = $attribute->thash;
-        $this->timestamp = $attribute->timestamp;
-        $this->blockHash = $attribute->block;
-        $this->publicKey = $attribute->public_key;
-        $this->result = $attribute->result;
-        $this->signature = $attribute->signature;
-        $this->transactionData = (array) $attribute->transaction;
+        $this->transactionHash = $attribute->thash ?? $this->transactionHash;
+        $this->timestamp = $attribute->timestamp ?? $this->timestamp;
+        $this->blockHash = $attribute->block ?? $this->blockHash;
+        $this->publicKey = $attribute->public_key ?? $this->publicKey;
+        $this->result = $attribute->result ?? $this->result;
+        $this->signature = $attribute->signature ?? $this->signature;
+        $this->transactionData = $attribute->transaction ?? $this->transactionData;
     }
 
     /**
@@ -136,7 +92,7 @@ class Transaction
      *
      * @return array
      */
-    private function getArray(): array
+    public function getArray(): array
     {
         return [
             'thash' => $this->transactionHash,
@@ -145,7 +101,7 @@ class Transaction
             'public_key'=> $this->publicKey,
             'result' => $this->result,
             'signature' => $this->signature,
-            'transaction' => $this->transactionData,
+            'transaction' => (array) $this->transactionData,
         ];
     }
 }

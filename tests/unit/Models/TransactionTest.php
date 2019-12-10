@@ -3,7 +3,6 @@
 namespace Saseul\Test\Unit\Models;
 
 use PHPUnit\Framework\TestCase;
-use Saseul\Constant\MongoDb;
 use Saseul\DataAccess\Models\Transaction;
 use Saseul\System\Database;
 
@@ -115,37 +114,59 @@ class TransactionTest extends TestCase
         );
     }
 
-    public function testGivenQueryDataThenFindOneData(): void
+    public function testGivenTransactionDataThenSetsAttribute(): void
     {
         // Arrange
-        $filter = ['thash' => '0001'];
+        $data = [
+            'thash' => '0001',
+            'timestamp' => 10,
+            'block' => 1,
+            'public_key' => '0x6f0001',
+            'result' => 'accept',
+            'signature' => 'f001',
+            'transaction' => [
+                'data' => 20000
+            ],
+        ];
 
         // Act
-        $actual = $this->sut->findOne($filter);
+        $this->sut->setAttributeUseObject((object) $data);
 
         // Assert
-        $this->assertIsArray($actual);
-        $this->assertIsArray($actual['transaction']);
-        $this->assertArrayHasKey('block', $actual);
-        $this->assertArrayHasKey('transaction', $actual);
-        $this->assertSame('accept', $actual['result']);
+        $this->assertSame($data['thash'], $this->sut->getTransactionHash());
+        $this->assertSame($data['transaction'], $this->sut->getTransactionData());
     }
 
-    public function testGivenQueryDataThenFindListData(): void
+    public function testGivenNullDataThenSetsDefaultAttribute(): void
+    {
+        // Act
+        $this->sut->setAttributeUseObject((object) null);
+
+        // Assert
+        $this->assertSame('', $this->sut->getTransactionHash());
+        $this->assertSame([], $this->sut->getTransactionData());
+        $this->assertSame(0, $this->sut->getTimestamp());
+    }
+
+    public function testGivenTransactionDataThenGetsTransactionListData(): void
     {
         // Arrange
-        $filter = [];
-        $options = ['sort' => ['timestamp' => MongoDb::DESC]];
+        $data = [
+            'thash' => '0001',
+            'timestamp' => 10,
+            'block' => 1,
+            'public_key' => '0x6f0001',
+            'result' => 'accept',
+            'signature' => 'f001',
+            'transaction' => [],
+        ];
+        $this->sut->setAttributeUseObject((object) $data);
 
         // Act
-        $actual = $this->sut->find($filter, $options);
+        $actual = $this->sut->getArray();
 
         // Assert
         $this->assertIsArray($actual);
-        $this->assertCount(2, $actual);
-        $this->assertSame('0002', $actual[0]['thash']);
-        $this->assertIsArray($actual[0]['transaction']);
-        $this->assertArrayHasKey('data', $actual[0]['transaction']);
-        $this->assertSame(20000, $actual[0]['transaction']['data']);
+        $this->assertSame($data, $actual);
     }
 }

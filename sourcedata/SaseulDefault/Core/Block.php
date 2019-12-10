@@ -8,7 +8,6 @@ use Saseul\Constant\Rule;
 use Saseul\DataAccess\Models\Block as BlockModel;
 use Saseul\DataAccess\Models\Transaction as TransactionModel;
 use Saseul\System\Database;
-use Saseul\Util\DateTime;
 
 class Block
 {
@@ -40,18 +39,6 @@ class Block
         return $roundNumber - ($roundNumber % Rule::BUNCH) + Rule::BUNCH - 1;
     }
 
-    public static function nextBlock(array $lastBlock, string $blockhash, int $txCount, int $standardTimestamp): array
-    {
-        return [
-            'block_number' => ((int) $lastBlock['block_number'] + 1),
-            'last_blockhash' => $lastBlock['blockhash'],
-            'blockhash' => $blockhash,
-            'transaction_count' => $txCount,
-            's_timestamp' => $standardTimestamp,
-            'timestamp' => DateTime::Microtime(),
-        ];
-    }
-
     /**
      * 최근 Block 목록을 반환한다.
      *
@@ -68,35 +55,6 @@ class Block
         ];
 
         return (new BlockModel())->find($filter, $option);
-    }
-
-    /**
-     * 최근 Transaction 을 반환한다.
-     *
-     * @param int $max_count Get transaction max count (default: 100)
-     *
-     * @return array
-     */
-    public static function getLatestTransactionList(int $max_count = 100): array
-    {
-        $filter = [];
-        $option = [
-            'sort' => ['timestamp' => MongoDb::DESC],
-            'limit' => $max_count,
-        ];
-
-        return (new TransactionModel())->find($filter, $option);
-    }
-
-    public static function txFileName(int $block_number)
-    {
-        $block = self::getBlockInfoByNumber($block_number);
-
-        if (isset($block['blockhash'], $block['s_timestamp'])) {
-            return $block['blockhash'] . $block['s_timestamp'];
-        }
-
-        return '';
     }
 
     /**
@@ -137,5 +95,74 @@ class Block
     public static function getCount(): int
     {
         return (new self())->db->getBlocksCollection()->countDocuments();
+    }
+
+    public static function txFileName(int $block_number)
+    {
+        $block = self::getBlockInfoByNumber($block_number);
+
+        if (isset($block['blockhash'], $block['s_timestamp'])) {
+            return $block['blockhash'] . $block['s_timestamp'];
+        }
+
+        return '';
+    }
+
+    /**
+     * 최근 Transaction 을 반환한다.
+     *
+     * @param int $max_count Get transaction max count (default: 100)
+     *
+     * @return array
+     */
+    public static function getLatestTransactionList(int $max_count = 100): array
+    {
+        $filter = [];
+        $option = [
+            'sort' => ['timestamp' => MongoDb::DESC],
+            'limit' => $max_count,
+        ];
+
+        return (new self())->findTransaction($filter, $option);
+    }
+
+    /**
+     * Transaction 데이터를 찾는다.
+     *
+     * @param array $filter
+     * @param array $option
+     *
+     * @return array
+     */
+    private function findTransaction(array $filter, array $option = []): array
+    {
+        $cursor = $this->db->getTransactionsCollection()->find($filter, $option);
+
+        $transactionList = [];
+        foreach ($cursor as $item) {
+            $model = new TransactionModel();
+            $model->setAttributeUseObject($item);
+            $transactionList[] = $model->getArray();
+        }
+
+        return $transactionList;
+    }
+
+    /**
+     * 하나의 Transaction 데이터를 찾는다.
+     *
+     * @param array $filter
+     * @param array $option
+     *
+     * @return array
+     */
+    private function findOneTransaction(array $filter, array $option = []): array
+    {
+        $cursor = $this->db->getTransactionsCollection()->findOne($filter, $option);
+
+        $model = new TransactionModel();
+        $model->setAttributeUseObject((object) $cursor);
+
+        return $model->getArray();
     }
 }
