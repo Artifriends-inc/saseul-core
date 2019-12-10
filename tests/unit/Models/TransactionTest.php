@@ -115,7 +115,7 @@ class TransactionTest extends TestCase
         );
     }
 
-    public function testGivenQueryDataThenFindOneData(): void
+    public function testGivenBlockDataThenGetsOneBlockData(): void
     {
         // Arrange
         $filter = ['thash' => '0001'];
@@ -131,7 +131,7 @@ class TransactionTest extends TestCase
         $this->assertSame('accept', $actual['result']);
     }
 
-    public function testGivenQueryDataThenFindListData(): void
+    public function testGivenBlockDataThenGetsBlockListData(): void
     {
         // Arrange
         $filter = [];

@@ -2,13 +2,8 @@
 
 namespace Saseul\DataAccess\Models;
 
-use Saseul\System\Database;
-
 class Block
 {
-    /** @var Database */
-    private $db;
-
     /** @var int */
     private $blockNumber;
 
@@ -29,8 +24,6 @@ class Block
 
     public function __construct()
     {
-        $this->db = Database::getInstance();
-
         $this->blockNumber = 0;
         $this->lastBlockHash = '';
         $this->blockHash = '';
@@ -70,58 +63,18 @@ class Block
     }
 
     /**
-     * Block 하나의 데이터를 찾아서 반환한다.
-     *
-     * @param array $filter
-     * @param array $option
-     *
-     * @return array
-     */
-    public function find(array $filter, array $option = []): array
-    {
-        $cursor = $this->db->getBlocksCollection()->find($filter, $option);
-
-        $list = [];
-        foreach ($cursor as $item) {
-            $this->setAttributeUseObject($item);
-            $list[] = $this->getArray();
-        }
-
-        return $list;
-    }
-
-    /**
-     * Filter로 select한 데이터들의 목록을 반환한다.
-     *
-     * @param array $filter
-     * @param array $option
-     *
-     * @return array
-     */
-    public function findOne(array $filter, array $option = []): array
-    {
-        $cursor = $this->db->getBlocksCollection()->findOne($filter, $option);
-
-        if ($cursor !== null) {
-            $this->setAttributeUseObject($cursor);
-        }
-
-        return $this->getArray();
-    }
-
-    /**
      * Object로 입력받은 attribute를 설정합니다.
      *
      * @param object $attribute
      */
-    private function setAttributeUseObject(object $attribute): void
+    public function setAttributeUseObject(object $attribute): void
     {
-        $this->blockNumber = $attribute->block_number;
-        $this->lastBlockHash = $attribute->last_blockhash;
-        $this->blockHash = $attribute->blockhash;
-        $this->transactionCount = $attribute->transaction_count;
-        $this->standardTimestamp = $attribute->s_timestamp;
-        $this->timestamp = $attribute->timestamp;
+        $this->blockNumber = $attribute->block_number ?? $this->blockNumber;
+        $this->lastBlockHash = $attribute->last_blockhash ?? $this->lastBlockHash;
+        $this->blockHash = $attribute->blockhash ?? $this->blockHash;
+        $this->transactionCount = $attribute->transaction_count ?? $this->transactionCount;
+        $this->standardTimestamp = $attribute->s_timestamp ?? $this->standardTimestamp;
+        $this->timestamp = $attribute->timestamp ?? $this->timestamp;
     }
 
     /**
@@ -129,7 +82,7 @@ class Block
      *
      * @return array
      */
-    private function getArray(): array
+    public function getArray(): array
     {
         return [
             'block_number' => $this->blockNumber,

@@ -3,45 +3,11 @@
 namespace Saseul\Test\Unit\Models;
 
 use PHPUnit\Framework\TestCase;
-use Saseul\Constant\MongoDb;
 use Saseul\DataAccess\Models\Block;
-use Saseul\System\Database;
 
 class BlockTest extends TestCase
 {
-    protected static $db;
     private $sut;
-
-    public static function setUpBeforeClass(): void
-    {
-        self::$db = Database::getInstance();
-        self::$db->getBlocksCollection()->drop();
-
-        $insertData = [
-            [
-                'block_number' => 1,
-                'last_blockhash' => '0001',
-                'blockhash' => '0002',
-                'transaction_count' => 0,
-                's_timestamp' => 1000,
-                'timestamp' => 10000,
-            ],
-            [
-                'block_number' => 2,
-                'last_blockhash' => '0002',
-                'blockhash' => '0003',
-                'transaction_count' => 2,
-                's_timestamp' => 2000,
-                'timestamp' => 20000,
-            ]
-        ];
-        self::$db->getBlocksCollection()->insertMany($insertData);
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        self::$db->getBlocksCollection()->drop();
-    }
 
     protected function setUp(): void
     {
@@ -102,36 +68,53 @@ class BlockTest extends TestCase
         );
     }
 
-    public function testGivenQueryDataThenFindOneData(): void
+    public function testGivenBlockDataThenSetsAttribute(): void
     {
         // Arrange
-        $filter = ['block_number' => 2];
-
-        // Act
-        $actual = $this->sut->findOne($filter);
-
-        // Assert
-        $this->assertIsArray($actual);
-        $this->assertSame(2, $actual['block_number']);
-        $this->assertSame(20000, $actual['timestamp']);
-    }
-
-    public function testGivenQeuryDataThenFindListData(): void
-    {
-        // Arrange
-        $filter = [];
-        $option = [
-            'sort' => ['timestamp' => MongoDb::DESC],
-            'limit' => 1,
+        $blockData = [
+            'block_number' => 1,
+            'last_blockhash' => '0001',
+            'blockhash' => '0002',
+            'transaction_count' => 0,
+            's_timestamp' => 1000,
+            'timestamp' => 10000,
         ];
 
         // Act
-        $actual = $this->sut->find($filter, $option);
+        $this->sut->setAttributeUseObject((object) $blockData);
+
+        // Assert
+        $this->assertSame($blockData, $this->sut->getArray());
+    }
+
+    public function testGivenNullDataThenSetsDefaultAttribute(): void
+    {
+        // Act
+        $this->sut->setAttributeUseObject((object) null);
+
+        // Assert
+        $this->assertSame(0, $this->sut->getBlockNumber());
+        $this->assertSame('', $this->sut->getBlockHash());
+    }
+
+    public function testGivenBlockDataThenGetsArrayData(): void
+    {
+        // Arrange
+        $blockData = [
+            'block_number' => 1,
+            'last_blockhash' => '0001',
+            'blockhash' => '0002',
+            'transaction_count' => 0,
+            's_timestamp' => 1000,
+            'timestamp' => 10000,
+        ];
+        $this->sut->setAttributeUseObject((object) $blockData);
+
+        // Act
+        $actual = $this->sut->getArray();
 
         // Assert
         $this->assertIsArray($actual);
-        $this->assertCount(1, $actual);
-        $this->assertSame(2, $actual[0]['block_number']);
-        $this->assertSame(20000, $actual[0]['timestamp']);
+        $this->assertSame($blockData, $actual);
     }
 }
