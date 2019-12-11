@@ -74,8 +74,7 @@ class Node
         sleep(1);
     }
 
-    // TODO: 접근 지정자를 public에서 protected로 변경
-    public function mergedNode($nodes)
+    protected function mergedNode($nodes)
     {
         $mergedNode = $nodes;
         $hosts = [];
@@ -97,8 +96,7 @@ class Node
         return $mergedNode;
     }
 
-    // TODO: 접근 지정자를 public에서 protected로 변경
-    public function finishingWork(string $result): void
+    protected function finishingWork(string $result): void
     {
         // TODO: ban이 리스크를 가짐.
         switch ($result) {
@@ -122,25 +120,8 @@ class Node
         }
     }
 
-    // TODO: 접근 지정자를 public 에서 private 으로 변경 및 메서드 이름 명확하게 변경
-    public function exclude(): void
-    {
-        $subjectNode = Property::subjectNode();
-
-        if ($subjectNode['host'] && $subjectNode['host'] !== '') {
-            $this->excludedHosts[$subjectNode['host']];
-        }
-    }
-
-    // TODO: 접근 지정자를 public 에서 private 으로 변경 및 메서드 이름 명확하게 변경
-    public function resetexcludedHosts()
-    {
-        // TODO: 바로 리셋해도 별 문제 없을까?
-        $this->excludedHosts = [];
-    }
-
     // TODO: 접근 지정자를 public 에서 protected 으로 변경
-    public function setLength($completeTime = 0)
+    protected function setLength($completeTime = 0)
     {
         $length = (int) ($completeTime + $this->heartbeat * 5) + 1;
 
@@ -155,32 +136,7 @@ class Node
         $this->length = $length;
     }
 
-    // TODO: 접근 지정자를 public 에서 private 으로 변경
-    public function resetFailCount()
-    {
-        $this->fail_count = 0;
-    }
-
-    // TODO: 접근 지정자를 public 에서 private 으로 변경
-    public function increaseFailCount()
-    {
-        $this->fail_count++;
-    }
-
-    // TODO: 접근 지정자를 public 에서 private 으로 변경
-    public function isTimeToSeparation()
-    {
-        return $this->fail_count >= 5;
-    }
-
-    // TODO: 사용되고 있지 않으므로 변경
-    public function getFailCount()
-    {
-        return $this->fail_count;
-    }
-
-    // TODO: 접근 지정자를 public 에서 protected 으로 변경
-    public function aliveNodes(array $nodes, array $alives)
+    protected function aliveNodes(array $nodes, array $alives)
     {
         $aliveNodes = [];
         $excludedHosts = $this->excludedHosts;
@@ -194,8 +150,8 @@ class Node
         return $aliveNodes;
     }
 
-    // TODO: 접근 지정자를 public 에서 protected 으로 변경
-    public function subjectNodeByAddress(array $nodes, string $address)
+    // TODO: Validator 에서만 사용되고 있으므로 옮길 수 있는지 고려
+    protected function subjectNodeByAddress(array $nodes, string $address)
     {
         $subjectNode = [];
 
@@ -210,24 +166,8 @@ class Node
         return $subjectNode;
     }
 
-    // TODO: 접근 지정자를 public 에서 private 으로 변경
-    public function subjectNodeByHost(array $nodes, string $host)
-    {
-        $subjectNode = [];
-
-        foreach ($nodes as $node) {
-            if ($node['host'] === $host) {
-                $subjectNode = $node;
-
-                break;
-            }
-        }
-
-        return $subjectNode;
-    }
-
-    // TODO: 접근 지정자를 public 에서 protected 으로 변경
-    public function aliveArbiters(array $nodes)
+    // TODO: Light 클래스에서만 사용되므로 옮길 수 있는지 고려
+    protected function aliveArbiters(array $nodes)
     {
         $aliveArbiters = [];
 
@@ -240,8 +180,8 @@ class Node
         return $aliveArbiters;
     }
 
-    // TODO: 접근 지정자를 public 에서 protected 으로 변경
-    public function validators(array $nodes)
+    // TODO: Validator 클래스에서만 사용되므로 옮길 수 있는지 고려
+    protected function validators(array $nodes)
     {
         $allValidators = Tracker::getValidatorAddress();
         $validators = [];
@@ -255,8 +195,8 @@ class Node
         return $validators;
     }
 
-    // TODO: 접근 지정자를 public 에서 private 으로 변경 및 메서드 이름 명확하게 변경
-    public function update($aliveArbiters, $generation, $myRoundNumber): void
+    // TODO: Light 클래스에서만 사용되므로 옮길 수 있는지 고려 및 메서드 이름 명확하게 변경
+    protected function update($aliveArbiters, $generation, $myRoundNumber): void
     {
         $originBlockhash = $generation['origin_blockhash'];
         $nextBlockNumber = $myRoundNumber;
@@ -318,8 +258,8 @@ class Node
         Daemon::restart();
     }
 
-    // TODO: 접근 지정자를 public 에서 protected 으로 변경
-    public function sync($aliveNodes, $lastBlock, $myRoundNumber, $netRoundNumber): string
+    // TODO: 메서드 이름을 무엇을 싱크하고 있는지 변경 필요
+    protected function sync($aliveNodes, $lastBlock, $myRoundNumber, $netRoundNumber): string
     {
         $netBunch = Block::bunchFinalNumber($netRoundNumber);
         $myBunch = Block::bunchFinalNumber($myRoundNumber);
@@ -336,8 +276,54 @@ class Node
         return $syncResult;
     }
 
-    // TODO: 접근 지정자를 public 에서 private 으로 변경 및 주석 부분 당장 필요 없으면 제거
-    public function syncBlock($aliveNodes, $lastBlock, $myRoundNumber): string
+    // TODO: 무엇을 제거하는지 명확한 메서드 명 정의 필요
+    private function exclude(): void
+    {
+        $subjectNode = Property::subjectNode();
+
+        if ($subjectNode['host'] && $subjectNode['host'] !== '') {
+            $this->excludedHosts[$subjectNode['host']];
+        }
+    }
+
+    // TODO: 메서드 이름 재 고려
+    private function resetExcludedHosts()
+    {
+        // TODO: 바로 리셋해도 별 문제 없을까?
+        $this->excludedHosts = [];
+    }
+
+    private function resetFailCount()
+    {
+        $this->fail_count = 0;
+    }
+
+    private function increaseFailCount()
+    {
+        $this->fail_count++;
+    }
+
+    private function isTimeToSeparation()
+    {
+        return $this->fail_count >= 5;
+    }
+
+    private function subjectNodeByHost(array $nodes, string $host)
+    {
+        $subjectNode = [];
+
+        foreach ($nodes as $node) {
+            if ($node['host'] === $host) {
+                $subjectNode = $node;
+
+                break;
+            }
+        }
+
+        return $subjectNode;
+    }
+
+    private function syncBlock($aliveNodes, $lastBlock, $myRoundNumber): string
     {
         $netBlockInfo = $this->sync_manager->netBlockInfo($aliveNodes, $myRoundNumber);
 
@@ -349,12 +335,6 @@ class Node
 
         $target = $this->sync_manager->selectBlockInfo($netBlockInfo);
         $blockInfo = $target['item'];
-        // $unique = $target['unique'];
-        //
-        // if ($unique === false) {
-        //    # fork 인지 ;; 정보 기록 필요함.
-        //    # 필요에 따라서 네트워크 ban;
-        // }
 
         $host = $blockInfo['host'];
 
@@ -368,8 +348,7 @@ class Node
         return $this->syncCommit($transactions, $lastBlock, $nextBlockhash, $nextStandardTimestamp);
     }
 
-    // TODO: 접근 지정자를 public 에서 private 으로 변경
-    public function syncBunch($aliveNodes, $myRoundNumber): string
+    private function syncBunch($aliveNodes, $myRoundNumber): string
     {
         $netBunchInfo = $this->sync_manager->netBunchInfo($aliveNodes, $myRoundNumber);
 
@@ -434,8 +413,7 @@ class Node
         return Event::SUCCESS;
     }
 
-    // TODO: 접근 지정자를 public 에서 private 으로 변경 및 주석 제거
-    public function syncCommit(array $transactions, array $lastBlock, string $expectBlockhash, int $expectStandardTimestamp): string
+    private function syncCommit(array $transactions, array $lastBlock, string $expectBlockhash, int $expectStandardTimestamp): string
     {
         $lastStandardTimestamp = $lastBlock['s_timestamp'];
         $lastBlockhash = $lastBlock['blockhash'];
@@ -467,8 +445,7 @@ class Node
         return Event::DIFFERENT;
     }
 
-    // TODO: 접근 지정자를 public 에서 private 으로 변경 및 주석 제거
-    public function ban(): void
+    private function ban(): void
     {
         if ($this->isTimeToSeparation()) {
             // ban;
