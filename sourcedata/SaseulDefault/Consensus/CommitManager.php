@@ -45,12 +45,12 @@ class CommitManager
         return self::$instance;
     }
 
-    public function init()
+    public function init(): void
     {
         $this->status_manager->reset();
     }
 
-    public function nextBlock($lastBlock, $blockhash, int $txCount, $standardTimestamp)
+    public function nextBlock($lastBlock, $blockhash, int $txCount, $standardTimestamp): array
     {
         return [
             'block_number' => ((int) $lastBlock['block_number'] + 1),
@@ -62,7 +62,7 @@ class CommitManager
         ];
     }
 
-    public function commit($transactions, $lastBlock, $expectBlock)
+    public function commit($transactions, $lastBlock, $expectBlock): void
     {
         if (count($transactions) === 0) {
             return;
@@ -85,7 +85,7 @@ class CommitManager
         Chunk::RemoveBroadcastChunk($lastBlock['s_timestamp']);
     }
 
-    public function orderedTransactions($transactions, $minTimestamp, $maxTimestamp)
+    public function orderedTransactions($transactions, $minTimestamp, $maxTimestamp): array
     {
         $orderKey = [];
         $txs = [];
@@ -143,7 +143,6 @@ class CommitManager
 
     public function collectChunk(array $results, array $oldChunks, int $minTime, int $maxTime)
     {
-        $t = [];
         $max = 0;
         $chunks = $oldChunks;
 
@@ -153,12 +152,6 @@ class CommitManager
             if ($rs['exec_time'] > $max) {
                 $max = $rs['exec_time'];
             }
-
-//            $t[] = [
-//                'host' => $rs['host'],
-//                'exec_time' => $rs['exec_time'],
-//                'cnt' => count($result['data']['items']),
-//            ];
 
             // check structure;
             if (!isset($result['data']['items']) || !is_array($result['data']['items'])) {
