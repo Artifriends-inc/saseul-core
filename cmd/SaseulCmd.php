@@ -8,6 +8,7 @@ require_once 'vendor/autoload.php';
 use Composer\Script\Event;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
+use Saseul\Constant\Role;
 use Saseul\Core\Env;
 use Saseul\System\Key;
 use Saseul\Util\DateTime;
@@ -64,6 +65,17 @@ class SaseulCmd
             'timestamp' => DateTime::Microtime(),
         ];
         $res = self::sendRequest($env, $depositData)->getBody();
+        echo $res . PHP_EOL;
+
+        $changeRoleData = [
+            'type' => 'ChangeRole',
+            'version' => Version::CURRENT,
+            'from' => $env['address'],
+            'role' => Role::VALIDATOR,
+            'transactional_data' => 'Genesis change role',
+            'timestamp' => DateTime::Microtime(),
+        ];
+        $res = self::sendRequest($env, $changeRoleData)->getBody();
         echo $res . PHP_EOL;
     }
 

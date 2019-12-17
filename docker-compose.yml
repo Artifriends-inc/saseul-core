@@ -45,7 +45,7 @@ services:
     depends_on:
       - api
     ports:
-      - 8080:80
+      - 80:80
     volumes:
       - ./conf/site.conf:/etc/nginx/conf.d/default.conf
       - ./public:/app/saseul/public
