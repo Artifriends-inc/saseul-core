@@ -240,15 +240,14 @@ class Tracker
     {
         $db = Database::getInstance();
 
-        if ((false !== ($key = array_search(NodeInfo::getAddress(), $nodeInfoList, true)))
-            || (false !== ($key = array_search(NodeInfo::getHost(), $nodeInfoList, true)))) {
-            unset($nodeInfoList[$key]);
-        }
-
         $operations = [];
         foreach ($nodeInfoList as $info) {
             $host = $info['host'];
             $address = $info['address'];
+
+            if ($host === NodeInfo::getHost() || $address === NodeInfo::getAddress()) {
+                continue;
+            }
 
             $operations[] = [
                 'updateMany' => [
@@ -264,6 +263,12 @@ class Tracker
                 ]
             ];
         }
+
+        if (empty($operations)) {
+            return;
+        }
+
+        static::logger()->debug('operations data', [$operations]);
 
         $db->getTrackerCollection()->bulkWrite($operations);
     }
